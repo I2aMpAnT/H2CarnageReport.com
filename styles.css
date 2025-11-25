@@ -51,18 +51,17 @@ body::before {
 
 header {
     text-align: center;
-    margin-bottom: 60px;
-    padding: 40px 20px;
-    background: linear-gradient(135deg, var(--background-medium) 0%, var(--background-light) 100%);
+    margin-bottom: 40px;
+    padding: 20px;
     position: relative;
     overflow: hidden;
     animation: fadeInDown 0.8s ease-out;
 }
 
 .logo {
-    max-width: 400px;
+    max-width: 280px;
     height: auto;
-    margin: 0 auto 20px;
+    margin: 0 auto 10px;
     display: block;
     filter: drop-shadow(0 0 20px rgba(0, 217, 255, 0.5));
 }
