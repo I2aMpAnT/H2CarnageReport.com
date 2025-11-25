@@ -274,12 +274,23 @@ function renderScoreboard(game) {
     const gameType = (details['Game Type'] || '').toLowerCase();
     const hasTeams = players.some(p => p.team && p.team !== 'none');
     
+    // Sort players: Red team first, then Blue team
+    const sortedPlayers = [...players];
+    if (hasTeams) {
+        sortedPlayers.sort((a, b) => {
+            const teamOrder = { 'Red': 0, 'Blue': 1 };
+            const teamA = teamOrder[a.team] !== undefined ? teamOrder[a.team] : 2;
+            const teamB = teamOrder[b.team] !== undefined ? teamOrder[b.team] : 2;
+            return teamA - teamB;
+        });
+    }
+    
     let html = '<div class="scoreboard">';
     
     // Determine columns based on game type
-    let columns = ['Place', 'Player'];
+    let columns = ['Player'];
     
-    if (hasTeams) {
+    if (hasTeams && gameType !== 'slayer') {
         columns.push('Team');
     }
     
@@ -290,14 +301,9 @@ function renderScoreboard(game) {
     }
     
     // Build grid template
-    let gridTemplate = hasTeams ? 
-        '60px 50px 1fr 80px 50px 50px 50px 70px' : 
-        '60px 1fr 80px 50px 50px 50px 70px';
-    
-    if (gameType === 'slayer' && hasTeams) {
-        gridTemplate = '2fr 80px 50px 50px 50px 70px';
-        columns = ['Player', 'Score', 'K', 'D', 'A', 'K/D'];
-    }
+    let gridTemplate = hasTeams && gameType !== 'slayer' ? 
+        '2fr 80px 80px 50px 50px 50px 70px' : 
+        '2fr 80px 50px 50px 50px 70px';
     
     // Header
     html += `<div class="scoreboard-header" style="grid-template-columns: ${gridTemplate}">`;
@@ -307,48 +313,26 @@ function renderScoreboard(game) {
     html += '</div>';
     
     // Rows
-    players.forEach(player => {
+    sortedPlayers.forEach(player => {
         const teamAttr = player.team && player.team !== 'none' ? `data-team="${player.team}"` : '';
         html += `<div class="scoreboard-row" ${teamAttr} style="grid-template-columns: ${gridTemplate}">`;
         
-        if (gameType === 'slayer' && hasTeams) {
-            // Team slayer format
-            html += `<div class="sb-player">`;
-            html += `<span class="player-name-text">${player.name}</span>`;
-            if (player.team && player.team !== 'none') {
-                html += ` <span class="team-badge team-${player.team.toLowerCase()}">${player.team}</span>`;
-            }
-            html += `</div>`;
-            html += `<div class="sb-score">${player.score || 0}</div>`;
-            html += `<div class="sb-kills">${player.kills || 0}</div>`;
-            html += `<div class="sb-deaths">${player.deaths || 0}</div>`;
-            html += `<div class="sb-assists">${player.assists || 0}</div>`;
-            html += `<div class="sb-kd">${calculateKD(player.kills, player.deaths)}</div>`;
-        } else {
-            // FFA or other format
-            html += `<div class="sb-place"><span class="place-badge place-${getPlaceClass(player.place)}">${player.place}</span></div>`;
-            
-            if (!hasTeams || gameType !== 'slayer') {
-                html += `<div class="sb-rank"></div>`;
-            }
-            
-            html += `<div class="sb-player">`;
-            html += `<span class="player-name-text">${player.name}</span>`;
-            if (player.team && player.team !== 'none' && hasTeams) {
-                html += ` <span class="team-badge team-${player.team.toLowerCase()}">${player.team}</span>`;
-            }
-            html += `</div>`;
-            
-            if (hasTeams && gameType !== 'slayer') {
-                html += `<div class="sb-col">${player.team || '-'}</div>`;
-            }
-            
-            html += `<div class="sb-score">${player.score || 0}</div>`;
-            html += `<div class="sb-kills">${player.kills || 0}</div>`;
-            html += `<div class="sb-deaths">${player.deaths || 0}</div>`;
-            html += `<div class="sb-assists">${player.assists || 0}</div>`;
-            html += `<div class="sb-kd">${calculateKD(player.kills, player.deaths)}</div>`;
+        html += `<div class="sb-player">`;
+        html += `<span class="player-name-text">${player.name}</span>`;
+        if (player.team && player.team !== 'none') {
+            html += ` <span class="team-badge team-${player.team.toLowerCase()}">${player.team}</span>`;
         }
+        html += `</div>`;
+        
+        if (hasTeams && gameType !== 'slayer') {
+            html += `<div class="sb-col">${player.team || '-'}</div>`;
+        }
+        
+        html += `<div class="sb-score">${player.score || 0}</div>`;
+        html += `<div class="sb-kills">${player.kills || 0}</div>`;
+        html += `<div class="sb-deaths">${player.deaths || 0}</div>`;
+        html += `<div class="sb-assists">${player.assists || 0}</div>`;
+        html += `<div class="sb-kd">${calculateKD(player.kills, player.deaths)}</div>`;
         
         html += '</div>';
     });
