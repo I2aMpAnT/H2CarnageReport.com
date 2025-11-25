@@ -36,6 +36,7 @@
             <div class="main-tab-navigation">
                 <button class="main-tab-btn active" id="btn-main-gamehistory" onclick="switchMainTab('gamehistory')">Game History</button>
                 <button class="main-tab-btn" id="btn-main-leaderboard" onclick="switchMainTab('leaderboard')">Leaderboard</button>
+                <button class="main-tab-btn" id="btn-main-pvp" onclick="switchMainTab('pvp')">PVP</button>
             </div>
 
             <div id="main-tab-gamehistory" class="main-tab-content" style="display: block;">
@@ -44,6 +45,23 @@
 
             <div id="main-tab-leaderboard" class="main-tab-content" style="display: none;">
                 <div id="leaderboardContainer"></div>
+            </div>
+
+            <div id="main-tab-pvp" class="main-tab-content" style="display: none;">
+                <div id="pvpContainer">
+                    <div class="pvp-search-section">
+                        <div class="pvp-search-box">
+                            <input type="text" id="pvpPlayer1" class="search-input" placeholder="Player 1...">
+                            <div id="pvpResults1" class="search-results"></div>
+                        </div>
+                        <div class="pvp-vs">VS</div>
+                        <div class="pvp-search-box">
+                            <input type="text" id="pvpPlayer2" class="search-input" placeholder="Player 2...">
+                            <div id="pvpResults2" class="search-results"></div>
+                        </div>
+                    </div>
+                    <div id="pvpComparisonContent"></div>
+                </div>
             </div>
         </div>
 

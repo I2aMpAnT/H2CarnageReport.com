@@ -4,26 +4,37 @@ let gamesData = [];
 // Global player ranks (randomly assigned once)
 let playerRanks = {};
 
-// Map images - Halo 2 multiplayer maps
+// Map images - local files from mapimages folder
 const mapImages = {
-    'Midship': 'https://www.halopedia.org/images/thumb/3/3d/HMCC_H2_Midship_Map.png/1200px-HMCC_H2_Midship_Map.png',
-    'Lockout': 'https://www.halopedia.org/images/thumb/4/4b/HMCC_H2_Lockout_Map.png/1200px-HMCC_H2_Lockout_Map.png',
-    'Sanctuary': 'https://www.halopedia.org/images/thumb/4/46/HMCC_H2_Sanctuary_Map.png/1200px-HMCC_H2_Sanctuary_Map.png',
-    'Warlock': 'https://www.halopedia.org/images/thumb/9/90/HMCC_H2_Warlock_Map.png/1200px-HMCC_H2_Warlock_Map.png',
-    'Beaver Creek': 'https://www.halopedia.org/images/thumb/8/83/HMCC_H2_Beaver_Creek_Map.png/1200px-HMCC_H2_Beaver_Creek_Map.png',
-    'Ascension': 'https://www.halopedia.org/images/thumb/b/bb/HMCC_H2_Ascension_Map.png/1200px-HMCC_H2_Ascension_Map.png',
-    'Coagulation': 'https://www.halopedia.org/images/thumb/d/d1/HMCC_H2_Coagulation_Map.png/1200px-HMCC_H2_Coagulation_Map.png',
-    'Zanzibar': 'https://www.halopedia.org/images/thumb/8/8d/HMCC_H2_Zanzibar_Map.png/1200px-HMCC_H2_Zanzibar_Map.png',
-    'Ivory Tower': 'https://www.halopedia.org/images/thumb/0/0e/HMCC_H2_Ivory_Tower_Map.png/1200px-HMCC_H2_Ivory_Tower_Map.png',
-    'Burial Mounds': 'https://www.halopedia.org/images/thumb/e/e3/HMCC_H2_Burial_Mounds_Map.png/1200px-HMCC_H2_Burial_Mounds_Map.png',
-    'Colossus': 'https://www.halopedia.org/images/thumb/c/cd/HMCC_H2_Colossus_Map.png/1200px-HMCC_H2_Colossus_Map.png',
-    'Headlong': 'https://www.halopedia.org/images/thumb/5/50/HMCC_H2_Headlong_Map.png/1200px-HMCC_H2_Headlong_Map.png',
-    'Waterworks': 'https://www.halopedia.org/images/thumb/4/43/HMCC_H2_Waterworks_Map.png/1200px-HMCC_H2_Waterworks_Map.png',
-    'Foundation': 'https://www.halopedia.org/images/thumb/9/91/HMCC_H2_Foundation_Map.png/1200px-HMCC_H2_Foundation_Map.png'
+    'Midship': 'mapimages/Midship.jpeg',
+    'Lockout': 'mapimages/Lockout.jpeg',
+    'Sanctuary': 'mapimages/Sanctuary.jpeg',
+    'Warlock': 'mapimages/Warlock.jpeg',
+    'Beaver Creek': 'mapimages/Beaver Creek.jpeg',
+    'Ascension': 'mapimages/Ascension.jpeg',
+    'Coagulation': 'mapimages/Coagulation.jpeg',
+    'Zanzibar': 'mapimages/Zanzibar.jpeg',
+    'Ivory Tower': 'mapimages/Ivory Tower.jpeg',
+    'Burial Mounds': 'mapimages/Burial Mounds.jpeg',
+    'Colossus': 'mapimages/Colossus.jpeg',
+    'Headlong': 'mapimages/Headlong.jpeg',
+    'Waterworks': 'mapimages/Waterworks.jpeg',
+    'Foundation': 'mapimages/Foundation.jpeg',
+    'Backwash': 'mapimages/Backwash.jpeg',
+    'Containment': 'mapimages/Containment.png',
+    'Desolation': 'mapimages/Desolation.jpeg',
+    'District': 'mapimages/District.jpeg',
+    'Elongation': 'mapimages/Elongation.jpeg',
+    'Gemini': 'mapimages/Gemini.png',
+    'Relic': 'mapimages/Relic.jpeg',
+    'Terminal': 'mapimages/Terminal.png',
+    'Tombstone': 'mapimages/Tombstone.jpeg',
+    'Turf': 'mapimages/Turf.jpeg',
+    'Uplift': 'mapimages/Uplift.jpeg'
 };
 
 // Default map image if not found
-const defaultMapImage = 'https://www.halopedia.org/images/thumb/3/3d/HMCC_H2_Midship_Map.png/1200px-HMCC_H2_Midship_Map.png';
+const defaultMapImage = 'mapimages/Midship.jpeg';
 
 // Generate random ranks for all players
 function generatePlayerRanks() {
@@ -219,7 +230,6 @@ function createGameItem(game, gameNumber) {
     let displayGameType = details['Variant Name'] || details['Game Type'] || 'Unknown';
     let mapName = details['Map Name'] || 'Unknown Map';
     let duration = details['Duration'] || '0:00';
-    let mapImage = mapImages[mapName] || defaultMapImage;
     
     // Calculate team scores for team games
     let teamScoreDisplay = '';
@@ -238,33 +248,22 @@ function createGameItem(game, gameNumber) {
     if (Object.keys(teams).length > 0) {
         const teamScores = Object.entries(teams)
             .sort((a, b) => b[1] - a[1]) // Sort by score descending
-            .map(([team, score]) => `<span class="team-score-${team.toLowerCase()}">${team}: ${score}</span>`)
-            .join(' <span class="score-vs">vs</span> ');
-        teamScoreDisplay = `<div class="game-team-scores">${teamScores}</div>`;
+            .map(([team, score]) => `${team}: ${score}`)
+            .join(' - ');
+        teamScoreDisplay = `<span class="game-meta-tag">${teamScores}</span>`;
     }
-    
-    // Create compact scoreboard for preview
-    const scoreboardPreview = renderScoreboardPreview(game);
     
     gameDiv.innerHTML = `
         <div class="game-header-bar" onclick="toggleGameDetails(${gameNumber})">
             <div class="game-header-left">
-                <div class="expand-arrow"></div>
-                <div class="game-map-thumb">
-                    <img src="${mapImage}" alt="${mapName}" onerror="this.src='${defaultMapImage}'">
-                </div>
-                <div class="game-header-info">
-                    <div class="game-number">${displayGameType}</div>
-                    <div class="game-info">
-                        <span class="game-meta-tag">${mapName}</span>
-                        <span class="game-meta-tag">${duration}</span>
-                    </div>
+                <div class="game-number">${displayGameType}</div>
+                <div class="game-info">
+                    <span class="game-meta-tag">${mapName}</span>
+                    <span class="game-meta-tag">${duration}</span>
                     ${teamScoreDisplay}
                 </div>
             </div>
-        </div>
-        <div class="game-preview-scoreboard">
-            ${scoreboardPreview}
+            <div class="expand-icon">▶</div>
         </div>
         <div class="game-details">
             <div class="game-details-content">
@@ -275,43 +274,6 @@ function createGameItem(game, gameNumber) {
     `;
     
     return gameDiv;
-}
-
-function renderScoreboardPreview(game) {
-    const players = game.players;
-    const hasTeams = players.some(p => p.team && p.team !== 'none' && p.team !== 'None');
-    
-    const sortedPlayers = [...players];
-    if (hasTeams) {
-        sortedPlayers.sort((a, b) => {
-            const teamOrder = { 'Red': 0, 'Blue': 1 };
-            const teamA = teamOrder[a.team] !== undefined ? teamOrder[a.team] : 2;
-            const teamB = teamOrder[b.team] !== undefined ? teamOrder[b.team] : 2;
-            return teamA - teamB;
-        });
-    }
-    
-    let html = '<div class="scoreboard-preview">';
-    
-    // Header
-    html += '<div class="sb-preview-header">';
-    html += '<div>Player</div><div>Score</div><div>K</div><div>D</div><div>K/D</div>';
-    html += '</div>';
-    
-    // Rows
-    sortedPlayers.forEach(player => {
-        const teamClass = player.team && player.team !== 'none' ? `team-${player.team.toLowerCase()}` : '';
-        html += `<div class="sb-preview-row ${teamClass}">`;
-        html += `<div class="sb-preview-player">${getPlayerRankIcon(player.name, 'small')}<span>${player.name}</span></div>`;
-        html += `<div>${player.score || 0}</div>`;
-        html += `<div>${player.kills || 0}</div>`;
-        html += `<div>${player.deaths || 0}</div>`;
-        html += `<div>${calculateKD(player.kills, player.deaths)}</div>`;
-        html += '</div>';
-    });
-    
-    html += '</div>';
-    return html;
 }
 
 function toggleGameDetails(gameNumber) {
@@ -870,6 +832,19 @@ function initializeSearch() {
         setupSearchBox(searchInput2, searchResults2, 2);
     }
     
+    // Setup PVP search boxes
+    const pvpPlayer1 = document.getElementById('pvpPlayer1');
+    const pvpResults1 = document.getElementById('pvpResults1');
+    const pvpPlayer2 = document.getElementById('pvpPlayer2');
+    const pvpResults2 = document.getElementById('pvpResults2');
+    
+    if (pvpPlayer1 && pvpResults1) {
+        setupPvpSearchBox(pvpPlayer1, pvpResults1, 1);
+    }
+    if (pvpPlayer2 && pvpResults2) {
+        setupPvpSearchBox(pvpPlayer2, pvpResults2, 2);
+    }
+    
     document.addEventListener('click', function(e) {
         if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
             searchResults.classList.remove('active');
@@ -877,7 +852,115 @@ function initializeSearch() {
         if (searchInput2 && searchResults2 && !searchInput2.contains(e.target) && !searchResults2.contains(e.target)) {
             searchResults2.classList.remove('active');
         }
+        if (pvpResults1 && pvpPlayer1 && !pvpPlayer1.contains(e.target) && !pvpResults1.contains(e.target)) {
+            pvpResults1.classList.remove('active');
+        }
+        if (pvpResults2 && pvpPlayer2 && !pvpPlayer2.contains(e.target) && !pvpResults2.contains(e.target)) {
+            pvpResults2.classList.remove('active');
+        }
     });
+}
+
+function setupPvpSearchBox(inputElement, resultsElement, playerNum) {
+    inputElement.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        
+        if (query.length < 2) {
+            resultsElement.classList.remove('active');
+            return;
+        }
+        
+        const results = [];
+        const playerNames = new Set();
+        
+        gamesData.forEach(game => {
+            game.players.forEach(player => {
+                if (player.name.toLowerCase().includes(query)) {
+                    playerNames.add(player.name);
+                }
+            });
+        });
+        
+        playerNames.forEach(name => {
+            const playerStats = calculatePlayerSearchStats(name);
+            results.push({
+                type: 'player',
+                name: name,
+                meta: `${playerStats.games} games · ${playerStats.kd} K/D`
+            });
+        });
+        
+        displayPvpSearchResults(results, resultsElement, playerNum);
+    });
+}
+
+function displayPvpSearchResults(results, resultsElement, playerNum) {
+    if (results.length === 0) {
+        resultsElement.innerHTML = '<div class="search-result-item">No players found</div>';
+        resultsElement.classList.add('active');
+        return;
+    }
+    
+    let html = '';
+    results.slice(0, 10).forEach(result => {
+        html += `<div class="search-result-item" onclick="selectPvpPlayer(${playerNum}, '${escapeHtml(result.name)}')">`;
+        html += `<div class="search-result-name">${result.name}</div>`;
+        html += `<div class="search-result-meta">${result.meta}</div>`;
+        html += `</div>`;
+    });
+    
+    resultsElement.innerHTML = html;
+    resultsElement.classList.add('active');
+}
+
+function selectPvpPlayer(playerNum, playerName) {
+    const inputElement = document.getElementById(`pvpPlayer${playerNum}`);
+    const resultsElement = document.getElementById(`pvpResults${playerNum}`);
+    
+    inputElement.value = playerName;
+    resultsElement.classList.remove('active');
+    
+    // Check if both players are selected
+    const player1 = document.getElementById('pvpPlayer1').value.trim();
+    const player2 = document.getElementById('pvpPlayer2').value.trim();
+    
+    if (player1 && player2 && player1 !== player2) {
+        renderPvpComparison(player1, player2);
+    }
+}
+
+function renderPvpComparison(player1Name, player2Name) {
+    const container = document.getElementById('pvpComparisonContent');
+    if (!container) return;
+    
+    const stats1 = calculatePlayerStats(player1Name);
+    const stats2 = calculatePlayerStats(player2Name);
+    const h2h = calculateHeadToHead(player1Name, player2Name);
+    
+    let html = '<div class="comparison-container">';
+    
+    // Header with player names
+    html += '<div class="comparison-header">';
+    html += `<div class="player-header">${getPlayerRankIcon(player1Name, 'normal')}<span class="player-header-name">${player1Name}</span></div>`;
+    html += '<div class="pvp-vs">VS</div>';
+    html += `<div class="player-header">${getPlayerRankIcon(player2Name, 'normal')}<span class="player-header-name">${player2Name}</span></div>`;
+    html += '</div>';
+    
+    // Head to Head section
+    if (h2h.gamesPlayed > 0) {
+        html += '<div class="h2h-section">';
+        html += `<div class="h2h-title">Head-to-Head: ${h2h.gamesPlayed} Games Together</div>`;
+        html += '<div class="h2h-stats">';
+        html += `<span class="h2h-stat">Kills when matched: ${h2h.player1Kills} vs ${h2h.player2Kills}</span>`;
+        html += '</div>';
+        html += '</div>';
+    }
+    
+    // Comparison table
+    html += renderComparisonStats(player1Name, stats1, player2Name, stats2, h2h);
+    
+    html += '</div>';
+    container.innerHTML = html;
 }
 
 function setupSearchBox(inputElement, resultsElement, boxNumber) {

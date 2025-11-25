@@ -272,7 +272,7 @@ header {
 }
 
 .game-header-bar {
-    padding: 15px 20px;
+    padding: 20px 25px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
@@ -288,159 +288,42 @@ header {
 .game-header-left {
     display: flex;
     align-items: center;
-    gap: 15px;
-    flex: 1;
-}
-
-.expand-arrow {
-    width: 0;
-    height: 0;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-right: 12px solid var(--unsc-blue);
-    transition: transform 0.3s ease;
-    flex-shrink: 0;
-}
-
-.game-item.expanded .expand-arrow {
-    transform: rotate(90deg);
-}
-
-.game-map-thumb {
-    width: 100px;
-    height: 60px;
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid rgba(0, 217, 255, 0.3);
-    flex-shrink: 0;
-}
-
-.game-map-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.game-header-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
 .game-number {
     font-family: 'Orbitron', sans-serif;
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--shield-blue);
+    min-width: 80px;
 }
 
 .game-info {
     display: flex;
-    gap: 10px;
+    gap: 15px;
     flex-wrap: wrap;
 }
 
 .game-meta-tag {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    padding: 3px 8px;
+    font-size: 12px;
+    padding: 5px 12px;
     background: rgba(0, 217, 255, 0.1);
     border: 1px solid rgba(0, 217, 255, 0.3);
     color: var(--text-secondary);
 }
 
-.game-team-scores {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 13px;
-}
-
-.team-score-red {
-    color: #ff6b6b;
-}
-
-.team-score-blue {
-    color: #5599ff;
-}
-
-.score-vs {
-    color: var(--text-muted);
-    font-size: 11px;
-}
-
-/* Scoreboard Preview on Game Cards */
-.game-preview-scoreboard {
-    padding: 0 20px 15px 20px;
-    border-bottom: 1px solid rgba(0, 217, 255, 0.1);
-}
-
-.scoreboard-preview {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.sb-preview-header {
-    display: grid;
-    grid-template-columns: 2fr 60px 40px 40px 50px;
-    gap: 5px;
-    padding: 8px 12px;
-    background: rgba(0, 217, 255, 0.1);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.sb-preview-row {
-    display: grid;
-    grid-template-columns: 2fr 60px 40px 40px 50px;
-    gap: 5px;
-    padding: 6px 12px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    color: var(--text-secondary);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-}
-
-.sb-preview-row:last-child {
-    border-bottom: none;
-}
-
-.sb-preview-row.team-red {
-    background: rgba(220, 20, 60, 0.1);
-    border-left: 2px solid rgba(220, 20, 60, 0.5);
-}
-
-.sb-preview-row.team-blue {
-    background: rgba(30, 80, 180, 0.2);
-    border-left: 2px solid rgba(50, 120, 220, 0.7);
-}
-
-.sb-preview-player {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    overflow: hidden;
-}
-
-.sb-preview-player span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.sb-preview-player .rank-icon-small {
-    width: 18px;
-    height: 18px;
-    margin-right: 4px;
-}
-
 .expand-icon {
-    display: none;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    color: var(--unsc-blue);
+    transition: transform 0.3s ease;
+}
+
+.game-item.expanded .expand-icon {
+    transform: rotate(90deg);
 }
 
 .game-details {
@@ -2003,5 +1886,80 @@ header {
     .sb-preview-player .rank-icon-small {
         width: 14px;
         height: 14px;
+    }
+}
+
+/* PVP Section Styles */
+.pvp-search-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: var(--background-medium);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: 8px;
+}
+
+.pvp-search-box {
+    position: relative;
+    flex: 1;
+    max-width: 350px;
+}
+
+.pvp-vs {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--unsc-blue);
+    text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+}
+
+#pvpComparisonContent {
+    min-height: 200px;
+}
+
+#pvpComparisonContent .comparison-container {
+    background: var(--background-medium);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: 8px;
+    padding: 30px;
+}
+
+#pvpComparisonContent .comparison-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+#pvpComparisonContent .player-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+#pvpComparisonContent .player-header-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .pvp-search-section {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .pvp-search-box {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .pvp-vs {
+        font-size: 20px;
     }
 }
