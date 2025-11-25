@@ -976,6 +976,21 @@ header {
     filter: drop-shadow(0 0 6px rgba(0, 217, 255, 0.3));
 }
 
+.rank-icon-small {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.3));
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.player-with-rank {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .lb-player {
     font-family: 'Orbitron', sans-serif;
     font-size: 15px;

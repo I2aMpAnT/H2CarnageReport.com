@@ -1,6 +1,9 @@
 // Initialize empty games data array
 let gamesData = [];
 
+// Global player ranks (randomly assigned once)
+let playerRanks = {};
+
 // Map images - Halo 2 multiplayer maps
 const mapImages = {
     'Midship': 'https://www.halopedia.org/images/thumb/3/3d/HMCC_H2_Midship_Map.png/1200px-HMCC_H2_Midship_Map.png',
@@ -21,6 +24,36 @@ const mapImages = {
 
 // Default map image if not found
 const defaultMapImage = 'https://www.halopedia.org/images/thumb/3/3d/HMCC_H2_Midship_Map.png/1200px-HMCC_H2_Midship_Map.png';
+
+// Generate random ranks for all players
+function generatePlayerRanks() {
+    const allPlayers = new Set();
+    gamesData.forEach(game => {
+        game.players.forEach(player => {
+            allPlayers.add(player.name);
+        });
+    });
+    
+    const playerList = Array.from(allPlayers);
+    const availableRanks = Array.from({length: 50}, (_, i) => i + 1);
+    
+    // Shuffle ranks
+    for (let i = availableRanks.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [availableRanks[i], availableRanks[j]] = [availableRanks[j], availableRanks[i]];
+    }
+    
+    playerList.forEach((name, index) => {
+        playerRanks[name] = availableRanks[index % availableRanks.length];
+    });
+}
+
+// Get rank icon HTML for a player
+function getPlayerRankIcon(playerName, size = 'small') {
+    const rank = playerRanks[playerName] || 1;
+    const sizeClass = size === 'small' ? 'rank-icon-small' : 'rank-icon';
+    return `<img src="https://r2-cdn.insignia.live/h2-rank/${rank}.png" alt="Rank ${rank}" class="${sizeClass}" />`;
+}
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
@@ -78,6 +111,10 @@ async function loadGamesData() {
         console.log('[DEBUG] Games loaded successfully!');
         console.log('[DEBUG] Number of games:', gamesData.length);
         console.log('[DEBUG] First game:', gamesData[0]);
+        
+        // Generate random ranks for all players
+        console.log('[DEBUG] Generating player ranks...');
+        generatePlayerRanks();
         
         loadingArea.style.display = 'none';
         statsArea.style.display = 'block';
@@ -357,23 +394,11 @@ function renderScoreboard(game) {
     
     let html = '<div class="scoreboard">';
     
-    // Determine columns based on game type
-    let columns = ['Player'];
+    // Determine columns - removed Team column
+    let columns = ['Player', 'Score', 'K', 'D', 'A', 'K/D'];
     
-    if (hasTeams && gameType !== 'slayer') {
-        columns.push('Team');
-    }
-    
-    if (gameType === 'ctf' || gameType === 'assault' || gameType === 'oddball') {
-        columns.push('Score', 'K', 'D', 'A', 'K/D');
-    } else {
-        columns.push('Score', 'K', 'D', 'A', 'K/D');
-    }
-    
-    // Build grid template
-    let gridTemplate = hasTeams && gameType !== 'slayer' ? 
-        '2fr 80px 80px 50px 50px 50px 70px' : 
-        '2fr 80px 50px 50px 50px 70px';
+    // Build grid template - simplified without Team column
+    let gridTemplate = '2fr 80px 50px 50px 50px 70px';
     
     // Header
     html += `<div class="scoreboard-header" style="grid-template-columns: ${gridTemplate}">`;
@@ -388,15 +413,9 @@ function renderScoreboard(game) {
         html += `<div class="scoreboard-row" ${teamAttr} style="grid-template-columns: ${gridTemplate}">`;
         
         html += `<div class="sb-player">`;
+        html += getPlayerRankIcon(player.name, 'small');
         html += `<span class="player-name-text">${player.name}</span>`;
-        if (player.team && player.team !== 'none') {
-            html += ` <span class="team-badge team-${player.team.toLowerCase()}">${player.team}</span>`;
-        }
         html += `</div>`;
-        
-        if (hasTeams && gameType !== 'slayer') {
-            html += `<div class="sb-col">${player.team || '-'}</div>`;
-        }
         
         html += `<div class="sb-score">${player.score || 0}</div>`;
         html += `<div class="sb-kills">${player.kills || 0}</div>`;
@@ -438,7 +457,7 @@ function renderDetailedStats(game) {
         const timeAlive = formatTime(stat.total_time_alive || 0);
         
         html += `<tr ${teamAttr}>`;
-        html += `<td>${stat.Player}</td>`;
+        html += `<td><span class="player-with-rank">${getPlayerRankIcon(stat.Player, 'small')}<span>${stat.Player}</span></span></td>`;
         html += `<td>${stat.kills}</td>`;
         html += `<td>${stat.assists}</td>`;
         html += `<td>${stat.deaths}</td>`;
@@ -491,7 +510,7 @@ function renderDetailedStats(game) {
             const team = playerTeams[stat.Player];
             const teamAttr = team ? `data-team="${team}"` : '';
             
-            html += `<tr ${teamAttr}><td>${stat.Player}</td>`;
+            html += `<tr ${teamAttr}><td><span class="player-with-rank">${getPlayerRankIcon(stat.Player, 'small')}<span>${stat.Player}</span></span></td>`;
             
             if (hasCTF) {
                 html += `<td>${stat.ctf_scores || 0}</td>`;
@@ -562,7 +581,7 @@ function renderMedals(game) {
         const teamAttr = team ? `data-team="${team}"` : '';
         
         html += `<tr ${teamAttr}>`;
-        html += `<td>${medal.player}</td>`;
+        html += `<td><span class="player-with-rank">${getPlayerRankIcon(medal.player, 'small')}<span>${medal.player}</span></span></td>`;
         Array.from(medalTypes).sort().forEach(type => {
             html += `<td>${medal[type] || 0}</td>`;
         });
@@ -623,7 +642,7 @@ function renderWeapons(game) {
                 const accuracy = fired > 0 ? ((hit / fired) * 100).toFixed(1) : '0.0';
                 
                 html += `<tr ${teamAttr}>`;
-                html += `<td>${weapon.Player}</td>`;
+                html += `<td><span class="player-with-rank">${getPlayerRankIcon(weapon.Player, 'small')}<span>${weapon.Player}</span></span></td>`;
                 html += `<td>${kills}</td>`;
                 if (firedCol) html += `<td>${fired}</td>`;
                 if (hitCol) html += `<td>${hit}</td>`;
@@ -678,20 +697,8 @@ function renderLeaderboard() {
     const players = Object.values(playerStats).map(p => {
         p.kd = p.deaths > 0 ? (p.kills / p.deaths).toFixed(2) : p.kills.toFixed(2);
         p.winrate = p.games > 0 ? ((p.wins / p.games) * 100).toFixed(1) : '0.0';
+        p.rank = playerRanks[p.name] || 1;
         return p;
-    });
-    
-    // Randomly assign ranks 1-50 to players (50 is highest, 1 is lowest)
-    const availableRanks = Array.from({length: 50}, (_, i) => i + 1);
-    // Shuffle the ranks
-    for (let i = availableRanks.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [availableRanks[i], availableRanks[j]] = [availableRanks[j], availableRanks[i]];
-    }
-    
-    // Assign ranks to players
-    players.forEach((player, index) => {
-        player.rank = availableRanks[index % availableRanks.length];
     });
     
     // Sort by rank descending (50 at top, 1 at bottom)
