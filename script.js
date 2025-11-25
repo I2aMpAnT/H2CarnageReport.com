@@ -162,15 +162,36 @@ function createGameItem(game, gameNumber) {
     let mapName = details['Map Name'] || 'Unknown Map';
     let duration = details['Duration'] || '0:00';
     
+    // Calculate team scores for team games
+    let teamScoreDisplay = '';
+    const teams = {};
+    players.forEach(player => {
+        const team = player.team;
+        if (team && team !== 'None') {
+            if (!teams[team]) {
+                teams[team] = 0;
+            }
+            teams[team] += parseInt(player.score) || 0;
+        }
+    });
+    
+    // If there are teams, show the scores
+    if (Object.keys(teams).length > 0) {
+        const teamScores = Object.entries(teams)
+            .sort((a, b) => b[1] - a[1]) // Sort by score descending
+            .map(([team, score]) => `${team}: ${score}`)
+            .join(' - ');
+        teamScoreDisplay = `<span class="game-meta-tag">${teamScores}</span>`;
+    }
+    
     gameDiv.innerHTML = `
         <div class="game-header-bar" onclick="toggleGameDetails(${gameNumber})">
             <div class="game-header-left">
-                <div class="game-number">GAME ${gameNumber}</div>
+                <div class="game-number">${displayGameType}</div>
                 <div class="game-info">
-                    <span class="game-meta-tag">${displayGameType}</span>
                     <span class="game-meta-tag">${mapName}</span>
                     <span class="game-meta-tag">${duration}</span>
-                    <span class="game-meta-tag">${players.length} Players</span>
+                    ${teamScoreDisplay}
                 </div>
             </div>
             <div class="expand-icon">▶</div>
