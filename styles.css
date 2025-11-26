@@ -2947,7 +2947,7 @@ header {
 .profile-player-info {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
 }
 
 .profile-rank {
@@ -2956,13 +2956,13 @@ header {
 }
 
 .profile-rank img {
-    width: 80px;
-    height: 80px;
+    width: 44px;
+    height: 44px;
 }
 
 .profile-name {
     font-family: 'Orbitron', sans-serif;
-    font-size: 36px;
+    font-size: 28px;
     font-weight: 700;
     color: var(--text-primary);
     text-shadow: 0 0 20px rgba(168, 212, 255, 0.3);
@@ -3083,12 +3083,12 @@ header {
     }
     
     .profile-name {
-        font-size: 24px;
+        font-size: 22px;
     }
     
     .profile-rank img {
-        width: 60px;
-        height: 60px;
+        width: 36px;
+        height: 36px;
     }
     
     .profile-games-header {
