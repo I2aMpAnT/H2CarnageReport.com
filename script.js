@@ -39,44 +39,44 @@ const defaultMapImage = 'mapimages/Midship.jpeg';
 // Medal icons - local files from h2icons folder (25 medals)
 const medalIcons = {
     // Kill streaks (within 4 seconds)
-    'double_kill': 'h2icons/Double Kill.png',
-    'triple_kill': 'h2icons/Triple Kill.png',
-    'killtacular': 'h2icons/Killtacular.png',
-    'kill_frenzy': 'h2icons/Kill Frenzy.png',
-    'killtrocity': 'h2icons/Killtrocity.png',
-    'killamanjaro': 'h2icons/Killamanjaro.png',
+    'double_kill': 'h2icons/Double Kill.bmp',
+    'triple_kill': 'h2icons/Triple Kill.bmp',
+    'killtacular': 'h2icons/Killtacular.bmp',
+    'kill_frenzy': 'h2icons/Kill Frenzy.bmp',
+    'killtrocity': 'h2icons/Killtrocity.bmp',
+    'killamanjaro': 'h2icons/Killamanjaro.bmp',
     
     // Spree medals (kills without dying)
-    'killing_spree': 'h2icons/Killing Spree.png',
-    'running_riot': 'h2icons/Running Riot.png',
-    'rampage': 'h2icons/Rampage.png',
-    'berserker': 'h2icons/Berserker.png',
-    'overkill': 'h2icons/Overkill.png',
+    'killing_spree': 'h2icons/Killing Spree.bmp',
+    'running_riot': 'h2icons/Running Riot.bmp',
+    'rampage': 'h2icons/Rampage.bmp',
+    'berserker': 'h2icons/Berserker.bmp',
+    'overkill': 'h2icons/Overkill.bmp',
     
     // Special kills
-    'assassin': 'h2icons/Assassin.png',
-    'assassinate': 'h2icons/Assassin.png',
-    'assassination': 'h2icons/Assassin.png',
-    'bonecracker': 'h2icons/Bonecracker.png',
-    'sniper_kill': 'h2icons/Sniper Kill.png',
-    'sniper': 'h2icons/Sniper Kill.png',
-    'stick_it': 'h2icons/Stick It.png',
-    'stick': 'h2icons/Stick It.png',
-    'roadkill': 'h2icons/Roadkill.png',
-    'splatter': 'h2icons/Roadkill.png',
-    'carjacking': 'h2icons/Carjacking.png',
+    'assassin': 'h2icons/Assassin.bmp',
+    'assassinate': 'h2icons/Assassin.bmp',
+    'assassination': 'h2icons/Assassin.bmp',
+    'bonecracker': 'h2icons/Bonecracker.bmp',
+    'sniper_kill': 'h2icons/Sniper Kill.bmp',
+    'sniper': 'h2icons/Sniper Kill.bmp',
+    'stick_it': 'h2icons/Stick It.bmp',
+    'stick': 'h2icons/Stick It.bmp',
+    'roadkill': 'h2icons/Roadkill.bmp',
+    'splatter': 'h2icons/Roadkill.bmp',
+    'carjacking': 'h2icons/Carjacking.bmp',
     
     // Flag objectives
-    'flag_taken': 'h2icons/Flag Taken.png',
-    'flag_captured': 'h2icons/Flag Captured.png',
-    'flag_returned': 'h2icons/Flag Returned.png',
-    'flag_carrier_kill': 'h2icons/Flag Carrier Kill.png',
+    'flag_taken': 'h2icons/Flag Taken.bmp',
+    'flag_captured': 'h2icons/Flag Captured.bmp',
+    'flag_returned': 'h2icons/Flag Returned.bmp',
+    'flag_carrier_kill': 'h2icons/Flag Carrier Kill.bmp',
     
     // Bomb objectives
-    'bomb_planted': 'h2icons/Bomb Planted.png',
-    'bomb_taken': 'h2icons/Bomb Taken.png',
-    'bomb_returned': 'h2icons/Bomb Returned.png',
-    'bomb_carrier_kill': 'h2icons/Bomb Carrier Kill.png'
+    'bomb_planted': 'h2icons/Bomb Planted.bmp',
+    'bomb_taken': 'h2icons/Bomb Taken.bmp',
+    'bomb_returned': 'h2icons/Bomb Returned.bmp',
+    'bomb_carrier_kill': 'h2icons/Bomb Carrier Kill.bmp'
 };
 
 // Helper function to get medal icon path
