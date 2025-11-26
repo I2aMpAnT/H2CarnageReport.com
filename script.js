@@ -383,7 +383,7 @@ function createGameItem(game, gameNumber) {
             const winner = sortedPlayers[0];
             winnerClass = 'winner-ffa';
             scoreTagClass = 'score-tag-ffa';
-            teamScoreDisplay = `<span class="game-meta-tag ${scoreTagClass}">${winner.name}: ${winner.score}</span>`;
+            teamScoreDisplay = `<span class="game-meta-tag ${scoreTagClass}">${winner.name}</span>`;
         }
     }
     
