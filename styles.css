@@ -1,15 +1,15 @@
 :root {
-    --unsc-blue: #00d9ff;
+    --unsc-blue: #a8d4ff;
     --covenant-purple: #7b2cbf;
     --warning-orange: #ff6d00;
-    --shield-blue: #4db8ff;
-    --electric-blue: #0080ff;
+    --shield-blue: #c8e4ff;
+    --electric-blue: #7ab8ff;
     --background-dark: #0a0e17;
     --background-medium: #151b2b;
     --background-light: #1f2937;
     --text-primary: #e8f4f8;
     --text-secondary: #8b95a8;
-    --grid-color: rgba(0, 217, 255, 0.1);
+    --grid-color: rgba(168, 212, 255, 0.1);
 }
 
 * {
@@ -125,7 +125,7 @@ header {
 
 .search-result-item {
     padding: 15px 20px;
-    border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.1);
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: 'Rajdhani', sans-serif;
@@ -133,7 +133,7 @@ header {
 }
 
 .search-result-item:hover {
-    background: rgba(0, 217, 255, 0.1);
+    background: rgba(168, 212, 255, 0.1);
     border-left: 4px solid var(--unsc-blue);
     padding-left: 16px;
 }
@@ -176,7 +176,7 @@ header {
 
 .search-input:focus {
     border-color: var(--unsc-blue);
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    box-shadow: 0 0 20px rgba(168, 212, 255, 0.3);
 }
 
 .search-input::placeholder {
@@ -188,7 +188,7 @@ header {
     display: flex;
     gap: 20px;
     margin: 40px 0 30px 0;
-    border-bottom: 3px solid rgba(0, 217, 255, 0.2);
+    border-bottom: 3px solid rgba(168, 212, 255, 0.2);
     justify-content: center;
 }
 
@@ -210,13 +210,13 @@ header {
 
 .main-tab-btn:hover {
     color: var(--unsc-blue);
-    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+    text-shadow: 0 0 10px rgba(168, 212, 255, 0.5);
 }
 
 .main-tab-btn.active {
     color: var(--unsc-blue);
     border-bottom-color: var(--unsc-blue);
-    text-shadow: 0 0 15px rgba(0, 217, 255, 0.8);
+    text-shadow: 0 0 15px rgba(168, 212, 255, 0.8);
 }
 
 .main-tab-content {
@@ -274,7 +274,7 @@ header {
 
 .game-item {
     background: var(--background-medium);
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(168, 212, 255, 0.3);
     overflow: hidden;
     transition: all 0.3s ease;
 }
@@ -298,7 +298,7 @@ header {
 
 .game-header-bar:hover {
     background: 
-        linear-gradient(90deg, rgba(0, 217, 255, 0.15) 0%, rgba(10, 14, 23, 0.65) 50%, rgba(0, 217, 255, 0.1) 100%),
+        linear-gradient(90deg, rgba(168, 212, 255, 0.15) 0%, rgba(10, 14, 23, 0.65) 50%, rgba(168, 212, 255, 0.1) 100%),
         var(--map-bg) center/cover no-repeat;
 }
 
@@ -428,7 +428,7 @@ header {
 
 .game-details-content {
     padding: 25px;
-    border-top: 1px solid rgba(0, 217, 255, 0.2);
+    border-top: 1px solid rgba(168, 212, 255, 0.2);
 }
 
 .game-date {
@@ -438,7 +438,7 @@ header {
     text-align: center;
     margin-bottom: 20px;
     padding: 10px;
-    background: rgba(0, 217, 255, 0.05);
+    background: rgba(168, 212, 255, 0.05);
     border-left: 3px solid var(--shield-blue);
 }
 
@@ -449,7 +449,7 @@ header {
     margin-bottom: 25px;
     padding: 20px;
     background: linear-gradient(135deg, rgba(15, 20, 35, 0.8), rgba(25, 35, 55, 0.8));
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(168, 212, 255, 0.3);
     border-radius: 8px;
 }
 
@@ -460,8 +460,8 @@ header {
     height: 160px;
     overflow: hidden;
     border-radius: 6px;
-    border: 2px solid rgba(0, 217, 255, 0.4);
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    border: 2px solid rgba(168, 212, 255, 0.4);
+    box-shadow: 0 0 20px rgba(168, 212, 255, 0.2);
 }
 
 .map-image {
@@ -490,7 +490,7 @@ header {
     font-weight: 700;
     color: var(--unsc-blue);
     text-transform: uppercase;
-    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+    text-shadow: 0 0 10px rgba(168, 212, 255, 0.5);
 }
 
 .game-info-panel {
@@ -566,9 +566,9 @@ header {
     display: flex;
     align-items: center;
     gap: 12px;
-    background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), transparent);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
     padding: 10px 20px;
-    border-left: 3px solid #ffd700;
+    border-left: 3px solid #ffffff;
     margin-top: 15px;
 }
 
@@ -576,7 +576,7 @@ header {
     font-family: 'Orbitron', sans-serif;
     font-size: 12px;
     font-weight: 600;
-    color: #ffd700;
+    color: rgba(255, 255, 255, 0.7);
     text-transform: uppercase;
     letter-spacing: 2px;
 }
@@ -592,21 +592,21 @@ header {
 .ffa-winner .winner-score {
     font-family: 'Share Tech Mono', monospace;
     font-size: 16px;
-    color: #ffd700;
+    color: rgba(255, 255, 255, 0.8);
     margin-left: 10px;
 }
 
 /* Team game winner highlight */
 .final-score-team.winner {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
 .final-score-team.team-red.winner {
-    border-color: #ffd700;
+    border-color: #ff8888;
 }
 
 .final-score-team.team-blue.winner {
-    border-color: #ffd700;
+    border-color: #88bbff;
 }
 
 /* Tab Navigation */
@@ -614,7 +614,7 @@ header {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
-    border-bottom: 2px solid rgba(0, 217, 255, 0.2);
+    border-bottom: 2px solid rgba(168, 212, 255, 0.2);
 }
 
 .tab-btn {
@@ -657,7 +657,7 @@ header {
 .stats-table {
     width: 100%;
     background: rgba(15, 20, 35, 0.5);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     border-collapse: collapse;
 }
 
@@ -666,8 +666,8 @@ header {
     font-size: 11px;
     font-weight: 700;
     padding: 12px 8px;
-    background: rgba(0, 217, 255, 0.1);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    background: rgba(168, 212, 255, 0.1);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     color: var(--unsc-blue);
     text-transform: uppercase;
     text-align: center;
@@ -677,13 +677,13 @@ header {
     font-family: 'Rajdhani', sans-serif;
     font-size: 14px;
     padding: 10px 8px;
-    border: 1px solid rgba(0, 217, 255, 0.1);
+    border: 1px solid rgba(168, 212, 255, 0.1);
     color: var(--text-primary);
     text-align: center;
 }
 
 .stats-table tr:hover {
-    background: rgba(0, 217, 255, 0.05);
+    background: rgba(168, 212, 255, 0.05);
 }
 
 .stats-table td:first-child {
@@ -720,7 +720,7 @@ header {
     color: var(--shield-blue);
     margin: 30px 0 15px 0;
     padding-bottom: 10px;
-    border-bottom: 2px solid rgba(0, 217, 255, 0.3);
+    border-bottom: 2px solid rgba(168, 212, 255, 0.3);
     text-transform: uppercase;
     letter-spacing: 2px;
 }
@@ -729,7 +729,7 @@ header {
 .scoreboard {
     width: 100%;
     background: rgba(15, 20, 35, 0.5);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
 }
 
 .scoreboard-header {
@@ -737,7 +737,7 @@ header {
     grid-template-columns: 60px 50px 1fr 80px 50px 50px 50px 70px;
     gap: 10px;
     padding: 15px 20px;
-    background: rgba(0, 217, 255, 0.1);
+    background: rgba(168, 212, 255, 0.1);
     border-bottom: 2px solid var(--unsc-blue);
     font-family: 'Orbitron', sans-serif;
     font-size: 12px;
@@ -751,14 +751,14 @@ header {
     grid-template-columns: 60px 50px 1fr 80px 50px 50px 50px 70px;
     gap: 10px;
     padding: 15px 20px;
-    border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.1);
     transition: all 0.3s ease;
     cursor: pointer;
     align-items: center;
 }
 
 .scoreboard-row:hover {
-    background: rgba(0, 217, 255, 0.05);
+    background: rgba(168, 212, 255, 0.05);
     border-left: 3px solid var(--unsc-blue);
     padding-left: 17px;
 }
@@ -827,7 +827,7 @@ header {
 }
 
 .place-4th {
-    background: rgba(0, 217, 255, 0.1);
+    background: rgba(168, 212, 255, 0.1);
     border: 1px solid var(--shield-blue);
     color: var(--shield-blue);
 }
@@ -895,13 +895,13 @@ header {
 /* PVP Kill Matrix Styles */
 .pvp-matrix {
     background: rgba(10, 14, 23, 0.8);
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(168, 212, 255, 0.3);
     overflow-x: auto;
     padding: 15px;
 }
 
 .pvp-header {
-    border-bottom: 2px solid rgba(0, 217, 255, 0.4);
+    border-bottom: 2px solid rgba(168, 212, 255, 0.4);
     padding-bottom: 10px;
     margin-bottom: 5px;
 }
@@ -938,12 +938,12 @@ header {
 }
 
 .pvp-row {
-    border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.1);
     transition: background 0.2s ease;
 }
 
 .pvp-row:hover {
-    background: rgba(0, 217, 255, 0.05);
+    background: rgba(168, 212, 255, 0.05);
 }
 
 .pvp-row.red {
@@ -955,11 +955,11 @@ header {
 }
 
 .pvp-row.red:hover {
-    background: linear-gradient(90deg, rgba(180, 30, 30, 0.25) 0%, rgba(0, 217, 255, 0.05) 50%);
+    background: linear-gradient(90deg, rgba(180, 30, 30, 0.25) 0%, rgba(168, 212, 255, 0.05) 50%);
 }
 
 .pvp-row.blue:hover {
-    background: linear-gradient(90deg, rgba(30, 80, 180, 0.25) 0%, rgba(0, 217, 255, 0.05) 50%);
+    background: linear-gradient(90deg, rgba(30, 80, 180, 0.25) 0%, rgba(168, 212, 255, 0.05) 50%);
 }
 
 .pvp-row-header {
@@ -1032,7 +1032,7 @@ header {
     justify-content: center;
     margin-top: 15px;
     padding-top: 15px;
-    border-top: 1px solid rgba(0, 217, 255, 0.2);
+    border-top: 1px solid rgba(168, 212, 255, 0.2);
 }
 
 .pvp-legend-item {
@@ -1072,7 +1072,7 @@ header {
 
 .player-card {
     background: rgba(15, 20, 35, 0.7);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     padding: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -1080,7 +1080,7 @@ header {
 
 .player-card:hover {
     border-color: var(--unsc-blue);
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.2);
+    box-shadow: 0 0 20px rgba(168, 212, 255, 0.2);
     transform: translateY(-3px);
 }
 
@@ -1196,7 +1196,7 @@ header {
 
 .stat-card {
     background: rgba(15, 20, 35, 0.7);
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(168, 212, 255, 0.3);
     padding: 20px;
     text-align: center;
 }
@@ -1215,7 +1215,7 @@ header {
     font-size: 36px;
     font-weight: 700;
     color: var(--unsc-blue);
-    text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+    text-shadow: 0 0 20px rgba(168, 212, 255, 0.5);
 }
 
 .stat-sublabel {
@@ -1252,7 +1252,7 @@ header {
     grid-template-columns: 50px 2fr 120px 80px;
     gap: 15px;
     padding: 12px 20px;
-    background: linear-gradient(90deg, rgba(0, 217, 255, 0.15), rgba(0, 217, 255, 0.05));
+    background: linear-gradient(90deg, rgba(168, 212, 255, 0.15), rgba(168, 212, 255, 0.05));
     border-bottom: 3px solid var(--unsc-blue);
     font-family: 'Orbitron', sans-serif;
     font-size: 12px;
@@ -1267,14 +1267,14 @@ header {
     grid-template-columns: 50px 2fr 120px 80px;
     gap: 15px;
     padding: 8px 20px;
-    border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.1);
     transition: all 0.3s ease;
     cursor: pointer;
     align-items: center;
 }
 
 .leaderboard-row:hover {
-    background: rgba(0, 217, 255, 0.05);
+    background: rgba(168, 212, 255, 0.05);
     border-left: 4px solid var(--unsc-blue);
     padding-left: 16px;
 }
@@ -1290,14 +1290,14 @@ header {
     width: 36px;
     height: 36px;
     object-fit: contain;
-    filter: drop-shadow(0 0 6px rgba(0, 217, 255, 0.3));
+    filter: drop-shadow(0 0 6px rgba(168, 212, 255, 0.3));
 }
 
 .rank-icon-small {
     width: 24px;
     height: 24px;
     object-fit: contain;
-    filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.3));
+    filter: drop-shadow(0 0 4px rgba(168, 212, 255, 0.3));
     vertical-align: middle;
     margin-right: 8px;
 }
@@ -1352,8 +1352,8 @@ header {
 .xp-bar {
     width: 100%;
     height: 8px;
-    background: rgba(0, 217, 255, 0.1);
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    background: rgba(168, 212, 255, 0.1);
+    border: 1px solid rgba(168, 212, 255, 0.3);
     margin-top: 5px;
     overflow: hidden;
 }
@@ -1362,7 +1362,7 @@ header {
     height: 100%;
     background: linear-gradient(90deg, var(--unsc-blue), var(--shield-blue));
     transition: width 0.3s ease;
-    box-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+    box-shadow: 0 0 10px rgba(168, 212, 255, 0.5);
 }
 
 .rank-name {
@@ -1660,7 +1660,7 @@ header {
 .medals-scoreboard {
     width: 100%;
     background: rgba(15, 20, 35, 0.5);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
 }
 
 .medals-header {
@@ -1668,7 +1668,7 @@ header {
     grid-template-columns: 200px 1fr;
     gap: 20px;
     padding: 15px 20px;
-    background: rgba(0, 217, 255, 0.1);
+    background: rgba(168, 212, 255, 0.1);
     border-bottom: 2px solid var(--unsc-blue);
     font-family: 'Orbitron', sans-serif;
     font-size: 12px;
@@ -1682,7 +1682,7 @@ header {
     grid-template-columns: 200px 1fr;
     gap: 20px;
     padding: 12px 20px;
-    border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.1);
     align-items: center;
     transition: all 0.3s ease;
 }
@@ -1692,7 +1692,7 @@ header {
 }
 
 .medals-row:hover {
-    background: rgba(0, 217, 255, 0.05);
+    background: rgba(168, 212, 255, 0.05);
 }
 
 .medals-row[data-team="Red"] {
@@ -1740,7 +1740,7 @@ header {
 }
 
 .medal-badge:hover {
-    background: rgba(0, 217, 255, 0.15);
+    background: rgba(168, 212, 255, 0.15);
     transform: translateY(-2px);
 }
 
@@ -1752,7 +1752,7 @@ header {
     left: 50%;
     transform: translateX(-50%);
     background: rgba(10, 20, 35, 0.95);
-    color: #00d9ff;
+    color: #a8d4ff;
     padding: 6px 10px;
     border-radius: 4px;
     font-family: 'Share Tech Mono', monospace;
@@ -1761,8 +1761,8 @@ header {
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease;
-    border: 1px solid rgba(0, 217, 255, 0.4);
-    box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(168, 212, 255, 0.4);
+    box-shadow: 0 0 10px rgba(168, 212, 255, 0.3);
     z-index: 100;
     pointer-events: none;
 }
@@ -1777,7 +1777,7 @@ header {
     width: 24px;
     height: 24px;
     object-fit: contain;
-    filter: drop-shadow(0 0 2px rgba(0, 217, 255, 0.5));
+    filter: drop-shadow(0 0 2px rgba(168, 212, 255, 0.5));
 }
 
 .medal-count {
@@ -1785,7 +1785,7 @@ header {
     font-size: 12px;
     font-weight: 700;
     color: var(--unsc-blue);
-    text-shadow: 0 0 6px rgba(0, 217, 255, 0.6);
+    text-shadow: 0 0 6px rgba(168, 212, 255, 0.6);
 }
 
 .medal-unknown {
@@ -1853,7 +1853,7 @@ header {
     gap: 20px;
     padding: 12px 16px;
     background: rgba(0, 100, 180, 0.15);
-    border-bottom: 1px solid rgba(0, 217, 255, 0.3);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.3);
     font-family: 'Orbitron', sans-serif;
     font-size: 11px;
     font-weight: 600;
@@ -1912,12 +1912,12 @@ header {
     transform: translateX(-50%);
     padding: 6px 10px;
     background: rgba(10, 20, 35, 0.95);
-    color: #00d9ff;
+    color: #a8d4ff;
     font-family: 'Share Tech Mono', monospace;
     font-size: 11px;
     white-space: nowrap;
     border-radius: 4px;
-    border: 1px solid rgba(0, 217, 255, 0.4);
+    border: 1px solid rgba(168, 212, 255, 0.4);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
@@ -1933,7 +1933,7 @@ header {
     width: 36px;
     height: 36px;
     object-fit: contain;
-    filter: drop-shadow(0 0 3px rgba(0, 217, 255, 0.4));
+    filter: drop-shadow(0 0 3px rgba(168, 212, 255, 0.4));
     border-radius: 3px;
 }
 
@@ -1955,7 +1955,7 @@ header {
     font-size: 12px;
     font-weight: 700;
     color: var(--unsc-blue);
-    text-shadow: 0 0 6px rgba(0, 217, 255, 0.6);
+    text-shadow: 0 0 6px rgba(168, 212, 255, 0.6);
 }
 
 .no-kills {
@@ -1978,7 +1978,7 @@ header {
     gap: 15px;
     padding: 12px 16px;
     background: rgba(0, 100, 180, 0.15);
-    border-bottom: 1px solid rgba(0, 217, 255, 0.3);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.3);
     font-family: 'Orbitron', sans-serif;
     font-size: 11px;
     font-weight: 600;
@@ -2048,7 +2048,7 @@ header {
     gap: 6px;
     padding: 4px 10px;
     background: rgba(0, 50, 100, 0.3);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     border-radius: 4px;
     position: relative;
     cursor: default;
@@ -2062,12 +2062,12 @@ header {
     transform: translateX(-50%);
     padding: 6px 10px;
     background: rgba(10, 20, 35, 0.95);
-    color: #00d9ff;
+    color: #a8d4ff;
     font-family: 'Share Tech Mono', monospace;
     font-size: 11px;
     white-space: nowrap;
     border-radius: 4px;
-    border: 1px solid rgba(0, 217, 255, 0.4);
+    border: 1px solid rgba(168, 212, 255, 0.4);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
@@ -2083,7 +2083,7 @@ header {
     width: 28px;
     height: 28px;
     object-fit: contain;
-    filter: drop-shadow(0 0 2px rgba(0, 217, 255, 0.3));
+    filter: drop-shadow(0 0 2px rgba(168, 212, 255, 0.3));
     border-radius: 2px;
 }
 
@@ -2266,7 +2266,7 @@ header {
 }
 
 .twitch-coming-soon {
-    background: linear-gradient(135deg, rgba(145, 70, 255, 0.1) 0%, rgba(0, 217, 255, 0.1) 100%);
+    background: linear-gradient(135deg, rgba(145, 70, 255, 0.1) 0%, rgba(168, 212, 255, 0.1) 100%);
     border: 1px dashed rgba(145, 70, 255, 0.4);
     border-radius: 8px;
     padding: 20px;
@@ -2297,8 +2297,8 @@ header {
 }
 
 .h2h-section {
-    background: rgba(0, 217, 255, 0.1);
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    background: rgba(168, 212, 255, 0.1);
+    border: 1px solid rgba(168, 212, 255, 0.3);
     border-radius: 8px;
     padding: 15px 20px;
     margin-bottom: 25px;
@@ -2405,13 +2405,13 @@ header {
     align-items: center;
     gap: 20px;
     padding: 20px 0;
-    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.2);
     margin-bottom: 25px;
 }
 
 .back-btn {
-    background: rgba(0, 217, 255, 0.1);
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    background: rgba(168, 212, 255, 0.1);
+    border: 1px solid rgba(168, 212, 255, 0.3);
     color: var(--unsc-blue);
     padding: 10px 20px;
     font-family: 'Rajdhani', sans-serif;
@@ -2423,7 +2423,7 @@ header {
 }
 
 .back-btn:hover {
-    background: rgba(0, 217, 255, 0.2);
+    background: rgba(168, 212, 255, 0.2);
     border-color: var(--unsc-blue);
 }
 
@@ -2442,7 +2442,7 @@ header {
     height: 36px;
     object-fit: cover;
     border-radius: 4px;
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(168, 212, 255, 0.3);
 }
 
 .search-results-container {
@@ -2453,7 +2453,7 @@ header {
 .map-info-header,
 .gametype-info-header {
     background: var(--background-medium);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     border-radius: 8px;
     padding: 25px;
     margin-bottom: 30px;
@@ -2470,7 +2470,7 @@ header {
     height: 180px;
     border-radius: 8px;
     overflow: hidden;
-    border: 2px solid rgba(0, 217, 255, 0.3);
+    border: 2px solid rgba(168, 212, 255, 0.3);
     flex-shrink: 0;
 }
 
@@ -2514,7 +2514,7 @@ header {
     color: var(--unsc-blue);
     margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.2);
 }
 
 .search-games-list {
@@ -2527,7 +2527,7 @@ header {
 
 .search-game-card {
     background: var(--background-medium);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     border-radius: 8px;
     overflow: hidden;
     cursor: pointer;
@@ -2543,7 +2543,7 @@ header {
     display: flex;
     gap: 15px;
     padding: 15px;
-    background: linear-gradient(90deg, rgba(0, 217, 255, 0.05), transparent);
+    background: linear-gradient(90deg, rgba(168, 212, 255, 0.05), transparent);
 }
 
 .search-card-map {
@@ -2551,7 +2551,7 @@ header {
     height: 60px;
     object-fit: cover;
     border-radius: 4px;
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(168, 212, 255, 0.3);
 }
 
 .search-card-info {
@@ -2607,7 +2607,7 @@ header {
 }
 
 .search-card-player.highlighted {
-    background: rgba(0, 217, 255, 0.2) !important;
+    background: rgba(168, 212, 255, 0.2) !important;
     border-left: 3px solid var(--unsc-blue) !important;
 }
 
@@ -2629,7 +2629,7 @@ header {
 
 @keyframes flashHighlight {
     0%, 100% { box-shadow: none; }
-    25%, 75% { box-shadow: 0 0 20px rgba(0, 217, 255, 0.5), inset 0 0 10px rgba(0, 217, 255, 0.1); }
+    25%, 75% { box-shadow: 0 0 20px rgba(168, 212, 255, 0.5), inset 0 0 10px rgba(168, 212, 255, 0.1); }
 }
 
 @media (max-width: 768px) {
@@ -2682,7 +2682,7 @@ header {
     margin-bottom: 40px;
     padding: 30px;
     background: var(--background-medium);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     border-radius: 8px;
 }
 
@@ -2697,7 +2697,7 @@ header {
     font-size: 28px;
     font-weight: 700;
     color: var(--unsc-blue);
-    text-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+    text-shadow: 0 0 15px rgba(168, 212, 255, 0.5);
 }
 
 #pvpComparisonContent {
@@ -2706,7 +2706,7 @@ header {
 
 #pvpComparisonContent .comparison-container {
     background: var(--background-medium);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     border-radius: 8px;
     padding: 30px;
 }
@@ -2717,7 +2717,7 @@ header {
     align-items: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+    border-bottom: 1px solid rgba(168, 212, 255, 0.2);
 }
 
 #pvpComparisonContent .player-header {
@@ -2756,7 +2756,7 @@ header {
 
 .clickable-player:hover {
     color: var(--unsc-blue);
-    text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+    text-shadow: 0 0 10px rgba(168, 212, 255, 0.5);
 }
 
 .clickable-player:hover .player-name-text {
@@ -2765,7 +2765,7 @@ header {
 }
 
 .pvp-col-header.clickable-player:hover {
-    background: rgba(0, 217, 255, 0.1);
+    background: rgba(168, 212, 255, 0.1);
 }
 
 /* ==================== SORTING CONTROLS ==================== */
@@ -2776,7 +2776,7 @@ header {
     margin-bottom: 20px;
     padding: 15px 20px;
     background: rgba(15, 20, 35, 0.8);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     flex-wrap: wrap;
 }
 
@@ -2792,7 +2792,7 @@ header {
     font-size: 14px;
     padding: 8px 12px;
     background: var(--background-dark);
-    border: 1px solid rgba(0, 217, 255, 0.3);
+    border: 1px solid rgba(168, 212, 255, 0.3);
     color: var(--text-primary);
     cursor: pointer;
     min-width: 150px;
@@ -2805,7 +2805,7 @@ header {
 .sort-select:focus {
     outline: none;
     border-color: var(--unsc-blue);
-    box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+    box-shadow: 0 0 10px rgba(168, 212, 255, 0.2);
 }
 
 .sort-select option {
@@ -2824,7 +2824,7 @@ header {
     gap: 30px;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 2px solid rgba(0, 217, 255, 0.3);
+    border-bottom: 2px solid rgba(168, 212, 255, 0.3);
 }
 
 .profile-player-info {
@@ -2848,7 +2848,7 @@ header {
     font-size: 36px;
     font-weight: 700;
     color: var(--text-primary);
-    text-shadow: 0 0 20px rgba(0, 217, 255, 0.3);
+    text-shadow: 0 0 20px rgba(168, 212, 255, 0.3);
     margin: 0;
 }
 
@@ -2864,20 +2864,20 @@ header {
 
 .profile-stat-card {
     background: rgba(15, 20, 35, 0.8);
-    border: 1px solid rgba(0, 217, 255, 0.2);
+    border: 1px solid rgba(168, 212, 255, 0.2);
     padding: 20px;
     text-align: center;
     transition: all 0.3s ease;
 }
 
 .profile-stat-card:hover {
-    border-color: rgba(0, 217, 255, 0.5);
-    box-shadow: 0 0 20px rgba(0, 217, 255, 0.1);
+    border-color: rgba(168, 212, 255, 0.5);
+    box-shadow: 0 0 20px rgba(168, 212, 255, 0.1);
 }
 
 .profile-stat-card.highlight {
     border-color: var(--unsc-blue);
-    background: rgba(0, 217, 255, 0.1);
+    background: rgba(168, 212, 255, 0.1);
 }
 
 .profile-stat-card .stat-value {
@@ -2940,16 +2940,16 @@ header {
     font-weight: 600;
     padding: 10px 20px;
     background: transparent;
-    border: 1px solid rgba(0, 217, 255, 0.4);
+    border: 1px solid rgba(168, 212, 255, 0.4);
     color: var(--unsc-blue);
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .back-btn:hover {
-    background: rgba(0, 217, 255, 0.1);
+    background: rgba(168, 212, 255, 0.1);
     border-color: var(--unsc-blue);
-    box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+    box-shadow: 0 0 15px rgba(168, 212, 255, 0.3);
 }
 
 /* Responsive adjustments for profile page */

@@ -541,7 +541,7 @@ function renderGameContent(game) {
             teamScoreHtml = '<div class="game-final-score ffa-winner">';
             teamScoreHtml += `<span class="winner-label">WINNER:</span> `;
             teamScoreHtml += `<span class="winner-name clickable-player" data-player="${winner.name}">${winner.name}</span>`;
-            teamScoreHtml += `<span class="winner-score">${winner.score || 0} pts</span>`;
+            teamScoreHtml += `<span class="winner-score">${winner.kills || 0} kills</span>`;
             teamScoreHtml += '</div>';
         }
     }
