@@ -686,6 +686,194 @@ def setup_commands(bot: commands.Bot, PREGAME_LOBBY_ID: int, POSTGAME_LOBBY_ID: 
         
         await interaction.response.defer()
     
+    # ========== ALIAS COMMANDS ==========
+    
+    @bot.tree.command(name="linkalias", description="Link an in-game alias to your Discord account")
+    @app_commands.describe(alias="Your in-game name/alias (e.g., your gamertag)")
+    async def link_alias(interaction: discord.Interaction, alias: str):
+        """Link an in-game alias - can have multiple"""
+        import twitch
+        
+        alias = alias.strip()
+        
+        if not alias:
+            await interaction.response.send_message("❌ Please provide an alias.", ephemeral=True)
+            return
+        
+        if len(alias) > 50:
+            await interaction.response.send_message("❌ Alias too long (max 50 characters).", ephemeral=True)
+            return
+        
+        players = twitch.load_players()
+        user_id = str(interaction.user.id)
+        
+        # Initialize player entry if doesn't exist
+        if user_id not in players:
+            players[user_id] = {}
+        
+        # Initialize aliases list if doesn't exist
+        if "aliases" not in players[user_id]:
+            players[user_id]["aliases"] = []
+        
+        # Check if alias already linked to this user
+        if alias.lower() in [a.lower() for a in players[user_id]["aliases"]]:
+            await interaction.response.send_message(
+                f"❌ Alias **{alias}** is already linked to your account.",
+                ephemeral=True
+            )
+            return
+        
+        # Check if alias is taken by someone else
+        for other_id, other_data in players.items():
+            if other_id != user_id:
+                other_aliases = other_data.get("aliases", [])
+                if alias.lower() in [a.lower() for a in other_aliases]:
+                    await interaction.response.send_message(
+                        f"❌ Alias **{alias}** is already linked to another user.",
+                        ephemeral=True
+                    )
+                    return
+        
+        # Add alias
+        players[user_id]["aliases"].append(alias)
+        twitch.save_players(players)
+        
+        # Show all aliases
+        all_aliases = players[user_id]["aliases"]
+        await interaction.response.send_message(
+            f"✅ Alias **{alias}** linked!\n"
+            f"Your aliases: {', '.join(all_aliases)}",
+            ephemeral=True
+        )
+        log_action(f"{interaction.user.name} linked alias: {alias}")
+    
+    @bot.tree.command(name="unlinkalias", description="Remove an in-game alias from your Discord account")
+    @app_commands.describe(alias="The alias to remove")
+    async def unlink_alias(interaction: discord.Interaction, alias: str):
+        """Remove an in-game alias"""
+        import twitch
+        
+        alias = alias.strip()
+        players = twitch.load_players()
+        user_id = str(interaction.user.id)
+        
+        if user_id not in players or "aliases" not in players[user_id]:
+            await interaction.response.send_message("❌ You have no aliases linked.", ephemeral=True)
+            return
+        
+        # Find alias (case-insensitive)
+        found_alias = None
+        for a in players[user_id]["aliases"]:
+            if a.lower() == alias.lower():
+                found_alias = a
+                break
+        
+        if not found_alias:
+            await interaction.response.send_message(
+                f"❌ Alias **{alias}** not found in your linked aliases.",
+                ephemeral=True
+            )
+            return
+        
+        # Remove alias
+        players[user_id]["aliases"].remove(found_alias)
+        twitch.save_players(players)
+        
+        remaining = players[user_id].get("aliases", [])
+        if remaining:
+            await interaction.response.send_message(
+                f"✅ Alias **{found_alias}** removed.\n"
+                f"Remaining aliases: {', '.join(remaining)}",
+                ephemeral=True
+            )
+        else:
+            await interaction.response.send_message(
+                f"✅ Alias **{found_alias}** removed. You have no more aliases.",
+                ephemeral=True
+            )
+        log_action(f"{interaction.user.name} unlinked alias: {found_alias}")
+    
+    @bot.tree.command(name="myaliases", description="View your linked in-game aliases")
+    async def my_aliases(interaction: discord.Interaction):
+        """View your linked aliases"""
+        import twitch
+        
+        players = twitch.load_players()
+        user_id = str(interaction.user.id)
+        
+        if user_id not in players or not players[user_id].get("aliases"):
+            await interaction.response.send_message(
+                "You have no aliases linked. Use `/linkalias` to add one.",
+                ephemeral=True
+            )
+            return
+        
+        aliases = players[user_id]["aliases"]
+        await interaction.response.send_message(
+            f"Your aliases: **{', '.join(aliases)}**",
+            ephemeral=True
+        )
+    
+    @bot.tree.command(name="checkaliases", description="Check someone's in-game aliases")
+    @app_commands.describe(user="The user to check")
+    async def check_aliases(interaction: discord.Interaction, user: discord.Member):
+        """Check someone's aliases"""
+        import twitch
+        
+        players = twitch.load_players()
+        user_id = str(user.id)
+        
+        if user_id not in players or not players[user_id].get("aliases"):
+            await interaction.response.send_message(
+                f"{user.display_name} has no aliases linked.",
+                ephemeral=True
+            )
+            return
+        
+        aliases = players[user_id]["aliases"]
+        await interaction.response.send_message(
+            f"{user.display_name}'s aliases: **{', '.join(aliases)}**",
+            ephemeral=True
+        )
+    
+    @bot.tree.command(name="adminunlinkalias", description="[ADMIN] Remove an alias from someone")
+    @has_admin_role()
+    @app_commands.describe(user="The user", alias="The alias to remove")
+    async def admin_unlink_alias(interaction: discord.Interaction, user: discord.Member, alias: str):
+        """Admin: Remove someone's alias"""
+        import twitch
+        
+        alias = alias.strip()
+        players = twitch.load_players()
+        user_id = str(user.id)
+        
+        if user_id not in players or "aliases" not in players[user_id]:
+            await interaction.response.send_message(
+                f"❌ {user.display_name} has no aliases linked.",
+                ephemeral=True
+            )
+            return
+        
+        # Find alias (case-insensitive)
+        found_alias = None
+        for a in players[user_id]["aliases"]:
+            if a.lower() == alias.lower():
+                found_alias = a
+                break
+        
+        if not found_alias:
+            await interaction.response.send_message(
+                f"❌ Alias **{alias}** not found for {user.display_name}.",
+                ephemeral=True
+            )
+            return
+        
+        players[user_id]["aliases"].remove(found_alias)
+        twitch.save_players(players)
+        
+        await interaction.response.defer()
+        log_action(f"Admin {interaction.user.name} removed alias '{found_alias}' from {user.display_name}")
+    
     @bot.tree.command(name='testmatchmakingred', description='[LEGACY] Test matchmaking as RED team')
     async def test_matchmaking_red(interaction: discord.Interaction):
         """Test queue for RED team - 8 random members, balanced, tester moved to red VC"""
@@ -895,6 +1083,12 @@ def setup_commands(bot: commands.Bot, PREGAME_LOBBY_ID: int, POSTGAME_LOBBY_ID: 
         • `/mytwitch` - Check your linked Twitch
         • `/checktwitch @user` - Check someone's Twitch
         
+        **Alias Commands:**
+        • `/linkalias <name>` - Link an in-game alias
+        • `/unlinkalias <name>` - Remove an alias
+        • `/myaliases` - View your aliases
+        • `/checkaliases @user` - Check someone's aliases
+        
         **Info Commands:**
         • `/help` - Show this help message
         • `/playerstats` - View your stats
@@ -933,9 +1127,10 @@ def setup_commands(bot: commands.Bot, PREGAME_LOBBY_ID: int, POSTGAME_LOBBY_ID: 
         • `/testmatchmakingblue` - Test as BLUE team (8 players)
         • `/logtestmatch` - Log test match with all map combos
         
-        **Twitch Admin:**
+        **Twitch/Alias Admin:**
         • `/adminsettwitch @user <twitch>` - Set someone's Twitch
         • `/adminremovetwitch @user` - Remove someone's Twitch
+        • `/adminunlinkalias @user <alias>` - Remove someone's alias
         """
         
         if is_admin:
