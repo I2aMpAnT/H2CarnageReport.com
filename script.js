@@ -207,6 +207,23 @@ function formatDuration(duration) {
     return `${minutes}min ${seconds}sec`;
 }
 
+// Convert time string "M:SS" to total seconds
+function timeToSeconds(timeStr) {
+    if (!timeStr) return 0;
+    const parts = timeStr.toString().split(':');
+    if (parts.length !== 2) return 0;
+    const minutes = parseInt(parts[0]) || 0;
+    const seconds = parseInt(parts[1]) || 0;
+    return (minutes * 60) + seconds;
+}
+
+// Convert total seconds to "M:SS" format
+function secondsToTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
 // Helper function to check if team is valid (not none/null/empty)
 function isValidTeam(team) {
     if (!team) return false;
@@ -426,6 +443,8 @@ function createGameItem(game, gameNumber) {
     // Calculate team scores for team games
     let teamScoreDisplay = '';
     const teams = {};
+    const isOddball = displayGameType.toLowerCase().includes('oddball');
+    
     players.forEach(player => {
         const team = player.team;
         if (isValidTeam(team)) {
@@ -433,7 +452,12 @@ function createGameItem(game, gameNumber) {
             if (!teams[teamKey]) {
                 teams[teamKey] = 0;
             }
-            teams[teamKey] += parseInt(player.score) || 0;
+            // For Oddball, sum time values; for other games, sum scores
+            if (isOddball) {
+                teams[teamKey] += timeToSeconds(player.score);
+            } else {
+                teams[teamKey] += parseInt(player.score) || 0;
+            }
         }
     });
     
@@ -454,7 +478,10 @@ function createGameItem(game, gameNumber) {
         }
         
         const teamScores = sortedTeams
-            .map(([team, score]) => `${team}: ${score}`)
+            .map(([team, score]) => {
+                const displayScore = isOddball ? secondsToTime(score) : score;
+                return `${team}: ${displayScore}`;
+            })
             .join(' - ');
         teamScoreDisplay = `<span class="game-meta-tag ${scoreTagClass}">${teamScores}</span>`;
     } else {
@@ -532,6 +559,7 @@ function renderGameContent(game) {
     let teamScoreHtml = '';
     const teams = {};
     let hasRealTeams = false;
+    const isOddball = gameType.toLowerCase().includes('oddball');
     
     game.players.forEach(player => {
         const team = player.team;
@@ -541,7 +569,12 @@ function renderGameContent(game) {
             if (!teams[teamKey]) {
                 teams[teamKey] = 0;
             }
-            teams[teamKey] += parseInt(player.score) || 0;
+            // For Oddball, sum time values; for other games, sum scores
+            if (isOddball) {
+                teams[teamKey] += timeToSeconds(player.score);
+            } else {
+                teams[teamKey] += parseInt(player.score) || 0;
+            }
         }
     });
     
@@ -552,7 +585,8 @@ function renderGameContent(game) {
         sortedTeams.forEach(([team, score], index) => {
             const teamClass = team.toLowerCase();
             const isWinner = index === 0;
-            teamScoreHtml += `<span class="final-score-team team-${teamClass}${isWinner ? ' winner' : ''}">${team}: ${score}</span>`;
+            const displayScore = isOddball ? secondsToTime(score) : score;
+            teamScoreHtml += `<span class="final-score-team team-${teamClass}${isWinner ? ' winner' : ''}">${team}: ${displayScore}</span>`;
             if (index < sortedTeams.length - 1) {
                 teamScoreHtml += '<span class="score-separator">vs</span>';
             }
@@ -1788,11 +1822,18 @@ function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
     // Calculate team scores
     let teamScoreHtml = '';
     const teams = {};
+    const isOddball = gameType.toLowerCase().includes('oddball');
+    
     players.forEach(player => {
         const team = player.team;
         if (team && team !== 'None') {
             if (!teams[team]) teams[team] = 0;
-            teams[team] += parseInt(player.score) || 0;
+            // For Oddball, sum time values; for other games, sum scores
+            if (isOddball) {
+                teams[team] += timeToSeconds(player.score);
+            } else {
+                teams[team] += parseInt(player.score) || 0;
+            }
         }
     });
     
@@ -1800,7 +1841,8 @@ function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
         const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
         teamScoreHtml = '<div class="card-team-scores">';
         sortedTeams.forEach(([team, score], index) => {
-            teamScoreHtml += `<span class="team-score-${team.toLowerCase()}">${team}: ${score}</span>`;
+            const displayScore = isOddball ? secondsToTime(score) : score;
+            teamScoreHtml += `<span class="team-score-${team.toLowerCase()}">${team}: ${displayScore}</span>`;
             if (index < sortedTeams.length - 1) teamScoreHtml += '<span class="score-vs">vs</span>';
         });
         teamScoreHtml += '</div>';
@@ -2103,13 +2145,19 @@ function filterProfileByWinLoss(filterType) {
         filteredGames = currentProfileGames.filter(game => {
             const player = game.playerData;
             const hasTeams = game.players.some(p => isValidTeam(p.team));
+            const gameType = game.details['Variant Name'] || game.details['Game Type'] || '';
+            const isOddball = gameType.toLowerCase().includes('oddball');
             
             if (hasTeams && isValidTeam(player.team)) {
                 // Team game - check if player's team won
                 const teams = {};
                 game.players.forEach(p => {
                     if (isValidTeam(p.team)) {
-                        teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                        if (isOddball) {
+                            teams[p.team] = (teams[p.team] || 0) + timeToSeconds(p.score);
+                        } else {
+                            teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                        }
                     }
                 });
                 const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
@@ -2127,13 +2175,19 @@ function filterProfileByWinLoss(filterType) {
         filteredGames = currentProfileGames.filter(game => {
             const player = game.playerData;
             const hasTeams = game.players.some(p => isValidTeam(p.team));
+            const gameType = game.details['Variant Name'] || game.details['Game Type'] || '';
+            const isOddball = gameType.toLowerCase().includes('oddball');
             
             if (hasTeams && isValidTeam(player.team)) {
                 // Team game - check if player's team lost
                 const teams = {};
                 game.players.forEach(p => {
                     if (isValidTeam(p.team)) {
-                        teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                        if (isOddball) {
+                            teams[p.team] = (teams[p.team] || 0) + timeToSeconds(p.score);
+                        } else {
+                            teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                        }
                     }
                 });
                 const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
@@ -2270,11 +2324,18 @@ function calculatePlayerOverallStats(playerName) {
             
             // Check if player won
             const hasTeams = game.players.some(p => isValidTeam(p.team));
+            const gameType = game.details['Variant Name'] || game.details['Game Type'] || '';
+            const isOddball = gameType.toLowerCase().includes('oddball');
+            
             if (hasTeams && isValidTeam(player.team)) {
                 const teams = {};
                 game.players.forEach(p => {
                     if (isValidTeam(p.team)) {
-                        teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                        if (isOddball) {
+                            teams[p.team] = (teams[p.team] || 0) + timeToSeconds(p.score);
+                        } else {
+                            teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                        }
                     }
                 });
                 const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
@@ -2423,12 +2484,18 @@ function filterPlayerGames(preFilteredGames = null) {
             games = games.filter(game => {
                 const player = game.playerData;
                 const hasTeams = game.players.some(p => isValidTeam(p.team));
+                const gameType = game.details['Variant Name'] || game.details['Game Type'] || '';
+                const isOddball = gameType.toLowerCase().includes('oddball');
                 
                 if (hasTeams && isValidTeam(player.team)) {
                     const teams = {};
                     game.players.forEach(p => {
                         if (isValidTeam(p.team)) {
-                            teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                            if (isOddball) {
+                                teams[p.team] = (teams[p.team] || 0) + timeToSeconds(p.score);
+                            } else {
+                                teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                            }
                         }
                     });
                     const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
@@ -2442,12 +2509,18 @@ function filterPlayerGames(preFilteredGames = null) {
             games = games.filter(game => {
                 const player = game.playerData;
                 const hasTeams = game.players.some(p => isValidTeam(p.team));
+                const gameType = game.details['Variant Name'] || game.details['Game Type'] || '';
+                const isOddball = gameType.toLowerCase().includes('oddball');
                 
                 if (hasTeams && isValidTeam(player.team)) {
                     const teams = {};
                     game.players.forEach(p => {
                         if (isValidTeam(p.team)) {
-                            teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                            if (isOddball) {
+                                teams[p.team] = (teams[p.team] || 0) + timeToSeconds(p.score);
+                            } else {
+                                teams[p.team] = (teams[p.team] || 0) + (parseInt(p.score) || 0);
+                            }
                         }
                     });
                     const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
