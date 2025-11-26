@@ -423,7 +423,8 @@ function createGameItem(game, gameNumber) {
     gameDiv.id = `game-${gameNumber}`;
     
     // Store the actual gamesData index for reliable game lookup
-    const gameDataIndex = gamesData.indexOf(game);
+    // Use originalIndex if it exists (from profile games), otherwise find it
+    const gameDataIndex = game.originalIndex !== undefined ? game.originalIndex : gamesData.indexOf(game);
     gameDiv.setAttribute('data-game-index', gameDataIndex);
     
     const details = game.details;
