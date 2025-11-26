@@ -136,6 +136,63 @@ function getMedalIcon(medalName) {
     return medalIcons[key] || null;
 }
 
+// Helper function to format date/time consistently
+function formatDateTime(startTime) {
+    if (!startTime) return '';
+    
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    // Try to parse MM/DD/YYYY format first
+    const dateMatch = startTime.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+    // Also try ISO format (YYYY-MM-DDTHH:MM:SS)
+    const isoMatch = startTime.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+    const timeMatch = startTime.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?/i);
+    
+    if (dateMatch) {
+        // MM/DD/YYYY format
+        const month = parseInt(dateMatch[1]) - 1;
+        const day = parseInt(dateMatch[2]);
+        const monthName = months[month] || dateMatch[1];
+        let result = `${monthName} ${day}`;
+        
+        if (timeMatch) {
+            let hour = parseInt(timeMatch[1]);
+            const minutes = timeMatch[2];
+            const ampm = timeMatch[3] ? timeMatch[3].toUpperCase() : '';
+            
+            // Format time cleanly (drop :00 minutes, keep AM/PM)
+            if (minutes === '00') {
+                result += ` · ${hour}${ampm}`;
+            } else {
+                result += ` · ${hour}:${minutes}${ampm}`;
+            }
+        }
+        return result + ' EST';
+    } else if (isoMatch) {
+        // ISO format: 2025-11-23T08:35:00-05:00
+        const month = parseInt(isoMatch[2]) - 1;
+        const day = parseInt(isoMatch[3]);
+        let hour = parseInt(isoMatch[4]);
+        const minutes = isoMatch[5];
+        const monthName = months[month];
+        
+        // Convert to 12-hour format
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        if (hour > 12) hour -= 12;
+        if (hour === 0) hour = 12;
+        
+        let result = `${monthName} ${day}`;
+        if (minutes === '00') {
+            result += ` · ${hour}${ampm}`;
+        } else {
+            result += ` · ${hour}:${minutes}${ampm}`;
+        }
+        return result + ' EST';
+    }
+    
+    return startTime;
+}
+
 // Generate random ranks for all players
 function generatePlayerRanks() {
     const allPlayers = new Set();
@@ -332,61 +389,8 @@ function createGameItem(game, gameNumber) {
     let duration = details['Duration'] || '0:00';
     let startTime = details['Start Time'] || '';
     
-    // Format date/time for display (clean, compact version)
-    let dateDisplay = '';
-    if (startTime) {
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        // Try to parse MM/DD/YYYY format first
-        const dateMatch = startTime.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
-        // Also try ISO format (YYYY-MM-DDTHH:MM:SS)
-        const isoMatch = startTime.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-        const timeMatch = startTime.match(/(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)?/i);
-        
-        if (dateMatch) {
-            // MM/DD/YYYY format
-            const month = parseInt(dateMatch[1]) - 1;
-            const day = parseInt(dateMatch[2]);
-            const monthName = months[month] || dateMatch[1];
-            dateDisplay = `${monthName} ${day}`;
-            
-            if (timeMatch) {
-                let hour = parseInt(timeMatch[1]);
-                const minutes = timeMatch[2];
-                const ampm = timeMatch[3] ? timeMatch[3].toUpperCase() : '';
-                
-                // Format time cleanly (drop :00 minutes, keep AM/PM)
-                if (minutes === '00') {
-                    dateDisplay += ` · ${hour}${ampm}`;
-                } else {
-                    dateDisplay += ` · ${hour}:${minutes}${ampm}`;
-                }
-            }
-            dateDisplay += ' EST';
-        } else if (isoMatch) {
-            // ISO format: 2025-11-23T08:35:00-05:00
-            const month = parseInt(isoMatch[2]) - 1;
-            const day = parseInt(isoMatch[3]);
-            let hour = parseInt(isoMatch[4]);
-            const minutes = isoMatch[5];
-            const monthName = months[month];
-            
-            // Convert to 12-hour format
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            if (hour > 12) hour -= 12;
-            if (hour === 0) hour = 12;
-            
-            dateDisplay = `${monthName} ${day}`;
-            if (minutes === '00') {
-                dateDisplay += ` · ${hour}${ampm}`;
-            } else {
-                dateDisplay += ` · ${hour}:${minutes}${ampm}`;
-            }
-            dateDisplay += ' EST';
-        } else {
-            dateDisplay = startTime;
-        }
-    }
+    // Format date/time for display using helper function
+    const dateDisplay = formatDateTime(startTime);
     
     // Get map image for background
     const mapImage = mapImages[mapName] || defaultMapImage;
@@ -488,12 +492,18 @@ function renderGameContent(game) {
     const duration = game.details['Duration'] || '0:00';
     const startTime = game.details['Start Time'] || '';
     
+    // Format the start time
+    const formattedTime = formatDateTime(startTime);
+    
     // Calculate team scores
     let teamScoreHtml = '';
     const teams = {};
+    let hasRealTeams = false;
+    
     game.players.forEach(player => {
         const team = player.team;
-        if (team && team !== 'None') {
+        if (team && team !== 'None' && team !== 'none' && team !== '') {
+            hasRealTeams = true;
             if (!teams[team]) {
                 teams[team] = 0;
             }
@@ -501,17 +511,30 @@ function renderGameContent(game) {
         }
     });
     
-    if (Object.keys(teams).length > 0) {
+    if (hasRealTeams && Object.keys(teams).length > 0) {
+        // Team game - show team scores
         const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
         teamScoreHtml = '<div class="game-final-score">';
         sortedTeams.forEach(([team, score], index) => {
             const teamClass = team.toLowerCase();
-            teamScoreHtml += `<span class="final-score-team team-${teamClass}">${team}: ${score}</span>`;
+            const isWinner = index === 0;
+            teamScoreHtml += `<span class="final-score-team team-${teamClass}${isWinner ? ' winner' : ''}">${team}: ${score}</span>`;
             if (index < sortedTeams.length - 1) {
                 teamScoreHtml += '<span class="score-separator">vs</span>';
             }
         });
         teamScoreHtml += '</div>';
+    } else {
+        // FFA game - show winner
+        const sortedPlayers = [...game.players].sort((a, b) => (b.score || 0) - (a.score || 0));
+        if (sortedPlayers.length > 0) {
+            const winner = sortedPlayers[0];
+            teamScoreHtml = '<div class="game-final-score ffa-winner">';
+            teamScoreHtml += `<span class="winner-label">WINNER:</span> `;
+            teamScoreHtml += `<span class="winner-name">${winner.name}</span>`;
+            teamScoreHtml += `<span class="winner-score">${winner.score || 0} pts</span>`;
+            teamScoreHtml += '</div>';
+        }
     }
     
     let html = '<div class="game-details-header">';
@@ -525,7 +548,7 @@ function renderGameContent(game) {
     html += `<div class="game-type-title">${gameType}</div>`;
     html += `<div class="game-meta-info">`;
     html += `<span><i class="icon-clock"></i> ${duration}</span>`;
-    html += `<span><i class="icon-calendar"></i> ${startTime}</span>`;
+    html += `<span><i class="icon-calendar"></i> ${formattedTime}</span>`;
     html += `</div>`;
     html += teamScoreHtml;
     html += `</div>`;
@@ -1003,6 +1026,7 @@ function renderAccuracy(game) {
     html += '<div class="accuracy-player-col">PLAYER</div>';
     html += '<div class="accuracy-total-col">SHOTS HIT</div>';
     html += '<div class="accuracy-total-col">SHOTS FIRED</div>';
+    html += '<div class="accuracy-total-col">HEADSHOTS</div>';
     html += '<div class="accuracy-total-col">ACCURACY</div>';
     html += '</div>';
     
@@ -1012,19 +1036,24 @@ function renderAccuracy(game) {
         const team = playerTeams[playerName];
         const teamAttr = team ? `data-team="${team}"` : '';
         
-        // Calculate total shots hit and fired across all weapons
+        // Calculate total shots hit, fired, and headshots across all weapons
         let totalHit = 0;
         let totalFired = 0;
+        let totalHeadshots = 0;
         
         weaponCols.forEach(col => {
-            if (col.toLowerCase().includes('hit')) {
+            const colLower = col.toLowerCase();
+            if (colLower.includes('headshot') || colLower.includes('head shot')) {
+                totalHeadshots += parseInt(weaponData[col]) || 0;
+            } else if (colLower.includes('hit')) {
                 totalHit += parseInt(weaponData[col]) || 0;
-            } else if (col.toLowerCase().includes('fired')) {
+            } else if (colLower.includes('fired')) {
                 totalFired += parseInt(weaponData[col]) || 0;
             }
         });
         
         const accuracy = totalFired > 0 ? ((totalHit / totalFired) * 100).toFixed(1) : '0.0';
+        const headshotPercent = totalHit > 0 ? ((totalHeadshots / totalHit) * 100).toFixed(0) : '0';
         
         html += `<div class="accuracy-row" ${teamAttr}>`;
         html += `<div class="accuracy-player-col">`;
@@ -1033,6 +1062,7 @@ function renderAccuracy(game) {
         html += `</div>`;
         html += `<div class="accuracy-total-col">${totalHit}</div>`;
         html += `<div class="accuracy-total-col">${totalFired}</div>`;
+        html += `<div class="accuracy-total-col accuracy-headshots">${totalHeadshots} <span class="headshot-percent">(${headshotPercent}%)</span></div>`;
         html += `<div class="accuracy-total-col accuracy-percent">${accuracy}%</div>`;
         html += `</div>`;
     });

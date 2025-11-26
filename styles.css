@@ -561,6 +561,54 @@ header {
     text-transform: uppercase;
 }
 
+/* FFA Winner Display */
+.game-final-score.ffa-winner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), transparent);
+    padding: 10px 20px;
+    border-left: 3px solid #ffd700;
+    margin-top: 15px;
+}
+
+.ffa-winner .winner-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.ffa-winner .winner-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.ffa-winner .winner-score {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 16px;
+    color: #ffd700;
+    margin-left: 10px;
+}
+
+/* Team game winner highlight */
+.final-score-team.winner {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.final-score-team.team-red.winner {
+    border-color: #ffd700;
+}
+
+.final-score-team.team-blue.winner {
+    border-color: #ffd700;
+}
+
 /* Tab Navigation */
 .tab-navigation {
     display: flex;
@@ -1926,8 +1974,8 @@ header {
 
 .accuracy-header {
     display: grid;
-    grid-template-columns: 180px 100px 100px 100px;
-    gap: 20px;
+    grid-template-columns: 180px 100px 100px 120px 100px;
+    gap: 15px;
     padding: 12px 16px;
     background: rgba(0, 100, 180, 0.15);
     border-bottom: 1px solid rgba(0, 217, 255, 0.3);
@@ -1940,8 +1988,8 @@ header {
 
 .accuracy-row {
     display: grid;
-    grid-template-columns: 180px 100px 100px 100px;
-    gap: 20px;
+    grid-template-columns: 180px 100px 100px 120px 100px;
+    gap: 15px;
     padding: 12px 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     align-items: center;
@@ -1974,6 +2022,17 @@ header {
     font-weight: 700;
     color: #00ff88;
     text-shadow: 0 0 6px rgba(0, 255, 136, 0.5);
+}
+
+.accuracy-total-col.accuracy-headshots {
+    color: #ff6b6b;
+    font-weight: 600;
+}
+
+.accuracy-total-col .headshot-percent {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
 }
 
 .accuracy-stats-col {
