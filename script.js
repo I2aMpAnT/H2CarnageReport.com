@@ -456,13 +456,15 @@ function createGameItem(game, gameNumber) {
                 <div class="game-number">${displayGameType}</div>
                 <div class="game-info">
                     <span class="game-meta-tag game-num-tag">Game ${gameNumber}</span>
-                    ${dateDisplay ? `<span class="game-meta-tag date-tag">${dateDisplay}</span>` : ''}
                     <span class="game-meta-tag">${mapName}</span>
                     <span class="game-meta-tag">${duration}</span>
                     ${teamScoreDisplay}
                 </div>
             </div>
-            <div class="expand-icon">▶</div>
+            <div class="game-header-right">
+                ${dateDisplay ? `<span class="game-meta-tag date-tag">${dateDisplay}</span>` : ''}
+                <div class="expand-icon">▶</div>
+            </div>
         </div>
         <div class="game-details">
             <div class="game-details-content">
