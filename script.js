@@ -299,6 +299,7 @@ function createGameItem(game, gameNumber) {
     
     // Determine winner
     let winnerClass = '';
+    let scoreTagClass = '';
     if (Object.keys(teams).length > 0) {
         // Team game - find winning team
         const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
@@ -306,13 +307,14 @@ function createGameItem(game, gameNumber) {
             const winningTeam = sortedTeams[0][0].toLowerCase();
             if (sortedTeams.length === 1 || sortedTeams[0][1] > sortedTeams[1][1]) {
                 winnerClass = `winner-${winningTeam}`;
+                scoreTagClass = `score-tag-${winningTeam}`;
             }
         }
         
         const teamScores = sortedTeams
             .map(([team, score]) => `${team}: ${score}`)
             .join(' - ');
-        teamScoreDisplay = `<span class="game-meta-tag">${teamScores}</span>`;
+        teamScoreDisplay = `<span class="game-meta-tag ${scoreTagClass}">${teamScores}</span>`;
     } else {
         // FFA game - find winner by place
         const winner = players.find(p => p.place === '1st');
