@@ -438,17 +438,17 @@ header {
 .game-meta-tag.score-tag-blue {
     background: rgba(50, 120, 220, 0.4);
     border: 1px solid #3388ff;
-    color: #7cb8ff;
+    color: #ffffff;
     box-shadow: 0 0 10px rgba(50, 120, 220, 0.5), inset 0 0 8px rgba(50, 120, 220, 0.3);
-    text-shadow: 0 0 6px rgba(50, 120, 220, 0.8);
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
 }
 
 .game-meta-tag.score-tag-red {
     background: rgba(220, 20, 60, 0.4);
     border: 1px solid #dc143c;
-    color: #ff6b6b;
+    color: #ffffff;
     box-shadow: 0 0 10px rgba(220, 20, 60, 0.5), inset 0 0 8px rgba(220, 20, 60, 0.3);
-    text-shadow: 0 0 6px rgba(220, 20, 60, 0.8);
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
 }
 
 .game-meta-tag.score-tag-ffa {
