@@ -1866,28 +1866,45 @@ function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
         return teamA - teamB;
     });
     
-    let html = `<div class="search-game-card" onclick="scrollToGame(${gameNumber})">`;
-    html += '<div class="search-card-header">';
-    html += `<img src="${mapImage}" class="search-card-map" alt="${mapName}">`;
-    html += '<div class="search-card-info">';
-    html += `<div class="search-card-title">${gameType}</div>`;
-    html += `<div class="search-card-meta">${mapName} • ${duration} • ${startTime}</div>`;
+    // Determine winner class
+    let winnerClass = '';
+    if (Object.keys(teams).length >= 2) {
+        const sortedTeams = Object.entries(teams).sort((a, b) => b[1] - a[1]);
+        if (sortedTeams[0][1] > sortedTeams[1][1]) {
+            winnerClass = `winner-${sortedTeams[0][0].toLowerCase()}`;
+        }
+    }
+
+    let html = `<div class="search-game-card ${winnerClass}" onclick="scrollToGame(${gameNumber})">`;
+    html += '<div class="search-card-content">';
+    html += '<div class="search-card-left">';
+    html += `<div class="search-card-gametype">${gameType}</div>`;
+    html += '<div class="search-card-tags">';
+    html += `<span class="game-meta-tag">Game ${gameNumber}</span>`;
+    html += `<span class="game-meta-tag">${mapName}</span>`;
+    html += `<span class="game-meta-tag">${duration}</span>`;
     html += teamScoreHtml;
     html += '</div>';
     html += '</div>';
-    
-    // Mini scoreboard
-    html += '<div class="search-card-scoreboard">';
-    sortedPlayers.forEach(player => {
-        const teamClass = player.team && player.team !== 'none' ? `team-${player.team.toLowerCase()}` : '';
-        const highlightClass = highlightPlayer && player.name === highlightPlayer ? 'highlighted' : '';
-        html += `<div class="search-card-player ${teamClass} ${highlightClass}">`;
-        html += `<span class="player-name">${player.name}</span>`;
-        html += `<span class="player-stats">${player.kills || 0}/${player.deaths || 0}</span>`;
-        html += '</div>';
-    });
+    html += '<div class="search-card-right">';
+    if (startTime) {
+        html += `<span class="game-meta-tag date-tag">${startTime}</span>`;
+    }
     html += '</div>';
-    
+    html += '</div>';
+
+    // Show highlighted player stats if specified
+    if (highlightPlayer) {
+        const playerData = players.find(p => p.name === highlightPlayer);
+        if (playerData) {
+            html += '<div class="search-card-player-stats">';
+            html += `<span class="player-stat-item">K: ${playerData.kills || 0}</span>`;
+            html += `<span class="player-stat-item">D: ${playerData.deaths || 0}</span>`;
+            html += `<span class="player-stat-item">A: ${playerData.assists || 0}</span>`;
+            html += '</div>';
+        }
+    }
+
     html += '</div>';
     return html;
 }
@@ -2315,12 +2332,12 @@ function showMedalBreakdown() {
     html += '<div class="weapon-breakdown-grid">';
     
     sortedMedals.forEach(([medal, count]) => {
-        const iconUrl = medalIcons[medal] || medalIcons[medal.toLowerCase()];
+        const iconUrl = getMedalIcon(medal);
         const percentage = ((count / Object.values(medalStats).reduce((a, b) => a + b, 0)) * 100).toFixed(1);
-        
+
         html += `<div class="weapon-breakdown-item">`;
         if (iconUrl) {
-            html += `<img src="assets/medals/${iconUrl}" alt="${medal}" class="weapon-breakdown-icon">`;
+            html += `<img src="${iconUrl}" alt="${medal}" class="weapon-breakdown-icon">`;
         } else {
             html += `<div class="weapon-breakdown-placeholder">${medal.substring(0, 2).toUpperCase()}</div>`;
         }
