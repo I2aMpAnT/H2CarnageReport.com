@@ -135,6 +135,16 @@ header {
     transition: all 0.3s ease;
     font-family: 'Rajdhani', sans-serif;
     font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-result-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .search-result-item:hover {
@@ -2148,7 +2158,9 @@ header {
 
 .player-stats-summary,
 .map-info-header,
-.gametype-info-header {
+.gametype-info-header,
+.medal-info-header,
+.weapon-info-header {
     background: var(--background-medium);
     border: 1px solid rgba(168, 212, 255, 0.2);
     border-radius: 8px;
@@ -2175,6 +2187,95 @@ header {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.medal-info-header,
+.weapon-info-header {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+.medal-large-image,
+.weapon-large-image {
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.medal-large-image img,
+.weapon-large-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.medal-stats,
+.weapon-stats {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.title-medal-icon,
+.title-weapon-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.top-earners-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.top-earner-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: rgba(0, 217, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.top-earner-item:hover {
+    background: rgba(0, 217, 255, 0.1);
+    border-color: var(--primary-color);
+}
+
+.earner-rank {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    color: var(--primary-color);
+    min-width: 30px;
+}
+
+.earner-rank-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.earner-name {
+    flex: 1;
+    color: var(--shield-blue);
+    font-weight: 600;
+}
+
+.earner-count {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--kills-green);
 }
 
 .map-stats,
