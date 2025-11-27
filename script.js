@@ -1598,7 +1598,7 @@ function setupSearchBox(inputElement, resultsElement, boxNumber) {
                     gameTypes.add(variantName);
                 }
             });
-            
+
             gameTypes.forEach(type => {
                 const typeGames = gamesData.filter(g => g.details['Variant Name'] === type).length;
                 results.push({
@@ -1606,6 +1606,67 @@ function setupSearchBox(inputElement, resultsElement, boxNumber) {
                     name: type,
                     meta: `${typeGames} games played`
                 });
+            });
+
+            // Search for medals
+            const matchedMedals = new Set();
+            Object.keys(medalIcons).forEach(medalKey => {
+                const displayName = formatMedalName(medalKey);
+                if (medalKey.toLowerCase().includes(query) || displayName.toLowerCase().includes(query)) {
+                    matchedMedals.add(medalKey);
+                }
+            });
+
+            matchedMedals.forEach(medal => {
+                // Count total of this medal across all games
+                let totalCount = 0;
+                gamesData.forEach(game => {
+                    if (game.medals) {
+                        game.medals.forEach(playerMedals => {
+                            if (playerMedals[medal]) {
+                                totalCount += parseInt(playerMedals[medal]) || 0;
+                            }
+                        });
+                    }
+                });
+                if (totalCount > 0) {
+                    results.push({
+                        type: 'medal',
+                        name: medal,
+                        meta: `${totalCount} earned total`
+                    });
+                }
+            });
+
+            // Search for weapons
+            const matchedWeapons = new Set();
+            Object.keys(weaponIcons).forEach(weaponKey => {
+                if (weaponKey.toLowerCase().includes(query)) {
+                    matchedWeapons.add(weaponKey);
+                }
+            });
+
+            matchedWeapons.forEach(weapon => {
+                // Count total kills with this weapon across all games
+                let totalKills = 0;
+                gamesData.forEach(game => {
+                    game.players.forEach(player => {
+                        if (player.weapons) {
+                            player.weapons.forEach(w => {
+                                if (w.name && w.name.toLowerCase() === weapon.toLowerCase()) {
+                                    totalKills += parseInt(w.kills) || 0;
+                                }
+                            });
+                        }
+                    });
+                });
+                if (totalKills > 0) {
+                    results.push({
+                        type: 'weapon',
+                        name: weapon,
+                        meta: `${totalKills} kills total`
+                    });
+                }
             });
         }
         
@@ -1636,16 +1697,34 @@ function displaySearchResults(results, resultsElement, boxNumber) {
         resultsElement.classList.add('active');
         return;
     }
-    
+
     let html = '';
     results.slice(0, 10).forEach(result => {
         html += `<div class="search-result-item" onclick="handleSearchResultClick('${result.type}', '${escapeHtml(result.name)}', ${boxNumber})">`;
-        html += `<div class="search-result-type">${result.type}</div>`;
-        html += `<div class="search-result-name">${result.name}</div>`;
+
+        // Add icon for medals and weapons
+        if (result.type === 'medal') {
+            const iconUrl = getMedalIcon(result.name);
+            if (iconUrl) {
+                html += `<img src="${iconUrl}" alt="${result.name}" class="search-result-icon">`;
+            }
+            html += `<div class="search-result-type">${result.type}</div>`;
+            html += `<div class="search-result-name">${formatMedalName(result.name)}</div>`;
+        } else if (result.type === 'weapon') {
+            const iconUrl = weaponIcons[result.name.toLowerCase()];
+            if (iconUrl) {
+                html += `<img src="${iconUrl}" alt="${result.name}" class="search-result-icon">`;
+            }
+            html += `<div class="search-result-type">${result.type}</div>`;
+            html += `<div class="search-result-name">${result.name.charAt(0).toUpperCase() + result.name.slice(1)}</div>`;
+        } else {
+            html += `<div class="search-result-type">${result.type}</div>`;
+            html += `<div class="search-result-name">${result.name}</div>`;
+        }
         html += `<div class="search-result-meta">${result.meta}</div>`;
         html += `</div>`;
     });
-    
+
     resultsElement.innerHTML = html;
     resultsElement.classList.add('active');
 }
@@ -1653,15 +1732,15 @@ function displaySearchResults(results, resultsElement, boxNumber) {
 function handleSearchResultClick(type, name, boxNumber) {
     const searchResults = boxNumber === 1 ? document.getElementById('searchResults') : document.getElementById('searchResults2');
     const searchInput = boxNumber === 1 ? document.getElementById('playerSearch') : document.getElementById('playerSearch2');
-    
+
     searchResults.classList.remove('active');
-    searchInput.value = name;
-    
+    searchInput.value = type === 'medal' ? formatMedalName(name) : name;
+
     if (type === 'player') {
         // Check if both players are selected for comparison
         const player1 = document.getElementById('playerSearch').value.trim();
         const player2 = document.getElementById('playerSearch2')?.value.trim();
-        
+
         if (player1 && player2 && player1 !== player2) {
             // Both players selected - open comparison modal
             openComparisonModal(player1, player2);
@@ -1673,6 +1752,10 @@ function handleSearchResultClick(type, name, boxNumber) {
         openSearchResultsPage('map', name);
     } else if (type === 'gametype') {
         openSearchResultsPage('gametype', name);
+    } else if (type === 'medal') {
+        openSearchResultsPage('medal', name);
+    } else if (type === 'weapon') {
+        openSearchResultsPage('weapon', name);
     }
 }
 
@@ -1699,6 +1782,16 @@ function openSearchResultsPage(type, name) {
     } else if (type === 'gametype') {
         searchResultsTitle.innerHTML = `🎮 ${name}`;
         searchResultsContent.innerHTML = renderGametypeSearchResults(name);
+    } else if (type === 'medal') {
+        const medalIcon = getMedalIcon(name);
+        const iconHtml = medalIcon ? `<img src="${medalIcon}" class="title-medal-icon" alt="${name}">` : '';
+        searchResultsTitle.innerHTML = `${iconHtml} ${formatMedalName(name)}`;
+        searchResultsContent.innerHTML = renderMedalSearchResults(name);
+    } else if (type === 'weapon') {
+        const weaponIcon = weaponIcons[name.toLowerCase()];
+        const iconHtml = weaponIcon ? `<img src="${weaponIcon}" class="title-weapon-icon" alt="${name}">` : '';
+        searchResultsTitle.innerHTML = `${iconHtml} ${name.charAt(0).toUpperCase() + name.slice(1)}`;
+        searchResultsContent.innerHTML = renderWeaponSearchResults(name);
     }
 }
 
@@ -1911,6 +2004,254 @@ function renderGametypeSearchResults(gametypeName) {
     
     html += '</div>';
     return html;
+}
+
+function renderMedalSearchResults(medalName) {
+    // Find all games where this medal was earned
+    const medalGames = [];
+    let playerMedalCounts = {};
+    let totalEarned = 0;
+
+    gamesData.forEach(game => {
+        if (game.medals) {
+            let gameMedalCount = 0;
+            game.medals.forEach(playerMedals => {
+                if (playerMedals[medalName]) {
+                    const count = parseInt(playerMedals[medalName]) || 0;
+                    gameMedalCount += count;
+                    totalEarned += count;
+
+                    const playerName = playerMedals.player;
+                    if (!playerMedalCounts[playerName]) {
+                        playerMedalCounts[playerName] = 0;
+                    }
+                    playerMedalCounts[playerName] += count;
+                }
+            });
+            if (gameMedalCount > 0) {
+                medalGames.push({ game, count: gameMedalCount });
+            }
+        }
+    });
+
+    // Store for modal
+    window.currentSearchPlayerStats = Object.fromEntries(
+        Object.entries(playerMedalCounts).map(([name, count]) => [name, { kills: count, deaths: 0, games: 0 }])
+    );
+    window.currentSearchContext = formatMedalName(medalName);
+
+    const medalIcon = getMedalIcon(medalName);
+
+    let html = '<div class="search-results-container">';
+
+    // Medal info header
+    html += '<div class="medal-info-header">';
+    if (medalIcon) {
+        html += `<div class="medal-large-image"><img src="${medalIcon}" alt="${medalName}"></div>`;
+    }
+    html += '<div class="medal-stats">';
+    html += `<div class="stat-card"><div class="stat-label">Total Earned</div><div class="stat-value">${totalEarned}</div></div>`;
+    html += `<div class="stat-card"><div class="stat-label">Games With Medal</div><div class="stat-value">${medalGames.length}</div></div>`;
+    html += `<div class="stat-card clickable-stat" onclick="showMedalLeadersBreakdown()"><div class="stat-label">Top Earners</div><div class="stat-value">${Object.keys(playerMedalCounts).length} players</div></div>`;
+    html += '</div>';
+    html += '</div>';
+
+    // Top earners list
+    const sortedPlayers = Object.entries(playerMedalCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    if (sortedPlayers.length > 0) {
+        html += '<div class="section-header">Top Earners</div>';
+        html += '<div class="top-earners-list">';
+        sortedPlayers.forEach(([name, count], index) => {
+            const rankIcon = getRankIcon(name);
+            html += `<div class="top-earner-item" onclick="openPlayerProfile('${name.replace(/'/g, "\\'")}')">`;
+            html += `<span class="earner-rank">#${index + 1}</span>`;
+            if (rankIcon) {
+                html += `<img src="${rankIcon}" class="earner-rank-icon" alt="rank">`;
+            }
+            html += `<span class="earner-name">${name}</span>`;
+            html += `<span class="earner-count">${count} earned</span>`;
+            html += '</div>';
+        });
+        html += '</div>';
+    }
+
+    // Games header
+    html += `<div class="section-header">Games with ${formatMedalName(medalName)} (${medalGames.length})</div>`;
+
+    // Games list
+    html += '<div class="search-games-list">';
+    medalGames.forEach(({ game, count }) => {
+        html += renderSearchGameCard(game, gamesData.length - gamesData.indexOf(game));
+    });
+    html += '</div>';
+
+    html += '</div>';
+    return html;
+}
+
+function renderWeaponSearchResults(weaponName) {
+    // Find all games where this weapon was used
+    const weaponGames = [];
+    let playerWeaponStats = {};
+    let totalKills = 0;
+
+    gamesData.forEach(game => {
+        let gameWeaponKills = 0;
+        game.players.forEach(player => {
+            if (player.weapons) {
+                player.weapons.forEach(w => {
+                    if (w.name && w.name.toLowerCase() === weaponName.toLowerCase()) {
+                        const kills = parseInt(w.kills) || 0;
+                        gameWeaponKills += kills;
+                        totalKills += kills;
+
+                        if (!playerWeaponStats[player.name]) {
+                            playerWeaponStats[player.name] = { kills: 0, games: 0 };
+                        }
+                        playerWeaponStats[player.name].kills += kills;
+                        playerWeaponStats[player.name].games += 1;
+                    }
+                });
+            }
+        });
+        if (gameWeaponKills > 0) {
+            weaponGames.push({ game, kills: gameWeaponKills });
+        }
+    });
+
+    // Store for modal
+    window.currentSearchPlayerStats = Object.fromEntries(
+        Object.entries(playerWeaponStats).map(([name, stats]) => [name, { kills: stats.kills, deaths: 0, games: stats.games }])
+    );
+    window.currentSearchContext = weaponName.charAt(0).toUpperCase() + weaponName.slice(1);
+
+    const weaponIcon = weaponIcons[weaponName.toLowerCase()];
+
+    let html = '<div class="search-results-container">';
+
+    // Weapon info header
+    html += '<div class="weapon-info-header">';
+    if (weaponIcon) {
+        html += `<div class="weapon-large-image"><img src="${weaponIcon}" alt="${weaponName}"></div>`;
+    }
+    html += '<div class="weapon-stats">';
+    html += `<div class="stat-card"><div class="stat-label">Total Kills</div><div class="stat-value">${totalKills}</div></div>`;
+    html += `<div class="stat-card"><div class="stat-label">Games With Weapon</div><div class="stat-value">${weaponGames.length}</div></div>`;
+    html += `<div class="stat-card clickable-stat" onclick="showWeaponLeadersBreakdown()"><div class="stat-label">Top Users</div><div class="stat-value">${Object.keys(playerWeaponStats).length} players</div></div>`;
+    html += '</div>';
+    html += '</div>';
+
+    // Top users list
+    const sortedPlayers = Object.entries(playerWeaponStats).sort((a, b) => b[1].kills - a[1].kills).slice(0, 10);
+    if (sortedPlayers.length > 0) {
+        html += '<div class="section-header">Top Users</div>';
+        html += '<div class="top-earners-list">';
+        sortedPlayers.forEach(([name, stats], index) => {
+            const rankIcon = getRankIcon(name);
+            html += `<div class="top-earner-item" onclick="openPlayerProfile('${name.replace(/'/g, "\\'")}')">`;
+            html += `<span class="earner-rank">#${index + 1}</span>`;
+            if (rankIcon) {
+                html += `<img src="${rankIcon}" class="earner-rank-icon" alt="rank">`;
+            }
+            html += `<span class="earner-name">${name}</span>`;
+            html += `<span class="earner-count">${stats.kills} kills</span>`;
+            html += '</div>';
+        });
+        html += '</div>';
+    }
+
+    // Games header
+    html += `<div class="section-header">Games with ${weaponName.charAt(0).toUpperCase() + weaponName.slice(1)} Kills (${weaponGames.length})</div>`;
+
+    // Games list
+    html += '<div class="search-games-list">';
+    weaponGames.forEach(({ game, kills }) => {
+        html += renderSearchGameCard(game, gamesData.length - gamesData.indexOf(game));
+    });
+    html += '</div>';
+
+    html += '</div>';
+    return html;
+}
+
+function showMedalLeadersBreakdown() {
+    const playerStats = window.currentSearchPlayerStats || {};
+    const context = window.currentSearchContext || 'Medal';
+
+    // Sort by most earned (stored in kills field)
+    const sortedPlayers = Object.entries(playerStats).sort((a, b) => b[1].kills - a[1].kills);
+    const totalEarned = Object.values(playerStats).reduce((sum, p) => sum + p.kills, 0);
+
+    let html = '<div class="weapon-breakdown-overlay" onclick="closeKillsBreakdown()">';
+    html += '<div class="weapon-breakdown-modal" onclick="event.stopPropagation()">';
+    html += `<div class="weapon-breakdown-header">`;
+    html += `<h2>${context} - All Earners</h2>`;
+    html += `<button class="modal-close" onclick="closeKillsBreakdown()">&times;</button>`;
+    html += `</div>`;
+    html += '<div class="weapon-breakdown-grid">';
+
+    sortedPlayers.forEach(([name, stats], index) => {
+        const percentage = totalEarned > 0 ? ((stats.kills / totalEarned) * 100).toFixed(1) : '0.0';
+        const rankIcon = getRankIcon(name);
+
+        html += `<div class="weapon-breakdown-item player-faced-item" onclick="event.stopPropagation(); closeKillsBreakdown(); openPlayerProfile('${name.replace(/'/g, "\\'")}')">`;
+        if (rankIcon) {
+            html += `<img src="${rankIcon}" alt="rank" class="weapon-breakdown-icon player-faced-rank">`;
+        } else {
+            html += `<div class="weapon-breakdown-placeholder">#${index + 1}</div>`;
+        }
+        html += `<div class="weapon-breakdown-info">`;
+        html += `<div class="weapon-breakdown-name">${name}</div>`;
+        html += `<div class="weapon-breakdown-stats">${stats.kills} earned (${percentage}%)</div>`;
+        html += `</div>`;
+        html += `</div>`;
+    });
+
+    html += '</div></div></div>';
+
+    const overlay = document.createElement('div');
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay.firstChild);
+}
+
+function showWeaponLeadersBreakdown() {
+    const playerStats = window.currentSearchPlayerStats || {};
+    const context = window.currentSearchContext || 'Weapon';
+
+    // Sort by most kills
+    const sortedPlayers = Object.entries(playerStats).sort((a, b) => b[1].kills - a[1].kills);
+    const totalKills = Object.values(playerStats).reduce((sum, p) => sum + p.kills, 0);
+
+    let html = '<div class="weapon-breakdown-overlay" onclick="closeKillsBreakdown()">';
+    html += '<div class="weapon-breakdown-modal" onclick="event.stopPropagation()">';
+    html += `<div class="weapon-breakdown-header">`;
+    html += `<h2>${context} - All Users</h2>`;
+    html += `<button class="modal-close" onclick="closeKillsBreakdown()">&times;</button>`;
+    html += `</div>`;
+    html += '<div class="weapon-breakdown-grid">';
+
+    sortedPlayers.forEach(([name, stats], index) => {
+        const percentage = totalKills > 0 ? ((stats.kills / totalKills) * 100).toFixed(1) : '0.0';
+        const rankIcon = getRankIcon(name);
+
+        html += `<div class="weapon-breakdown-item player-faced-item" onclick="event.stopPropagation(); closeKillsBreakdown(); openPlayerProfile('${name.replace(/'/g, "\\'")}')">`;
+        if (rankIcon) {
+            html += `<img src="${rankIcon}" alt="rank" class="weapon-breakdown-icon player-faced-rank">`;
+        } else {
+            html += `<div class="weapon-breakdown-placeholder">#${index + 1}</div>`;
+        }
+        html += `<div class="weapon-breakdown-info">`;
+        html += `<div class="weapon-breakdown-name">${name}</div>`;
+        html += `<div class="weapon-breakdown-stats">${stats.kills} kills (${percentage}%)</div>`;
+        html += `</div>`;
+        html += `</div>`;
+    });
+
+    html += '</div></div></div>';
+
+    const overlay = document.createElement('div');
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay.firstChild);
 }
 
 function renderSearchGameCard(game, gameNumber, highlightPlayer = null) {
