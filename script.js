@@ -36,44 +36,29 @@ const mapImages = {
 // Default map image if not found
 const defaultMapImage = 'mapimages/Midship.jpeg';
 
-// Medal icons - Original Halo 2 medals
+// Medal icons - Official Halo 2 medals only
 // Using local cached images in assets/medals/
-// Only Halo 2 medals are included
 const medalIcons = {
-    // Multi-kills (within 4 seconds)
+    // Consecutive Kills (multi-kills within 4 seconds)
     'double_kill': 'assets/medals/Double Kill.png',
     'triple_kill': 'assets/medals/Triple Kill.png',
     'killtacular': 'assets/medals/Killtacular.png',
+    'killing_frenzy': 'assets/medals/Kill Frenzy.png',
+    'kill_frenzy': 'assets/medals/Kill Frenzy.png',
     'killtrocity': 'assets/medals/Killtrocity.png',
     'killamanjaro': 'assets/medals/Killimanjaro.png',
     'killimanjaro': 'assets/medals/Killimanjaro.png',
-    'killtastrophe': 'assets/medals/Killimanjaro.png',
-    'killpocalypse': 'assets/medals/Killimanjaro.png',
-    'killionaire': 'assets/medals/Killimanjaro.png',
-    'overkill': 'assets/medals/Overkill.png',
 
-    // Spree medals (kills without dying)
+    // Sprees (kills without dying)
     'killing_spree': 'assets/medals/Killing Spree.png',
-    'killing_frenzy': 'assets/medals/Kill Frenzy.png',
-    'kill_frenzy': 'assets/medals/Kill Frenzy.png',
     'running_riot': 'assets/medals/Running Riot.png',
     'rampage': 'assets/medals/Rampage.png',
-    'untouchable': 'assets/medals/Berserker.png',
-    'invincible': 'assets/medals/Berserker.png',
+    'berserker': 'assets/medals/Berserker.png',
+    'overkill': 'assets/medals/Overkill.png',
 
-    // Sniper medal
+    // Special Kills
     'sniper_kill': 'assets/medals/Sniper Kill.png',
     'sniper': 'assets/medals/Sniper Kill.png',
-
-    // Special kills
-    'beat_down': 'assets/medals/Bone Cracker.png',
-    'beatdown': 'assets/medals/Bone Cracker.png',
-    'bone_cracker': 'assets/medals/Bone Cracker.png',
-    'bonecracker': 'assets/medals/Bone Cracker.png',
-    'pummel': 'assets/medals/Bone Cracker.png',
-    'assassin': 'assets/medals/Assassin.png',
-    'assassination': 'assets/medals/Assassin.png',
-    'assassinate': 'assets/medals/Assassin.png',
     'grenade_stick': 'assets/medals/Stick It.png',
     'stick_it': 'assets/medals/Stick It.png',
     'stick': 'assets/medals/Stick It.png',
@@ -81,17 +66,23 @@ const medalIcons = {
     'roadkill': 'assets/medals/Roadkill.png',
     'hijack': 'assets/medals/Hijack.png',
     'carjacking': 'assets/medals/Hijack.png',
+    'assassin': 'assets/medals/Assassin.png',
+    'assassination': 'assets/medals/Assassin.png',
+    'assassinate': 'assets/medals/Assassin.png',
+    'beat_down': 'assets/medals/Bone Cracker.png',
+    'beatdown': 'assets/medals/Bone Cracker.png',
+    'bone_cracker': 'assets/medals/Bone Cracker.png',
+    'bonecracker': 'assets/medals/Bone Cracker.png',
+    'pummel': 'assets/medals/Bone Cracker.png',
 
-    // Flag objectives
-    'flag_taken': 'assets/medals/Flag Taken.png',
-    'flag_score': 'assets/medals/Flag Score.png',
-    'flag_captured': 'assets/medals/Flag Score.png',
-    'flag_returned': 'assets/medals/Flag Returned.png',
-    'flag_carrier_kill': 'assets/medals/Flag Carrier Kill.png',
-
-    // Bomb objectives
+    // Objectives
+    'bomb_carrier_kill': 'assets/medals/Bomb Carrier Kill.png',
     'bomb_planted': 'assets/medals/Bomb Planted.png',
-    'bomb_carrier_kill': 'assets/medals/Bomb Carrier Kill.png'
+    'flag_carrier_kill': 'assets/medals/Flag Carrier Kill.png',
+    'flag_captured': 'assets/medals/Flag Score.png',
+    'flag_score': 'assets/medals/Flag Score.png',
+    'flag_taken': 'assets/medals/Flag Taken.png',
+    'flag_returned': 'assets/medals/Flag Returned.png'
 };
 
 // Weapon icons - Using local cached images in assets/weapons/
