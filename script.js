@@ -223,32 +223,72 @@ function isValidTeam(team) {
     return t !== '' && t !== 'none' && t !== 'null' && t !== 'undefined';
 }
 
-// Generate random ranks for all players
-function generatePlayerRanks() {
-    const allPlayers = new Set();
-    gamesData.forEach(game => {
-        game.players.forEach(player => {
-            allPlayers.add(player.name);
+// Store playlist ranks per player: { playerName: { playlist1: rank, playlist2: rank, ... } }
+let playerPlaylistRanks = {};
+
+// Load ranks from rankstats.json (pushed from server)
+async function loadPlayerRanks() {
+    try {
+        const response = await fetch('rankstats.json');
+        if (!response.ok) {
+            console.log('[RANKS] No rankstats.json found');
+            return;
+        }
+        const rankData = await response.json();
+
+        // Process rank data - supports both formats:
+        // Format 1 (playlist ranks): { "PlayerName": { "Team Slayer": 42, "MLG": 38 } }
+        // Format 2 (legacy MMR): { "discordId": { "discord_name": "Name", "mmr": 900 } }
+        Object.entries(rankData).forEach(([key, value]) => {
+            let playerName = null;
+            let ranks = {};
+
+            if (value.discord_name || value.alias) {
+                // Legacy format with discord_name/alias
+                playerName = value.alias || value.discord_name;
+                // Convert MMR to rank (1-50 scale)
+                if (value.mmr) {
+                    const rank = Math.min(50, Math.max(1, Math.round((value.mmr - 500) / 20)));
+                    ranks['Overall'] = rank;
+                }
+                // Check for playlist-specific ranks
+                Object.keys(value).forEach(k => {
+                    if (typeof value[k] === 'number' && !['xp', 'wins', 'losses', 'mmr', 'total_games', 'series_wins', 'series_losses', 'total_series'].includes(k)) {
+                        ranks[k] = value[k];
+                    }
+                });
+            } else if (typeof value === 'object') {
+                // New format: player name as key, playlist ranks as values
+                playerName = key;
+                Object.entries(value).forEach(([playlist, rank]) => {
+                    if (typeof rank === 'number') {
+                        ranks[playlist] = rank;
+                    }
+                });
+            }
+
+            if (playerName && Object.keys(ranks).length > 0) {
+                playerPlaylistRanks[playerName] = ranks;
+                // Set primary rank as highest across all playlists
+                playerRanks[playerName] = Math.max(...Object.values(ranks));
+            }
         });
-    });
-    
-    const playerList = Array.from(allPlayers);
-    const availableRanks = Array.from({length: 50}, (_, i) => i + 1);
-    
-    // Shuffle ranks
-    for (let i = availableRanks.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [availableRanks[i], availableRanks[j]] = [availableRanks[j], availableRanks[i]];
+
+        console.log('[RANKS] Loaded ranks for', Object.keys(playerPlaylistRanks).length, 'players');
+    } catch (error) {
+        console.log('[RANKS] Error loading ranks:', error);
     }
-    
-    playerList.forEach((name, index) => {
-        playerRanks[name] = availableRanks[index % availableRanks.length];
-    });
 }
 
-// Get rank icon HTML for a player
+// Get playlist ranks for a player
+function getPlayerPlaylistRanks(playerName) {
+    return playerPlaylistRanks[playerName] || null;
+}
+
+// Get rank icon HTML for a player (only if they have a rank in rankstats.json)
 function getPlayerRankIcon(playerName, size = 'small') {
-    const rank = playerRanks[playerName] || 1;
+    const rank = playerRanks[playerName];
+    if (!rank) return '';
     const sizeClass = size === 'small' ? 'rank-icon-small' : 'rank-icon';
     return `<img src="https://r2-cdn.insignia.live/h2-rank/${rank}.png" alt="Rank ${rank}" class="${sizeClass}" />`;
 }
@@ -310,9 +350,9 @@ async function loadGamesData() {
         console.log('[DEBUG] Number of games:', gamesData.length);
         console.log('[DEBUG] First game:', gamesData[0]);
         
-        // Generate random ranks for all players
-        console.log('[DEBUG] Generating player ranks...');
-        generatePlayerRanks();
+        // Load player ranks from rankstats.json (supports playlist-based ranks)
+        console.log('[DEBUG] Loading player ranks...');
+        await loadPlayerRanks();
         
         loadingArea.style.display = 'none';
         statsArea.style.display = 'block';
