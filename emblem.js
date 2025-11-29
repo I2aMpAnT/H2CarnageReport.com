@@ -76,11 +76,11 @@
         'Thor.png',             // 45
         'Wasp.png',             // 46
         'Mark of Shame.png',    // 47
-        'Frowney.png',          // 48
+        'Grunt Symbol.png',     // 48
         'Runes.png',            // 49
         'Grunt Head.png',       // 50
         'Tsantsa.png',          // 51
-        'Grunt Symbol.png',     // 52
+        'Frowney.png',          // 52
         'Cancel.png',           // 53
         'Number 0.png',         // 54
         'Number 1.png',         // 55
