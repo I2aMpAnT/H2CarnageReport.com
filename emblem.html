@@ -112,20 +112,26 @@
             const data = imageData.data;
 
             for (let i = 0; i < data.length; i += 4) {
-                const b = data[i + 2];
+                const r = data[i];
+                const g = data[i + 1];
                 const a = data[i + 3];
 
                 if (a === 0) {
-                    // Fully transparent = primary color
+                    // Fully transparent = primary player color
                     data[i] = primaryColor.r;
                     data[i + 1] = primaryColor.g;
                     data[i + 2] = primaryColor.b;
                 } else {
-                    // Blue channel intensity determines secondary color blend
-                    const blueRatio = b / 255;
-                    data[i] = Math.round(lerp(primaryColor.r, secondaryColor.r, blueRatio));
-                    data[i + 1] = Math.round(lerp(primaryColor.g, secondaryColor.g, blueRatio));
-                    data[i + 2] = Math.round(lerp(primaryColor.b, secondaryColor.b, blueRatio));
+                    // Background PNGs use white-to-blue gradient/split:
+                    // - White (255,255,255) → Primary color
+                    // - Blue (0,0,255) → Secondary color
+                    // The R and G channels determine position (B stays ~255)
+                    const primaryWeight = Math.min(r, g) / 255;
+                    const secondaryWeight = 1 - primaryWeight;
+
+                    data[i] = Math.round(primaryColor.r * primaryWeight + secondaryColor.r * secondaryWeight);
+                    data[i + 1] = Math.round(primaryColor.g * primaryWeight + secondaryColor.g * secondaryWeight);
+                    data[i + 2] = Math.round(primaryColor.b * primaryWeight + secondaryColor.b * secondaryWeight);
                 }
                 data[i + 3] = 255;
             }

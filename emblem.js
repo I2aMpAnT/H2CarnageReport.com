@@ -283,11 +283,12 @@
                 data[i + 1] = primaryColor.g;
                 data[i + 2] = primaryColor.b;
             } else {
-                // Blue pixel detection: high blue channel with low red and green
-                // Blue areas get secondary color, white/light areas get primary color
-                const isBlue = (b > 128 && r < 128 && g < 128);
-                const secondaryWeight = isBlue ? (b / 255) : 0;
-                const primaryWeight = 1 - secondaryWeight;
+                // Background PNGs use white-to-blue gradient/split:
+                // - White (255,255,255) → Primary color
+                // - Blue (0,0,255) → Secondary color
+                // The R and G channels determine position (B stays ~255)
+                const primaryWeight = Math.min(r, g) / 255;
+                const secondaryWeight = 1 - primaryWeight;
 
                 data[i] = Math.round(primaryColor.r * primaryWeight + secondaryColor.r * secondaryWeight);
                 data[i + 1] = Math.round(primaryColor.g * primaryWeight + secondaryColor.g * secondaryWeight);
