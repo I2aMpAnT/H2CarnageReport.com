@@ -164,6 +164,37 @@
         ctx.drawImage(tempCanvas, 0, 0, width, height, 0, 0, 256, 256);
     }
 
+    // Find the bounding box of non-black pixels in an image region
+    // Returns { minX, minY, maxX, maxY } or null if no content found
+    function findEmblemBounds(imageData, width, height, threshold = 25) {
+        const data = imageData.data;
+        let minX = width, minY = height, maxX = 0, maxY = 0;
+        let foundContent = false;
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const i = (y * width + x) * 4;
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                const a = data[i + 3];
+
+                // Check if pixel is non-black (has meaningful content)
+                // Use threshold to account for anti-aliasing and dark edges
+                if (a > 0 && (r > threshold || g > threshold || b > threshold)) {
+                    foundContent = true;
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+            }
+        }
+
+        if (!foundContent) return null;
+        return { minX, minY, maxX, maxY };
+    }
+
     // Draw foreground - yellow pixels get primary color, blue pixels get secondary color
     // When toggle is 1, only show secondary color (hide primary)
     function drawForeground(ctx, sx, sy, width, height, primaryColor, secondaryColor, toggle) {
@@ -175,6 +206,23 @@
         tempCtx.drawImage(foregroundSprite, sx, sy, width, height, 0, 0, width, height);
         const imageData = tempCtx.getImageData(0, 0, width, height);
         const data = imageData.data;
+
+        // Find the actual bounds of the emblem content
+        const bounds = findEmblemBounds(imageData, width, height);
+        let emblemWidth = width;
+        let emblemHeight = height;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (bounds) {
+            emblemWidth = bounds.maxX - bounds.minX + 1;
+            emblemHeight = bounds.maxY - bounds.minY + 1;
+            // Calculate centering offset
+            const emblemCenterX = bounds.minX + emblemWidth / 2;
+            const emblemCenterY = bounds.minY + emblemHeight / 2;
+            offsetX = (width / 2) - emblemCenterX;
+            offsetY = (height / 2) - emblemCenterY;
+        }
 
         for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
@@ -245,7 +293,12 @@
         }
 
         tempCtx.putImageData(imageData, 0, 0);
-        ctx.drawImage(tempCanvas, 0, 0, width, height, 0, 0, 256, 256);
+
+        // Apply centering offset when drawing to the output canvas
+        const scale = 256 / width;
+        const destOffsetX = offsetX * scale;
+        const destOffsetY = offsetY * scale;
+        ctx.drawImage(tempCanvas, 0, 0, width, height, destOffsetX, destOffsetY, 256, 256);
     }
 
     window.downloadEmblem = function() {
