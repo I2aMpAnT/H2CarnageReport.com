@@ -232,9 +232,68 @@
         link.click();
     }
 
+    // Parse URL parameters and set emblem values
+    function applyUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Map URL parameters to form elements
+        // EP = Emblem foreground design
+        // EB = Emblem background design
+        // EF = Emblem primary color (foreground color)
+        // ES = Emblem secondary color (or use S as fallback)
+        // ET = Emblem toggle
+        // P/S = Player primary/secondary colors from old system
+
+        const emblemForeground = urlParams.get('EP');
+        const emblemBackground = urlParams.get('EB');
+        const emblemPrimaryColor = urlParams.get('EF');
+        const emblemSecondaryColor = urlParams.get('ES') || urlParams.get('S');
+        const emblemToggle = urlParams.get('ET');
+
+        if (emblemForeground !== null) {
+            const fgSelect = document.getElementById('emblemForeground');
+            if (fgSelect) fgSelect.value = emblemForeground;
+        }
+
+        if (emblemBackground !== null) {
+            const bgSelect = document.getElementById('emblemBackground');
+            if (bgSelect) bgSelect.value = emblemBackground;
+        }
+
+        if (emblemPrimaryColor !== null) {
+            const primarySelect = document.getElementById('emblemPrimary');
+            if (primarySelect) primarySelect.value = emblemPrimaryColor;
+        }
+
+        if (emblemSecondaryColor !== null) {
+            const secondarySelect = document.getElementById('emblemSecondary');
+            if (secondarySelect) secondarySelect.value = emblemSecondaryColor;
+        }
+
+        if (emblemToggle !== null) {
+            const toggleCheckbox = document.getElementById('emblemToggle');
+            if (toggleCheckbox) toggleCheckbox.checked = (emblemToggle === '1');
+        }
+
+        // If any emblem parameters were provided, switch to the emblem tab
+        if (emblemForeground !== null || emblemBackground !== null ||
+            emblemPrimaryColor !== null || emblemSecondaryColor !== null) {
+            // Wait a moment for the page to fully load, then switch to emblem tab
+            setTimeout(() => {
+                if (typeof switchMainTab === 'function') {
+                    switchMainTab('emblem');
+                }
+            }, 100);
+        }
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadSprites);
+        document.addEventListener('DOMContentLoaded', () => {
+            applyUrlParameters();
+            loadSprites();
+        });
     } else {
+        applyUrlParameters();
         loadSprites();
     }
 
