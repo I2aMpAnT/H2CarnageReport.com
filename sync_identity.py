@@ -1,53 +1,177 @@
 #!/usr/bin/env python3
 """
-sync_identity.py - Fetch identity XLSX files from remote server and build MAC->profile mappings.
+sync_identity.py - Sync identity XLSX files and update players.json with stats_profile.
 
-This script connects to the stats server via SFTP, reads identity XLSX files from the
-private folder, extracts MAC addresses, and creates identity_mappings.json.
+This module is used by the Discord bot to:
+1. Read identity XLSX files from the private stats folder
+2. Extract MAC addresses from each file
+3. Match MAC addresses to players in players.json
+4. Add/update the stats_profile field (in-game name) for matched players
 
-Usage:
+Usage (as module):
+    from sync_identity import sync_player_profiles
+    updated_count = sync_player_profiles(sftp_connection, players_data)
+
+Usage (standalone):
     python sync_identity.py
 
-The identity files in /home/carnagereport/stats/private/ contain MAC addresses that can be
-used to link players. The filename of each identity XLSX corresponds to the player's
-profile name used in game stats.
-
-Output:
-    identity_mappings.json - Maps MAC addresses to profile names
-    Format: { "00:0D:3A:84:44:2F": "KidMode", ... }
+The identity files contain MAC addresses. The filename (without .xlsx) IS the
+player's in-game profile name used in stats.
 """
 
-import paramiko
 import pandas as pd
 import json
 import os
 import io
 from datetime import datetime
 
-# Server configuration
-SERVER_HOST = "104.207.143.249"
-SERVER_USER = "root"
+# Server paths
 PRIVATE_STATS_PATH = "/home/carnagereport/stats/private/"
 
-# Output file
-IDENTITY_MAPPINGS_FILE = "identity_mappings.json"
+# Local files
+PLAYERS_FILE = "players.json"
 
 def log(message):
     """Log with timestamp"""
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(f"[{timestamp}] {message}")
+    print(f"[IDENTITY] [{timestamp}] {message}")
 
-def save_json_file(filepath, data):
-    """Save data to JSON file"""
-    with open(filepath, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False)
+def load_players():
+    """Load players.json"""
+    try:
+        with open(PLAYERS_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except:
+        return {}
 
-def connect_sftp():
-    """Establish SFTP connection to server"""
+def save_players(players):
+    """Save players.json"""
+    with open(PLAYERS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(players, f, indent=2, ensure_ascii=False)
+
+def extract_mac_from_xlsx(file_data):
+    """
+    Extract MAC address from identity XLSX file data.
+
+    Args:
+        file_data: BytesIO object containing the XLSX file
+
+    Returns:
+        MAC address string (uppercase, colon-separated) or None
+    """
+    try:
+        xl = pd.ExcelFile(file_data)
+        mac_address = None
+
+        for sheet_name in xl.sheet_names:
+            df = pd.read_excel(file_data, sheet_name=sheet_name)
+            file_data.seek(0)
+
+            # Look for MAC-related columns
+            for col in df.columns:
+                col_lower = str(col).lower()
+                if any(p in col_lower for p in ['mac', 'hardware', 'identifier', 'address']):
+                    values = df[col].dropna()
+                    if len(values) > 0:
+                        val = str(values.iloc[0]).strip()
+                        if ':' in val or '-' in val:
+                            mac_address = val.upper().replace('-', ':')
+                            return mac_address
+
+        # Check first cell if no column match
+        file_data.seek(0)
+        df = pd.read_excel(file_data, sheet_name=0)
+        if len(df.columns) > 0 and len(df) > 0:
+            first_val = str(df.iloc[0, 0]).strip()
+            if ':' in first_val or '-' in first_val:
+                return first_val.upper().replace('-', ':')
+
+        return None
+
+    except Exception as e:
+        log(f"Error extracting MAC: {e}")
+        return None
+
+def sync_player_profiles(sftp, players=None):
+    """
+    Sync identity files and update players with stats_profile.
+
+    Args:
+        sftp: Paramiko SFTP client connected to the stats server
+        players: Optional players dict. If None, loads from file.
+
+    Returns:
+        Number of players updated
+    """
+    if players is None:
+        players = load_players()
+
+    # Build MAC -> user_id lookup
+    mac_to_user = {}
+    for user_id, data in players.items():
+        for mac in data.get('mac_addresses', []):
+            mac_to_user[mac.upper()] = user_id
+
+    log(f"Found {len(mac_to_user)} MAC addresses in players.json")
+
+    # List identity files
+    try:
+        identity_files = [f for f in sftp.listdir(PRIVATE_STATS_PATH) if f.endswith('.xlsx')]
+    except Exception as e:
+        log(f"Error listing {PRIVATE_STATS_PATH}: {e}")
+        return 0
+
+    log(f"Found {len(identity_files)} identity files")
+
+    updated_count = 0
+
+    for filename in identity_files:
+        filepath = os.path.join(PRIVATE_STATS_PATH, filename)
+        profile_name = os.path.splitext(filename)[0]  # Filename IS the profile name
+
+        try:
+            # Read file
+            with sftp.file(filepath, 'rb') as f:
+                file_data = io.BytesIO(f.read())
+
+            # Extract MAC
+            mac_address = extract_mac_from_xlsx(file_data)
+
+            if mac_address and mac_address in mac_to_user:
+                user_id = mac_to_user[mac_address]
+                old_profile = players[user_id].get('stats_profile', '')
+
+                if old_profile != profile_name:
+                    players[user_id]['stats_profile'] = profile_name
+                    updated_count += 1
+                    log(f"  {profile_name} -> user {user_id} (MAC: {mac_address})")
+
+        except Exception as e:
+            log(f"  Error processing {filename}: {e}")
+
+    if updated_count > 0:
+        save_players(players)
+        log(f"Updated {updated_count} player profiles")
+
+    return updated_count
+
+def sync_from_server(host="104.207.143.249", user="root"):
+    """
+    Connect to server and sync identity data.
+
+    Args:
+        host: Server hostname/IP
+        user: SSH username
+
+    Returns:
+        Number of players updated, or -1 on connection failure
+    """
+    import paramiko
+
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    # Try SSH key first, then agent
+    # Try SSH keys
     home = os.path.expanduser("~")
     key_paths = [
         os.path.join(home, ".ssh", "id_rsa"),
@@ -59,137 +183,34 @@ def connect_sftp():
         if os.path.exists(kp):
             try:
                 key = paramiko.RSAKey.from_private_key_file(kp)
-                log(f"Using SSH key: {kp}")
                 break
             except:
                 try:
                     key = paramiko.Ed25519Key.from_private_key_file(kp)
-                    log(f"Using SSH key: {kp}")
                     break
                 except:
                     pass
 
     try:
         if key:
-            ssh.connect(SERVER_HOST, username=SERVER_USER, pkey=key, timeout=30)
+            ssh.connect(host, username=user, pkey=key, timeout=30)
         else:
-            log("No SSH key found, using SSH agent")
-            ssh.connect(SERVER_HOST, username=SERVER_USER, timeout=30)
+            ssh.connect(host, username=user, timeout=30)
 
-        return ssh, ssh.open_sftp()
-    except Exception as e:
-        log(f"Connection failed: {e}")
-        return None, None
-
-def extract_mac_from_identity(sftp, filepath):
-    """
-    Extract MAC address from an identity XLSX file.
-
-    Identity files contain player profile information including their
-    hardware MAC address used for identification.
-    """
-    try:
-        # Read file into memory
-        with sftp.file(filepath, 'rb') as f:
-            file_data = io.BytesIO(f.read())
-
-        # Try to read Excel file and find MAC address
-        xl = pd.ExcelFile(file_data)
-
-        mac_address = None
-
-        # Common patterns for identity data in XLSX files
-        for sheet_name in xl.sheet_names:
-            df = pd.read_excel(file_data, sheet_name=sheet_name)
-            file_data.seek(0)  # Reset for next read
-
-            # Look for MAC-related columns (case-insensitive)
-            for col in df.columns:
-                col_lower = str(col).lower()
-                if any(pattern in col_lower for pattern in ['mac', 'hardware', 'identifier', 'address']):
-                    # Get first non-null value
-                    values = df[col].dropna()
-                    if len(values) > 0:
-                        val = str(values.iloc[0]).strip()
-                        # Validate it looks like a MAC address
-                        if ':' in val or '-' in val:
-                            mac_address = val.upper().replace('-', ':')
-                            break
-
-            if mac_address:
-                break
-
-        # If no MAC column found, check first column for MAC-like data
-        if not mac_address:
-            file_data.seek(0)
-            df = pd.read_excel(file_data, sheet_name=0)
-            if len(df.columns) > 0 and len(df) > 0:
-                first_val = str(df.iloc[0, 0]).strip()
-                if ':' in first_val or '-' in first_val:
-                    mac_address = first_val.upper().replace('-', ':')
-
-        return mac_address
-
-    except Exception as e:
-        log(f"Error reading {filepath}: {e}")
-        return None
-
-def sync_identity_data():
-    """
-    Main sync function - fetches identity data from server and creates identity_mappings.json
-    """
-    log("Starting identity sync...")
-
-    # Connect to server
-    ssh, sftp = connect_sftp()
-    if not sftp:
-        log("Failed to connect to server. Please check SSH configuration.")
-        return False
-
-    try:
-        # List identity files in private directory
-        log(f"Listing identity files in {PRIVATE_STATS_PATH}...")
-        identity_files = []
-        try:
-            for filename in sftp.listdir(PRIVATE_STATS_PATH):
-                if filename.endswith('.xlsx'):
-                    identity_files.append(filename)
-        except Exception as e:
-            log(f"Error listing directory: {e}")
-            return False
-
-        log(f"Found {len(identity_files)} identity XLSX files")
-
-        # Process each identity file
-        # The filename (without .xlsx) IS the profile name
-        identity_mappings = {}  # MAC address -> profile name
-
-        for filename in identity_files:
-            filepath = os.path.join(PRIVATE_STATS_PATH, filename)
-
-            # The filename (without .xlsx) is the profile name used in stats
-            profile_name = os.path.splitext(filename)[0]
-
-            # Extract MAC address from the file
-            mac_address = extract_mac_from_identity(sftp, filepath)
-
-            if mac_address:
-                identity_mappings[mac_address] = profile_name
-                log(f"  {profile_name}: MAC={mac_address}")
-            else:
-                log(f"  {profile_name}: No MAC found")
-
-        # Save identity mappings
-        save_json_file(IDENTITY_MAPPINGS_FILE, identity_mappings)
-        log(f"Saved {IDENTITY_MAPPINGS_FILE} with {len(identity_mappings)} mappings")
-
-        return True
-
-    finally:
+        sftp = ssh.open_sftp()
+        result = sync_player_profiles(sftp)
         sftp.close()
         ssh.close()
-        log("Connection closed")
+        return result
+
+    except Exception as e:
+        log(f"Connection failed: {e}")
+        return -1
 
 if __name__ == '__main__':
-    success = sync_identity_data()
-    exit(0 if success else 1)
+    result = sync_from_server()
+    if result >= 0:
+        print(f"Sync complete: {result} profiles updated")
+    else:
+        print("Sync failed")
+        exit(1)

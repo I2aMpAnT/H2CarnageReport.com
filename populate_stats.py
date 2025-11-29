@@ -50,53 +50,33 @@ def load_rankstats():
         return {}
 
 def load_players():
-    """Load players.json which contains MAC addresses to Discord user mappings."""
+    """Load players.json which contains MAC addresses and stats_profile mappings."""
     try:
         with open(PLAYERS_FILE, 'r') as f:
             return json.load(f)
     except:
         return {}
 
-def load_identity_mappings():
-    """Load identity_mappings.json which maps MAC addresses to profile names."""
-    try:
-        with open('identity_mappings.json', 'r') as f:
-            return json.load(f)
-    except:
-        return {}
-
-def build_profile_lookup(players, identity_mappings=None):
+def build_profile_lookup(players):
     """
     Build a lookup from stats profile name to Discord user_id.
 
-    Uses MAC addresses to link:
-    1. players.json: Discord user_id -> mac_addresses[]
-    2. identity_mappings.json: MAC address -> profile_name (from identity XLSX files)
-
-    This enables matching players by their in-game profile name.
+    Uses stats_profile field from players.json (populated by the bot from identity XLSX files).
+    The bot parses identity files to get MAC -> profile_name, then stores stats_profile
+    for each user based on their mac_addresses.
     """
     profile_to_user = {}
 
-    # Build MAC -> user_id lookup from players.json
-    mac_to_user = {}
     for user_id, data in players.items():
-        mac_addresses = data.get('mac_addresses', [])
-        for mac in mac_addresses:
-            mac_to_user[mac.upper()] = user_id
+        # Primary: use stats_profile (in-game name from identity files)
+        stats_profile = data.get('stats_profile', '')
+        if stats_profile:
+            profile_to_user[stats_profile.lower()] = user_id
 
         # Also include display_name as alias
         display_name = data.get('display_name', '')
         if display_name:
             profile_to_user[display_name.lower()] = user_id
-
-    # Use identity mappings to link profile names to users via MAC
-    if identity_mappings:
-        for mac, profile_name in identity_mappings.items():
-            mac_upper = mac.upper()
-            if mac_upper in mac_to_user:
-                user_id = mac_to_user[mac_upper]
-                profile_to_user[profile_name.lower()] = user_id
-                print(f"  MAC link: {profile_name} -> user {user_id}")
 
     return profile_to_user
 
@@ -329,16 +309,13 @@ def main():
     # Load existing rankstats
     rankstats = load_rankstats()
 
-    # Load players.json for MAC address to Discord user mappings
+    # Load players.json for stats_profile to Discord user mappings
+    # The bot populates stats_profile by parsing identity XLSX files
     players = load_players()
     print(f"Loaded {len(players)} players from players.json")
 
-    # Load identity mappings (MAC -> profile name) from identity XLSX files
-    identity_mappings = load_identity_mappings()
-    print(f"Loaded {len(identity_mappings)} identity mappings")
-
-    # Build profile name to user_id lookup using MAC address linking
-    profile_lookup = build_profile_lookup(players, identity_mappings)
+    # Build profile name to user_id lookup using stats_profile field
+    profile_lookup = build_profile_lookup(players)
     print(f"Built {len(profile_lookup)} profile->user mappings")
 
     # STEP 1: Zero out ALL player stats
