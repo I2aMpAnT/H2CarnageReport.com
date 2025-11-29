@@ -36,39 +36,39 @@
         'Da Bomb.png',          // 5
         'Sergeant.png',         // 6
         'Drone.png',            // 7
-        'Delta.png',            // 8
-        'Helmet.png',           // 9
-        'Phoenix.png',          // 10
-        'Champion.png',         // 11
-        'Jolly Roger.png',      // 12
-        'Marathon.png',         // 13
-        'Cube.png',             // 14
-        'Cleave.png',           // 15
-        'Grunt.png',            // 16
-        'Radioactive.png',      // 17
-        'Smiley.png',           // 18
-        'Sol.png',              // 19
-        'Frowney.png',          // 20
-        'Triad.png',            // 21
-        'Waypoint.png',         // 22
-        'Brute Head.png',       // 23
-        'Triplicate.png',       // 24
-        'Ying Yang.png',        // 25
-        'Trinity.png',          // 26
-        'Spearhead.png',        // 27
-        'Skull King.png',       // 28
-        'Trident.png',          // 29
-        'Subnova.png',          // 30
-        'Valkyrie.png',         // 31
-        'Spades.png',           // 32
-        'Clubs.png',            // 33
-        'Diamonds.png',         // 34
-        'Double Crescent.png',  // 35
-        'Hearts.png',           // 36
-        'Snake.png',            // 37
-        'Flaming Ninja.png',    // 38
-        'Rampancy.png',         // 39
-        'Hawk.png',             // 40
+        'Rampancy.png',         // 8
+        'Delta.png',            // 9
+        'Helmet.png',           // 10
+        'Phoenix.png',          // 11
+        'Champion.png',         // 12
+        'Jolly Roger.png',      // 13
+        'Marathon.png',         // 14
+        'Cube.png',             // 15
+        'Cleave.png',           // 16
+        'Grunt.png',            // 17
+        'Radioactive.png',      // 18
+        'Smiley.png',           // 19
+        'Sol.png',              // 20
+        'Frowney.png',          // 21
+        'Triad.png',            // 22
+        'Waypoint.png',         // 23
+        'Brute Head.png',       // 24
+        'Triplicate.png',       // 25
+        'Ying Yang.png',        // 26
+        'Trinity.png',          // 27
+        'Spearhead.png',        // 28
+        'Skull King.png',       // 29
+        'Trident.png',          // 30
+        'Subnova.png',          // 31
+        'Valkyrie.png',         // 32
+        'Spades.png',           // 33
+        'Clubs.png',            // 34
+        'Diamonds.png',         // 35
+        'Double Crescent.png',  // 36
+        'Hearts.png',           // 37
+        'Snake.png',            // 38
+        'Hawk.png',             // 39
+        'Flaming Ninja.png',    // 40
         'Lips.png',             // 41
         'Capsule.png',          // 42
         'Race.png',             // 43
