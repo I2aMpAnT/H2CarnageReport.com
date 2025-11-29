@@ -1,5 +1,5 @@
-// Emblem Generator JavaScript
-// Add this script to your index.html before </body>
+// Emblem Generator JavaScript - Individual Image Version
+// Uses individual PNG files instead of sprite sheets
 
 (function() {
     // Halo 2 emblem color palette (accurate colors from in-game color blocks)
@@ -24,43 +24,152 @@
         { r: 175, g: 144, b: 87  }  // 17: Tan (26E0)
     ];
 
-    let foregroundSprite = null;
-    let backgroundSprite = null;
-    let spritesLoaded = false;
+    // Foreground emblem filenames (index matches dropdown value)
+    // Order based on in-game selection screen
+    const foregroundFiles = [
+        'Sol.png',              // 0: Seventh Column / Sol
+        'Bullseye.png',         // 1: Bullseye
+        'Double Crescent.png',  // 2: Fist / Double Crescent
+        'Halt.png',             // 3: Halt
+        'Phoenix.png',          // 4: Sol -> Phoenix
+        'Champion.png',         // 5: Da Bomb -> Champion
+        'Sergeant.png',         // 6: Sergeant
+        'Drone.png',            // 7: Star -> Drone
+        'Spartan.png',          // 8: Jolly Roger -> Spartan
+        'Delta.png',            // 9: Halo -> Delta
+        'Helmet.png',           // 10: Cube -> Helmet
+        'Radioactive.png',      // 11: Radioactive
+        'Smiley.png',           // 12: Rampancy -> Smiley
+        'Frowney.png',          // 13: Marathon -> Frowney
+        'Triad.png',            // 14: Champion -> Triad
+        'Waypoint.png',         // 15: Heliograph -> Waypoint
+        'Ying Yang.png',        // 16: Smiley -> Ying Yang
+        'Brute Head.png',       // 17: Frowney -> Brute Head
+        'Trinity.png',          // 18: Spearhead -> Trinity
+        'Vortex.png',           // 19: Phoenix -> Vortex
+        'Spearhead.png',        // 20: Waypoint -> Spearhead
+        'Trident.png',          // 21: Yin Yang -> Trident
+        'Skull King.png',       // 22: Helmet -> Skull King
+        'Triplicate.png',       // 23: Triad -> Triplicate
+        'Subnova.png',          // 24: Vortex -> Subnova
+        'Marathon.png',         // 25: Trinity -> Marathon
+        'Valkyrie.png',         // 26: Skull King -> Valkyrie
+        'Spades.png',           // 27: Crescent -> Spades
+        'Clubs.png',            // 28: Flaming Ninja -> Clubs
+        'Diamonds.png',         // 29: Double Crescent -> Diamonds
+        'Hearts.png',           // 30: Spades -> Hearts
+        'Snake.png',            // 31: Clubs -> Snake
+        'Flaming Ninja.png',    // 32: Hearts -> Flaming Ninja
+        'Rampancy.png',         // 33: Diamonds -> Rampancy
+        'Hawk.png',             // 34: Mark of Shame -> Hawk
+        'Lips.png',             // 35: Eagle -> Lips
+        'Capsule.png',          // 36: Lips -> Capsule
+        'Race.png',             // 37: Capsule -> Race
+        'Gas Mask.png',         // 38: Cancel -> Gas Mask
+        'Grunt.png',            // 39: Gas Mask -> Grunt
+        'Grenade.png',          // 40: Tsantsa -> Grenade
+        'Thor.png',             // 41: Spartan -> Thor
+        'Mark of Shame.png',    // 42: Valkyrie -> Mark of Shame
+        'Wasp.png',             // 43: Drone -> Wasp
+        'Da Bomb.png',          // 44: Delta -> Da Bomb
+        'Runes.png',            // 45: Thor -> Runes
+        'Grunt Head.png',       // 46: Grunt Symbol -> Grunt Head
+        'Tsantsa.png',          // 47: Trident -> Tsantsa
+        'Cancel.png',           // 48: -> Cancel
+        'Jolly Roger.png',      // 49: -> Jolly Roger
+        'Cube.png',             // 50: -> Cube
+        'Cleave.png',           // 51: -> Cleave
+        'Grunt Symbol.png',     // 52: -> Grunt Symbol
+        'Number 0.png',         // 53: Number 0
+        'Number 1.png',         // 54: Number 1
+        'Number 2.png',         // 55: Number 2
+        'Number 3.png',         // 56: Number 3
+        'Number 4.png',         // 57: Number 4
+        'Number 5.png',         // 58: Number 5
+        'Number 6.png',         // 59: Number 6
+        'Number 7.png',         // 60: Number 7
+        'Number 8.png',         // 61: Number 8
+        'Number 9.png'          // 62: Number 9
+    ];
 
-    function loadSprites() {
-        const fg = new Image();
-        const bg = new Image();
-        let loadedCount = 0;
+    // Background filenames (index matches dropdown value)
+    // Order based on in-game selection screen
+    const backgroundFiles = [
+        'Solid.png',            // 0: Solid
+        'Vertical Split.png',   // 1: Vertical Split
+        'Horizontal Split 1.png', // 2: Horizontal Split 1
+        'Horizontal Split 2.png', // 3: Horizontal Split 2
+        'Horizontal Gradient.png', // 4: Horizontal Gradient
+        'Vertical Gradient.png', // 5: Vertical Gradient
+        'Triple Row.png',       // 6: Triple Row
+        'Quadrants 1.png',      // 7: Quadrants 1
+        'DIagonal Slice.png',   // 8: Diagonal Slice (note: typo in filename)
+        'Cleft.png',            // 9: Cleft
+        'X1.png',               // 10: X1
+        'X2.png',               // 11: X2
+        'Diamond.png',          // 12: Diamond
+        'Cross.png',            // 13: Cross
+        'Square.png',           // 14: Square
+        'Dual Half-Circle.png', // 15: Dual Half-Circle
+        'Diagonal Quadrant.png', // 16: Diagonal Quadrant
+        'Three Quarters.png',   // 17: Three Quarters
+        'Quarter.png',          // 18: Quarter
+        'Four Rows 1.png',      // 19: Four Rows 1
+        'Split Circle.png',     // 20: Split Circle
+        'One Third.png',        // 21: One Third
+        'Two Thirds.png',       // 22: Two Thirds
+        'Upper Field.png',      // 23: Upper Field
+        'Top and Bottom.png',   // 24: Top and Bottom
+        'Center Stripe.png',    // 25: Center Stripe
+        'Left and Right.png',   // 26: Left and Right
+        'Circle.png',           // 27: Circle
+        'Triangle.png',         // 28: Triangle
+        'Four Rows 2.png',      // 29: Four Rows 2
+        'Quadrants 2.png',      // 30: Quadrants 2
+        'Triple Column.png'     // 31: Triple Column
+    ];
 
-        fg.onload = () => {
-            foregroundSprite = fg;
-            loadedCount++;
-            if (loadedCount === 2) {
-                spritesLoaded = true;
-                updateEmblem();
+    // Image cache for loaded images
+    const imageCache = {};
+    let imagesReady = false;
+
+    // Load a single image and cache it
+    function loadImage(path) {
+        return new Promise((resolve, reject) => {
+            if (imageCache[path]) {
+                resolve(imageCache[path]);
+                return;
             }
-        };
-
-        bg.onload = () => {
-            backgroundSprite = bg;
-            loadedCount++;
-            if (loadedCount === 2) {
-                spritesLoaded = true;
-                updateEmblem();
-            }
-        };
-
-        fg.onerror = () => console.error('Failed to load emblem foregrounds');
-        bg.onerror = () => console.error('Failed to load emblem backgrounds');
-
-        fg.src = 'emblems/Emblem%20Foregrounds.png';
-        bg.src = 'emblems/Emblem%20Backgrounds.png';
+            const img = new Image();
+            img.onload = () => {
+                imageCache[path] = img;
+                resolve(img);
+            };
+            img.onerror = () => {
+                console.error('Failed to load:', path);
+                reject(new Error('Failed to load: ' + path));
+            };
+            img.src = path;
+        });
     }
 
-    window.updateEmblem = function() {
-        if (!spritesLoaded) return;
+    // Preload essential images for faster initial render
+    async function preloadImages() {
+        try {
+            // Load default emblem and background
+            const defaultFg = 'emblems/embems/' + encodeURIComponent(foregroundFiles[12]);
+            const defaultBg = 'emblems/backgrounds/' + encodeURIComponent(backgroundFiles[5]);
+            await Promise.all([loadImage(defaultFg), loadImage(defaultBg)]);
+            imagesReady = true;
+            updateEmblem();
+        } catch (e) {
+            console.error('Error preloading images:', e);
+            imagesReady = true; // Allow rendering to attempt anyway
+            updateEmblem();
+        }
+    }
 
+    window.updateEmblem = async function() {
         const canvas = document.getElementById('emblemCanvas');
         if (!canvas) return;
 
@@ -75,66 +184,40 @@
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, 256, 256);
 
-        const foregroundCols = 4;
-        const backgroundCols = 4;
+        // Get file paths
+        const fgFile = foregroundFiles[emblemForeground] || foregroundFiles[0];
+        const bgFile = backgroundFiles[emblemBackground] || backgroundFiles[0];
+        const fgPath = 'emblems/embems/' + encodeURIComponent(fgFile);
+        const bgPath = 'emblems/backgrounds/' + encodeURIComponent(bgFile);
 
-        // Sprite sheet dimensions:
-        // Foregrounds: 1030 x 6028, 58 items in 4 columns (16 rows including numbers)
-        // Backgrounds: 1030 x 2088, 27 items (7 rows), has title header
-        // Each cell has ~2px grid lines around it that need to be excluded
-        const gridLineWidth = 3; // Padding to exclude grid lines from extraction
+        try {
+            // Load both images (uses cache if available)
+            const [fgImg, bgImg] = await Promise.all([
+                loadImage(fgPath),
+                loadImage(bgPath)
+            ]);
 
-        // Background sprite dimensions (title header ~24px)
-        const bgCellWidth = Math.floor(1030 / 4);           // 257
-        const bgHeaderOffset = 24;
-        const bgCellHeight = Math.floor((2088 - bgHeaderOffset) / 7);  // ~295
-        // Actual usable area after excluding grid lines
-        const bgUsableWidth = bgCellWidth - gridLineWidth * 2;
-        const bgUsableHeight = bgCellHeight - gridLineWidth * 2;
+            // Draw background first
+            drawBackground(ctx, bgImg, colorPalette[emblemPrimary], colorPalette[emblemSecondary]);
 
-        // Foreground sprite dimensions
-        // 15 rows of emblems (58 items total: 48 symbols + 10 numbers)
-        // Header text takes ~24px, footer attribution ~140px
-        const fgCellWidth = Math.floor(1030 / 4);           // 257
-        const fgHeaderOffset = 24;
-        const fgFooterOffset = 140;
-        const fgContentHeight = 6028 - fgHeaderOffset - fgFooterOffset; // ~5864
-        const fgCellHeight = Math.floor(fgContentHeight / 15);  // ~390
-        // Actual usable area after excluding grid lines
-        const fgUsableWidth = fgCellWidth - gridLineWidth * 2;
-        const fgUsableHeight = fgCellHeight - gridLineWidth * 2;
-        // Crop to centered square for better emblem extraction
-        const fgEmblemSize = Math.min(fgUsableWidth, fgUsableHeight);
-
-        // Draw background first (primary color on blue areas, secondary on white areas)
-        const bgRow = Math.floor(emblemBackground / backgroundCols);
-        const bgCol = emblemBackground % backgroundCols;
-        // Add grid line offset to start inside the usable area
-        const bgX = bgCol * bgCellWidth + gridLineWidth;
-        const bgY = bgHeaderOffset + bgRow * bgCellHeight + gridLineWidth;
-
-        drawBackground(ctx, bgX, bgY, bgUsableWidth, bgUsableHeight, colorPalette[emblemPrimary], colorPalette[emblemSecondary]);
-
-        // Draw foreground on top
-        const fgRow = Math.floor(emblemForeground / foregroundCols);
-        const fgCol = emblemForeground % foregroundCols;
-        // Extract square region from each cell (emblems are roughly square), add grid line offset
-        const fgX = fgCol * fgCellWidth + gridLineWidth;
-        const fgY = fgHeaderOffset + fgRow * fgCellHeight + gridLineWidth;
-
-        // Toggle only hides the primary color, secondary still shows
-        drawForeground(ctx, fgX, fgY, fgEmblemSize, fgEmblemSize, colorPalette[emblemPrimary], colorPalette[emblemSecondary], emblemToggle);
+            // Draw foreground on top
+            drawForeground(ctx, fgImg, colorPalette[emblemPrimary], colorPalette[emblemSecondary], emblemToggle);
+        } catch (e) {
+            console.error('Error rendering emblem:', e);
+        }
     }
 
     // Draw background - blue pixels get primary color, white areas get secondary color
-    function drawBackground(ctx, sx, sy, width, height, primaryColor, secondaryColor) {
+    function drawBackground(ctx, img, primaryColor, secondaryColor) {
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = width;
-        tempCanvas.height = height;
+        const size = 256;
+        tempCanvas.width = size;
+        tempCanvas.height = size;
         const tempCtx = tempCanvas.getContext('2d');
 
-        tempCtx.drawImage(backgroundSprite, sx, sy, width, height, 0, 0, width, height);
-        const imageData = tempCtx.getImageData(0, 0, width, height);
+        // Draw image scaled to canvas size
+        tempCtx.drawImage(img, 0, 0, size, size);
+        const imageData = tempCtx.getImageData(0, 0, size, size);
         const data = imageData.data;
 
         for (let i = 0; i < data.length; i += 4) {
@@ -170,68 +253,22 @@
         }
 
         tempCtx.putImageData(imageData, 0, 0);
-        ctx.drawImage(tempCanvas, 0, 0, width, height, 0, 0, 256, 256);
-    }
-
-    // Find the bounding box of non-black pixels in an image region
-    // Returns { minX, minY, maxX, maxY } or null if no content found
-    function findEmblemBounds(imageData, width, height, threshold = 40) {
-        const data = imageData.data;
-        let minX = width, minY = height, maxX = 0, maxY = 0;
-        let foundContent = false;
-
-        for (let y = 0; y < height; y++) {
-            for (let x = 0; x < width; x++) {
-                const i = (y * width + x) * 4;
-                const r = data[i];
-                const g = data[i + 1];
-                const b = data[i + 2];
-                const a = data[i + 3];
-
-                // Check if pixel is non-black (has meaningful content)
-                // Use higher threshold to exclude dark edge artifacts and anti-aliasing noise
-                if (a > 0 && (r > threshold || g > threshold || b > threshold)) {
-                    foundContent = true;
-                    if (x < minX) minX = x;
-                    if (x > maxX) maxX = x;
-                    if (y < minY) minY = y;
-                    if (y > maxY) maxY = y;
-                }
-            }
-        }
-
-        if (!foundContent) return null;
-        return { minX, minY, maxX, maxY };
+        ctx.drawImage(tempCanvas, 0, 0);
     }
 
     // Draw foreground - yellow pixels get primary color, blue pixels get secondary color
     // When toggle is 1, only show secondary color (hide primary)
-    function drawForeground(ctx, sx, sy, width, height, primaryColor, secondaryColor, toggle) {
+    function drawForeground(ctx, img, primaryColor, secondaryColor, toggle) {
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = width;
-        tempCanvas.height = height;
+        const size = 256;
+        tempCanvas.width = size;
+        tempCanvas.height = size;
         const tempCtx = tempCanvas.getContext('2d');
 
-        tempCtx.drawImage(foregroundSprite, sx, sy, width, height, 0, 0, width, height);
-        const imageData = tempCtx.getImageData(0, 0, width, height);
+        // Draw image scaled to canvas size
+        tempCtx.drawImage(img, 0, 0, size, size);
+        const imageData = tempCtx.getImageData(0, 0, size, size);
         const data = imageData.data;
-
-        // Find the actual bounds of the emblem content
-        const bounds = findEmblemBounds(imageData, width, height);
-        let emblemWidth = width;
-        let emblemHeight = height;
-        let offsetX = 0;
-        let offsetY = 0;
-
-        if (bounds) {
-            emblemWidth = bounds.maxX - bounds.minX + 1;
-            emblemHeight = bounds.maxY - bounds.minY + 1;
-            // Calculate centering offset
-            const emblemCenterX = bounds.minX + emblemWidth / 2;
-            const emblemCenterY = bounds.minY + emblemHeight / 2;
-            offsetX = (width / 2) - emblemCenterX;
-            offsetY = (height / 2) - emblemCenterY;
-        }
 
         for (let i = 0; i < data.length; i += 4) {
             const r = data[i];
@@ -243,7 +280,6 @@
             if (a === 0) continue;
 
             // Skip black/near-black pixels (transparent background)
-            // Use higher threshold to clean up dark edge artifacts
             if (r < 30 && g < 30 && b < 30) {
                 data[i + 3] = 0; // Make transparent
                 continue;
@@ -303,12 +339,7 @@
         }
 
         tempCtx.putImageData(imageData, 0, 0);
-
-        // Apply centering offset when drawing to the output canvas
-        const scale = 256 / width;
-        const destOffsetX = offsetX * scale;
-        const destOffsetY = offsetY * scale;
-        ctx.drawImage(tempCanvas, 0, 0, width, height, destOffsetX, destOffsetY, 256, 256);
+        ctx.drawImage(tempCanvas, 0, 0);
     }
 
     window.downloadEmblem = function() {
@@ -377,11 +408,11 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
             applyUrlParameters();
-            loadSprites();
+            preloadImages();
         });
     } else {
         applyUrlParameters();
-        loadSprites();
+        preloadImages();
     }
 
     // Re-render when emblem tab becomes visible
@@ -389,7 +420,7 @@
         mutations.forEach((mutation) => {
             if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                 const emblemTab = document.getElementById('main-tab-emblem');
-                if (emblemTab && emblemTab.style.display !== 'none' && spritesLoaded) {
+                if (emblemTab && emblemTab.style.display !== 'none') {
                     updateEmblem();
                 }
             }
