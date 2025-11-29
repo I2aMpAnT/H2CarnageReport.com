@@ -26,25 +26,72 @@
         { r: 175, g: 144, b: 87,  code: '26E0', name: 'Tan' }
     ];
 
-    // Foreground emblem filenames (index matches dropdown value)
+    // Foreground emblem filenames (index matches game's EF parameter from halo2pc.com)
+    // Order matches sprite sheet: 64 emblems (0-63), numbers at 54-63
     const foregroundFiles = [
-        'Sol.png', 'Bullseye.png', 'Double Crescent.png', 'Halt.png',
-        'Phoenix.png', 'Champion.png', 'Sergeant.png', 'Drone.png',
-        'Spartan.png', 'Delta.png', 'Helmet.png', 'Radioactive.png',
-        'Smiley.png', 'Frowney.png', 'Triad.png', 'Waypoint.png',
-        'Ying Yang.png', 'Brute Head.png', 'Trinity.png', 'Vortex.png',
-        'Spearhead.png', 'Trident.png', 'Skull King.png', 'Triplicate.png',
-        'Subnova.png', 'Marathon.png', 'Valkyrie.png', 'Spades.png',
-        'Clubs.png', 'Diamonds.png', 'Hearts.png', 'Snake.png',
-        'Flaming Ninja.png', 'Rampancy.png', 'Hawk.png', 'Lips.png',
-        'Capsule.png', 'Race.png', 'Gas Mask.png', 'Grunt.png',
-        'Grenade.png', 'Thor.png', 'Mark of Shame.png', 'Wasp.png',
-        'Da Bomb.png', 'Runes.png', 'Grunt Head.png', 'Tsantsa.png',
-        'Cancel.png', 'Jolly Roger.png', 'Cube.png', 'Cleave.png',
-        'Grunt Symbol.png',
-        'Number 0.png', 'Number 1.png', 'Number 2.png', 'Number 3.png',
-        'Number 4.png', 'Number 5.png', 'Number 6.png', 'Number 7.png',
-        'Number 8.png', 'Number 9.png'
+        'Sol.png',              // 0
+        'Bullseye.png',         // 1
+        'Double Crescent.png',  // 2
+        'Halt.png',             // 3
+        'Phoenix.png',          // 4
+        'Champion.png',         // 5
+        'Sergeant.png',         // 6
+        'Drone.png',            // 7
+        'Spartan.png',          // 8
+        'Delta.png',            // 9
+        'Helmet.png',           // 10
+        'Grunt Symbol.png',     // 11 (Seventh Column position)
+        'Cube.png',             // 12
+        'Cleave.png',           // 13
+        'Grunt.png',            // 14
+        'Radioactive.png',      // 15
+        'Smiley.png',           // 16
+        'Frowney.png',          // 17
+        'Triad.png',            // 18
+        'Waypoint.png',         // 19
+        'Trinity.png',          // 20
+        'Ying Yang.png',        // 21
+        'Brute Head.png',       // 22
+        'Vortex.png',           // 23
+        'Spearhead.png',        // 24
+        'Trident.png',          // 25
+        'Skull King.png',       // 26
+        'Triplicate.png',       // 27
+        'Subnova.png',          // 28
+        'Marathon.png',         // 29
+        'Valkyrie.png',         // 30
+        'Spades.png',           // 31
+        'Clubs.png',            // 32
+        'Diamonds.png',         // 33
+        'Hearts.png',           // 34
+        'Snake.png',            // 35
+        'Flaming Ninja.png',    // 36
+        'Rampancy.png',         // 37
+        'Hawk.png',             // 38
+        'Lips.png',             // 39
+        'Capsule.png',          // 40
+        'Race.png',             // 41
+        'Gas Mask.png',         // 42
+        'Grenade.png',          // 43
+        'Thor.png',             // 44
+        'Mark of Shame.png',    // 45
+        'Wasp.png',             // 46
+        'Da Bomb.png',          // 47
+        'Runes.png',            // 48
+        'Grunt Head.png',       // 49
+        'Tsantsa.png',          // 50
+        'Cancel.png',           // 51
+        'Jolly Roger.png',      // 52
+        'Number 0.png',         // 53
+        'Number 1.png',         // 54
+        'Number 2.png',         // 55
+        'Number 3.png',         // 56
+        'Number 4.png',         // 57
+        'Number 5.png',         // 58
+        'Number 6.png',         // 59
+        'Number 7.png',         // 60
+        'Number 8.png',         // 61
+        'Number 9.png'          // 62
     ];
 
     // Background filenames (index matches dropdown value)
@@ -347,16 +394,19 @@
     }
 
     // Parse URL parameters and set emblem values
+    // Parameters match halo2pc.com format:
+    // P=primary color, S=secondary color, EP=emblem primary, ES=emblem secondary
+    // EF=emblem foreground, EB=emblem background, ET=emblem toggle
     function applyUrlParameters() {
         const urlParams = new URLSearchParams(window.location.search);
 
         const params = {
-            'EP': 'emblemForeground',
+            'EF': 'emblemForeground',
             'EB': 'emblemBackground',
-            'EF': 'emblemPrimary',
+            'EP': 'emblemPrimary',
             'ES': 'emblemSecondary',
-            'BP': 'bgPrimary',
-            'BS': 'bgSecondary'
+            'P': 'bgPrimary',
+            'S': 'bgSecondary'
         };
 
         Object.entries(params).forEach(([param, elementId]) => {
@@ -374,7 +424,7 @@
         }
 
         // Switch to emblem tab if parameters provided
-        if (urlParams.has('EP') || urlParams.has('EB') || urlParams.has('EF')) {
+        if (urlParams.has('EF') || urlParams.has('EB') || urlParams.has('EP')) {
             setTimeout(() => {
                 if (typeof switchMainTab === 'function') {
                     switchMainTab('emblem');
@@ -383,11 +433,66 @@
         }
     }
 
+    // Generate emblem URL with current settings
+    window.getEmblemUrl = function() {
+        const emblemForeground = document.getElementById('emblemForeground')?.value || 0;
+        const emblemBackground = document.getElementById('emblemBackground')?.value || 0;
+        const emblemPrimary = document.getElementById('emblemPrimary')?.value || 1;
+        const emblemSecondary = document.getElementById('emblemSecondary')?.value || 0;
+        const bgPrimary = document.getElementById('bgPrimary')?.value || 11;
+        const bgSecondary = document.getElementById('bgSecondary')?.value || 0;
+        const emblemToggle = document.getElementById('emblemToggle')?.checked ? 1 : 0;
+
+        const params = new URLSearchParams({
+            P: bgPrimary,
+            S: bgSecondary,
+            EP: emblemPrimary,
+            ES: emblemSecondary,
+            EF: emblemForeground,
+            EB: emblemBackground,
+            ET: emblemToggle
+        });
+
+        return window.location.origin + window.location.pathname + '?' + params.toString();
+    }
+
+    // Copy emblem URL to clipboard
+    window.copyEmblemUrl = function() {
+        const url = getEmblemUrl();
+        navigator.clipboard.writeText(url).then(() => {
+            // Show brief feedback
+            const canvas = document.getElementById('emblemCanvas');
+            if (canvas) {
+                canvas.style.outline = '3px solid #00ff00';
+                setTimeout(() => {
+                    canvas.style.outline = '';
+                }, 500);
+            }
+        }).catch(err => {
+            console.error('Failed to copy URL:', err);
+            // Fallback: select text in a temporary input
+            const input = document.createElement('input');
+            input.value = url;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+        });
+    }
+
     // Initialize everything when DOM is ready
     function init() {
         applyUrlParameters();
         initColorPickers();
         preloadImages();
+
+        // Add click-to-copy handler to emblem canvas
+        const canvas = document.getElementById('emblemCanvas');
+        if (canvas) {
+            canvas.style.cursor = 'pointer';
+            canvas.title = 'Click to copy emblem URL';
+            canvas.addEventListener('click', copyEmblemUrl);
+        }
     }
 
     if (document.readyState === 'loading') {
