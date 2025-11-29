@@ -47,37 +47,37 @@
             { r: 175, g: 144, b: 87  }  // 17 Tan
         ];
 
-        // Foreground files (index matches halo2pc.com EF parameter)
+        // Foreground files (index matches EF parameter)
         const foregroundFiles = [
-            'Seventh Column.png', 'Bullseye.png', 'Vortex.png', 'Halt.png',
-            'Spartan.png', 'Da Bomb.png', 'Sergeant.png', 'Drone.png',
-            'Delta.png', 'Helmet.png', 'Phoenix.png', 'Champion.png',
-            'Jolly Roger.png', 'Marathon.png', 'Cube.png', 'Cleave.png',
-            'Grunt.png', 'Radioactive.png', 'Smiley.png', 'Sol.png',
-            'Frowney.png', 'Triad.png', 'Waypoint.png', 'Brute Head.png',
-            'Triplicate.png', 'Ying Yang.png', 'Trinity.png', 'Spearhead.png',
-            'Skull King.png', 'Trident.png', 'Subnova.png', 'Valkyrie.png',
-            'Spades.png', 'Clubs.png', 'Diamonds.png', 'Double Crescent.png',
-            'Hearts.png', 'Snake.png', 'Flaming Ninja.png', 'Rampancy.png',
-            'Hawk.png', 'Lips.png', 'Capsule.png', 'Race.png',
-            'Gas Mask.png', 'Grenade.png', 'Thor.png', 'Wasp.png',
-            'Grunt Symbol.png', 'Mark of Shame.png', 'Runes.png', 'Grunt Head.png',
-            'Tsantsa.png', 'Cancel.png', 'Number 0.png', 'Number 1.png',
-            'Number 2.png', 'Number 3.png', 'Number 4.png', 'Number 5.png',
-            'Number 6.png', 'Number 7.png', 'Number 8.png', 'Number 9.png'
+            '00 - Seventh Column.png', '01 - Bullseye.png', '02 - Vortex.png', '03 - Halt.png',
+            '04 - Spartan.png', '05 - Da Bomb.png', '06 - Trinity.png', '07 - Delta.png',
+            '08 - Rampancy.png', '09 - Sergeant.png', '10 - Phoenix.png', '11 - Champion.png',
+            '12 - Jolly Roger.png', '13 - Marathon.png', '14 - Cube.png', '15 - Radioactive .png',
+            '16 - Smiley.png', '17 - Frowney.png', '18 - Spearhead.png', '19 - Sol.png',
+            '20 - Waypoint.png', '21 - Ying Yang.png', '22 - Helmet.png', '23 - Triad.png',
+            '24 - Grunt Symbol.png', '25 - Cleave.png', '26 - Thor.png', '27 - Skull King.png',
+            '28 - Triplicate.png', '29 - Subnova.png', '30 - Flaming Ninja.png', '31 - Double Crescent.png',
+            '32 - Spades.png', '33 - Clubs.png', '34 - Diamonds.png', '35 - Hearts.png',
+            '36 - Wasp.png', '37 - Mark of Shame.png', '38 - Snake.png', '39 - Hawk.png',
+            '40 - Lips.png', '41 - Capsule.png', '42 - Cancel.png', '43 - Gas Mask.png',
+            '44 - Grenade.png', '45 - Tsantsa.png', '46 - Race.png', '47 - Valkyrie.png',
+            '48 - Drone.png', '49 - Grunt.png', '50 - Grunt Head.png', '51 - Brute Head.png',
+            '52 - Runes.png', '53 - Trident.png', '54 - Number 0.png', '55 - Number 1.png',
+            '56 - Number 2.png', '57 - Number 3.png', '58 - Number 4.png', '59 - Number 5.png',
+            '60 - Number 6.png', '61 - Number 7.png', '62 - Number 8.png', '63 - Number 9.png'
         ];
 
-        // Background files (index matches sprite sheet order)
+        // Background files (index matches EB parameter)
         const backgroundFiles = [
-            'Solid.png', 'Vertical Split.png', 'Horizontal Split 1.png',
-            'Horizontal Split 2.png', 'Horizontal Gradient.png', 'Vertical Gradient.png',
-            'Triple Column.png', 'Triple Row.png', 'Quadrants 1.png',
-            'DIagonal Slice.png', 'Triangle.png', 'Cleft.png',
-            'X1.png', 'X2.png', 'Circle.png', 'Diamond.png',
-            'Cross.png', 'Square.png', 'Dual Half-Circle.png', 'Three Quarters.png',
-            'Diagonal Quadrant.png', 'Quarter.png', 'Split Circle.png', 'Four Rows 1.png',
-            'Four Rows 2.png', 'One Third.png', 'Two Thirds.png', 'Center Stripe.png',
-            'Left and Right.png', 'Top and Bottom.png', 'Upper Field.png', 'Quadrants 2.png'
+            '00 - Solid.png', '01 - Vertical Split.png', '02 - Horizontal Split 1.png',
+            '03 - Horizontal Split 2.png', '04 - Vertical Gradient.png', '05 - Horizontal Gradient.png',
+            '06 - Triple Column.png', '07 - Triple Row.png', '08 - Quadrants 1.png',
+            '09 - Quadrants 2.png', '10 - DIagonal Slice.png', '11 - Cleft.png',
+            '12 - X1.png', '13 - X2.png', '14 - Circle.png', '15 - Diamond.png',
+            '16 - Cross.png', '17 - Square.png', '18 - Dual Half-Circle.png', '19 - Triangle.png',
+            '20 - Diagonal Quadrant.png', '21 - Three Quarters.png', '22 - Quarter.png', '23 - Four Rows 1.png',
+            '24 - Four Rows 2.png', '25 - Split Circle.png', '26 - One Third.png', '27 - Two Thirds.png',
+            '28 - Upper Field.png', '29 - Top and Bottom.png', '30 - Center Stripe.png', '31 - Left and Right.png'
         ];
 
         function loadImage(path) {
@@ -104,8 +104,7 @@
             tempCanvas.width = size;
             tempCanvas.height = size;
             const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.imageSmoothingEnabled = true;
-            tempCtx.imageSmoothingQuality = 'high';
+            tempCtx.imageSmoothingEnabled = false;
             tempCtx.drawImage(img, 0, 0, size, size);
 
             const imageData = tempCtx.getImageData(0, 0, size, size);
@@ -146,8 +145,7 @@
             tempCanvas.width = size;
             tempCanvas.height = size;
             const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.imageSmoothingEnabled = true;
-            tempCtx.imageSmoothingQuality = 'high';
+            tempCtx.imageSmoothingEnabled = false;
             tempCtx.drawImage(img, 0, 0, size, size);
 
             const imageData = tempCtx.getImageData(0, 0, size, size);
