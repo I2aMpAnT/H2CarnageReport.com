@@ -1,6 +1,6 @@
 {
   "1136095104663306240": {
-    "xp": 0,
+    "xp": 100,
     "wins": 2,
     "losses": 0,
     "series_wins": 0,
@@ -10,7 +10,8 @@
     "mmr": 950,
     "discord_name": "Hyrax",
     "twitch_name": "hyrax__",
-    "twitch_url": "https://twitch.tv/hyrax__"
+    "twitch_url": "https://twitch.tv/hyrax__",
+    "rank": 2
   },
   "283293015135748097": {
     "xp": 0,
@@ -23,10 +24,11 @@
     "mmr": 900,
     "discord_name": "Dirk",
     "twitch_name": "ogdirk",
-    "twitch_url": "https://twitch.tv/ogdirk"
+    "twitch_url": "https://twitch.tv/ogdirk",
+    "rank": 1
   },
   "269681242335739905": {
-    "xp": 0,
+    "xp": 170,
     "wins": 3,
     "losses": 2,
     "series_wins": 0,
@@ -37,10 +39,11 @@
     "discord_name": "Keylord",
     "twitch_name": "justinkeylord",
     "twitch_url": "https://twitch.tv/justinkeylord",
-    "alias": "keylord"
+    "alias": "keylord",
+    "rank": 2
   },
   "132652800378142720": {
-    "xp": 0,
+    "xp": 150,
     "wins": 3,
     "losses": 0,
     "series_wins": 0,
@@ -51,33 +54,44 @@
     "discord_name": "Hammie",
     "twitch_name": "ai2ejay",
     "twitch_url": "https://twitch.tv/ai2ejay",
-    "alias": "RJ"
+    "alias": "RJ",
+    "rank": 2
   },
   "136324687926919168": {
-    "xp": 0,
-    "wins": 0,
-    "losses": 0,
+    "xp": 150,
+    "wins": 2,
+    "losses": 5,
     "series_wins": 0,
     "series_losses": 0,
-    "total_games": 0,
+    "total_games": 7,
     "total_series": 0,
     "mmr": 750,
     "discord_name": "roasted",
     "twitch_name": "h2roasted",
-    "twitch_url": "https://twitch.tv/h2roasted"
+    "twitch_url": "https://twitch.tv/h2roasted",
+    "kills": 68,
+    "deaths": 144,
+    "assists": 59,
+    "headshots": 41,
+    "rank": 2
   },
   "426757496557010948": {
-    "xp": 0,
-    "wins": 0,
-    "losses": 0,
+    "xp": 150,
+    "wins": 2,
+    "losses": 5,
     "series_wins": 0,
     "series_losses": 0,
-    "total_games": 0,
+    "total_games": 7,
     "total_series": 0,
     "mmr": 1075,
     "discord_name": "Rocky",
     "twitch_name": "c6rocky",
-    "twitch_url": "https://twitch.tv/c6rocky"
+    "twitch_url": "https://twitch.tv/c6rocky",
+    "kills": 120,
+    "deaths": 128,
+    "assists": 59,
+    "headshots": 72,
+    "rank": 2
   },
   "412829053603807232": {
     "xp": 0,
@@ -88,7 +102,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 700,
-    "discord_name": "Lefty"
+    "discord_name": "Lefty",
+    "rank": 1
   },
   "232556390839746560": {
     "xp": 0,
@@ -99,7 +114,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 925,
-    "discord_name": "DSJ"
+    "discord_name": "DSJ",
+    "rank": 1
   },
   "293794892893782017": {
     "xp": 0,
@@ -112,23 +128,29 @@
     "mmr": 900,
     "discord_name": "FrEnZy",
     "twitch_name": "trailerparkrich",
-    "twitch_url": "https://twitch.tv/trailerparkrich"
+    "twitch_url": "https://twitch.tv/trailerparkrich",
+    "rank": 1
   },
   "293507586131492864": {
-    "xp": 0,
-    "wins": 4,
-    "losses": 3,
+    "xp": 410,
+    "wins": 7,
+    "losses": 6,
     "series_wins": 0,
     "series_losses": 0,
-    "total_games": 8,
+    "total_games": 14,
     "total_series": 0,
     "mmr": 1100,
     "discord_name": "Prince KidMode",
     "twitch_name": "kidm0de",
-    "twitch_url": "https://twitch.tv/kidm0de"
+    "twitch_url": "https://twitch.tv/kidm0de",
+    "kills": 110,
+    "deaths": 90,
+    "assists": 49,
+    "headshots": 76,
+    "rank": 5
   },
   "284010072504270849": {
-    "xp": 0,
+    "xp": 80,
     "wins": 1,
     "losses": 3,
     "series_wins": 0,
@@ -138,7 +160,8 @@
     "mmr": 750,
     "discord_name": "DU7S",
     "twitch_name": "du7s",
-    "twitch_url": "https://twitch.tv/du7s"
+    "twitch_url": "https://twitch.tv/du7s",
+    "rank": 1
   },
   "299780772456431627": {
     "xp": 0,
@@ -149,7 +172,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 800,
-    "discord_name": "Gava"
+    "discord_name": "Gava",
+    "rank": 1
   },
   "210187331066396672": {
     "xp": 0,
@@ -162,10 +186,11 @@
     "mmr": 800,
     "discord_name": "Rinser",
     "twitch_name": "mrwelfares",
-    "twitch_url": "https://twitch.tv/mrwelfares"
+    "twitch_url": "https://twitch.tv/mrwelfares",
+    "rank": 1
   },
   "334212655613214721": {
-    "xp": 0,
+    "xp": 270,
     "wins": 5,
     "losses": 2,
     "series_wins": 0,
@@ -175,7 +200,8 @@
     "mmr": 1400,
     "discord_name": "fluhd",
     "twitch_name": "floodandshiro",
-    "twitch_url": "https://twitch.tv/floodandshiro"
+    "twitch_url": "https://twitch.tv/floodandshiro",
+    "rank": 3
   },
   "212720585279537153": {
     "xp": 0,
@@ -186,10 +212,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 711,
-    "discord_name": "Punny88"
+    "discord_name": "Punny88",
+    "rank": 1
   },
   "385632391089356810": {
-    "xp": 0,
+    "xp": 20,
     "wins": 0,
     "losses": 2,
     "series_wins": 0,
@@ -199,7 +226,8 @@
     "mmr": 950,
     "discord_name": "KraN",
     "twitch_name": "kranlive",
-    "twitch_url": "https://twitch.tv/kranlive"
+    "twitch_url": "https://twitch.tv/kranlive",
+    "rank": 1
   },
   "1222926448084520970": {
     "xp": 0,
@@ -212,7 +240,8 @@
     "mmr": 250,
     "discord_name": "Old Man",
     "twitch_name": "old_man_halo",
-    "twitch_url": "https://twitch.tv/old_man_halo"
+    "twitch_url": "https://twitch.tv/old_man_halo",
+    "rank": 1
   },
   "165626999891689474": {
     "xp": 0,
@@ -223,7 +252,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 950,
-    "discord_name": "SHOW5TOPPER"
+    "discord_name": "SHOW5TOPPER",
+    "rank": 1
   },
   "486628967760003085": {
     "xp": 0,
@@ -236,10 +266,11 @@
     "mmr": 950,
     "discord_name": "NaDeShY",
     "twitch_name": "nadeshy",
-    "twitch_url": "https://twitch.tv/nadeshy"
+    "twitch_url": "https://twitch.tv/nadeshy",
+    "rank": 1
   },
   "558138736966238219": {
-    "xp": 0,
+    "xp": 20,
     "wins": 0,
     "losses": 2,
     "series_wins": 0,
@@ -247,7 +278,8 @@
     "total_games": 2,
     "total_series": 0,
     "mmr": 1200,
-    "discord_name": "waRRior Fresh"
+    "discord_name": "waRRior Fresh",
+    "rank": 1
   },
   "294558721474953219": {
     "xp": 0,
@@ -258,7 +290,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 750,
-    "discord_name": "bignami"
+    "discord_name": "bignami",
+    "rank": 1
   },
   "395302282914168852": {
     "xp": 0,
@@ -269,10 +302,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1550,
-    "discord_name": "TimRager"
+    "discord_name": "TimRager",
+    "rank": 1
   },
   "859153194839965718": {
-    "xp": 0,
+    "xp": 60,
     "wins": 1,
     "losses": 1,
     "series_wins": 0,
@@ -282,7 +316,8 @@
     "mmr": 1150,
     "discord_name": "Curts GLORY",
     "twitch_name": "Curtsglory",
-    "twitch_url": "https://twitch.tv/Curtsglory"
+    "twitch_url": "https://twitch.tv/Curtsglory",
+    "rank": 1
   },
   "943239550782803988": {
     "xp": 0,
@@ -293,7 +328,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 600,
-    "discord_name": "xX daVe Xx"
+    "discord_name": "xX daVe Xx",
+    "rank": 1
   },
   "771859735938072596": {
     "xp": 0,
@@ -304,7 +340,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 700,
-    "discord_name": "JUiCE"
+    "discord_name": "JUiCE",
+    "rank": 1
   },
   "554332927614517269": {
     "xp": 0,
@@ -315,7 +352,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 900,
-    "discord_name": "TGS NaTuRaL"
+    "discord_name": "TGS NaTuRaL",
+    "rank": 1
   },
   "658102055696859156": {
     "xp": 0,
@@ -326,7 +364,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 500,
-    "discord_name": "-NeiLuZ-"
+    "discord_name": "-NeiLuZ-",
+    "rank": 1
   },
   "384701805944111128": {
     "xp": 0,
@@ -337,7 +376,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 750,
-    "discord_name": "Overseasons"
+    "discord_name": "Overseasons",
+    "rank": 1
   },
   "141912473744703489": {
     "xp": 0,
@@ -348,7 +388,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 600,
-    "discord_name": "LiaM"
+    "discord_name": "LiaM",
+    "rank": 1
   },
   "556272092408971294": {
     "xp": 0,
@@ -359,7 +400,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1300,
-    "discord_name": "Dro"
+    "discord_name": "Dro",
+    "rank": 1
   },
   "156907171433414656": {
     "xp": 0,
@@ -373,7 +415,8 @@
     "discord_name": "Lethal_HT",
     "twitch_name": "lethal_ht",
     "twitch_url": "https://twitch.tv/lethal_ht",
-    "alias": "lethal_ht"
+    "alias": "lethal_ht",
+    "rank": 1
   },
   "900612436686680095": {
     "xp": 0,
@@ -384,7 +427,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 300,
-    "discord_name": "T.Robs"
+    "discord_name": "T.Robs",
+    "rank": 1
   },
   "652998057087991838": {
     "xp": 0,
@@ -395,7 +439,8 @@
     "total_games": 1,
     "total_series": 0,
     "mmr": 900,
-    "discord_name": "TwoDashAngo"
+    "discord_name": "TwoDashAngo",
+    "rank": 1
   },
   "1380083223937290272": {
     "xp": 0,
@@ -406,7 +451,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 950,
-    "discord_name": "Mr i Hockey"
+    "discord_name": "Mr i Hockey",
+    "rank": 1
   },
   "314217230390919174": {
     "xp": 0,
@@ -417,7 +463,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 850,
-    "discord_name": "popq2"
+    "discord_name": "popq2",
+    "rank": 1
   },
   "1179648030375424032": {
     "xp": 0,
@@ -428,7 +475,8 @@
     "total_games": 1,
     "total_series": 0,
     "mmr": 1200,
-    "discord_name": "Ben"
+    "discord_name": "Ben",
+    "rank": 1
   },
   "1324420042494050338": {
     "xp": 0,
@@ -439,10 +487,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 800,
-    "discord_name": "DrugAbuse goose \ud83c\uddfa\ud83c\uddf8"
+    "discord_name": "DrugAbuse goose \ud83c\uddfa\ud83c\uddf8",
+    "rank": 1
   },
   "359216128959971329": {
-    "xp": 0,
+    "xp": 240,
     "wins": 4,
     "losses": 4,
     "series_wins": 0,
@@ -453,7 +502,8 @@
     "discord_name": "Hypnox",
     "twitch_name": "hyp_nox",
     "twitch_url": "https://twitch.tv/hyp_nox",
-    "alias": "Hypnosis"
+    "alias": "Hypnosis",
+    "rank": 3
   },
   "276552139084398592": {
     "xp": 0,
@@ -464,7 +514,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1325,
-    "discord_name": "WoGG"
+    "discord_name": "WoGG",
+    "rank": 1
   },
   "639932733392683048": {
     "xp": 0,
@@ -475,10 +526,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1300,
-    "discord_name": "fricken (retired)"
+    "discord_name": "fricken (retired)",
+    "rank": 1
   },
   "980246369161855017": {
-    "xp": 0,
+    "xp": 50,
     "wins": 1,
     "losses": 0,
     "series_wins": 0,
@@ -486,20 +538,26 @@
     "total_games": 1,
     "total_series": 0,
     "mmr": 500,
-    "discord_name": "Byceps"
+    "discord_name": "Byceps",
+    "rank": 1
   },
   "884896715432411178": {
-    "xp": 0,
+    "xp": 200,
     "wins": 4,
     "losses": 0,
     "series_wins": 0,
     "series_losses": 0,
-    "total_games": 4,
+    "total_games": 5,
     "total_series": 0,
     "mmr": 850,
     "discord_name": "I2aMpAnT",
     "twitch_name": "i2ampant_Gaming",
-    "twitch_url": "https://twitch.tv/i2ampant_Gaming"
+    "twitch_url": "https://twitch.tv/i2ampant_Gaming",
+    "kills": 0,
+    "deaths": 1,
+    "assists": 0,
+    "headshots": 0,
+    "rank": 3
   },
   "601594438233620521": {
     "xp": 0,
@@ -510,7 +568,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1000,
-    "discord_name": "MadMikeWillEatU"
+    "discord_name": "MadMikeWillEatU",
+    "rank": 1
   },
   "173926727117045760": {
     "xp": 0,
@@ -521,7 +580,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1650,
-    "discord_name": "Gor3"
+    "discord_name": "Gor3",
+    "rank": 1
   },
   "907034559248482314": {
     "xp": 0,
@@ -532,10 +592,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 200,
-    "discord_name": "MohnJorrow"
+    "discord_name": "MohnJorrow",
+    "rank": 1
   },
   "951202518396977203": {
-    "xp": 0,
+    "xp": 10,
     "wins": 0,
     "losses": 1,
     "series_wins": 0,
@@ -543,10 +604,11 @@
     "total_games": 1,
     "total_series": 0,
     "mmr": 362,
-    "discord_name": "Wrecktangle\u2019s Mic"
+    "discord_name": "Wrecktangle\u2019s Mic",
+    "rank": 1
   },
   "797210177786347530": {
-    "xp": 0,
+    "xp": 160,
     "wins": 3,
     "losses": 1,
     "series_wins": 0,
@@ -554,7 +616,8 @@
     "total_games": 4,
     "total_series": 0,
     "mmr": 1200,
-    "discord_name": "future trunks"
+    "discord_name": "future trunks",
+    "rank": 2
   },
   "213096674023833610": {
     "xp": 0,
@@ -567,7 +630,8 @@
     "mmr": 800,
     "discord_name": "Faulty",
     "twitch_name": "texjas",
-    "twitch_url": "https://twitch.tv/texjas"
+    "twitch_url": "https://twitch.tv/texjas",
+    "rank": 1
   },
   "176191518837702666": {
     "xp": 0,
@@ -578,7 +642,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 900,
-    "discord_name": "J2"
+    "discord_name": "J2",
+    "rank": 1
   },
   "225563156397686786": {
     "xp": 0,
@@ -589,7 +654,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 900,
-    "discord_name": "Sup"
+    "discord_name": "Sup",
+    "rank": 1
   },
   "795707878388137995": {
     "xp": 0,
@@ -600,7 +666,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 900,
-    "discord_name": "Sauce"
+    "discord_name": "Sauce",
+    "rank": 1
   },
   "241980128631062539": {
     "xp": 0,
@@ -611,10 +678,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 700,
-    "discord_name": "Conflictz"
+    "discord_name": "Conflictz",
+    "rank": 1
   },
   "694412691015598140": {
-    "xp": 0,
+    "xp": 80,
     "wins": 1,
     "losses": 3,
     "series_wins": 0,
@@ -624,7 +692,8 @@
     "mmr": 700,
     "discord_name": "simon hagiwara",
     "twitch_name": "spencerbrown",
-    "twitch_url": "https://twitch.tv/spencerbrown"
+    "twitch_url": "https://twitch.tv/spencerbrown",
+    "rank": 1
   },
   "851303681897791548": {
     "xp": 0,
@@ -637,7 +706,8 @@
     "mmr": 249,
     "discord_name": "Genkinz",
     "twitch_name": "genkinz",
-    "twitch_url": "https://twitch.tv/genkinz"
+    "twitch_url": "https://twitch.tv/genkinz",
+    "rank": 1
   },
   "1351057247437852733": {
     "xp": 0,
@@ -648,7 +718,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1000,
-    "discord_name": "GoonerRat"
+    "discord_name": "GoonerRat",
+    "rank": 1
   },
   "736026857572401214": {
     "xp": 0,
@@ -659,7 +730,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 400,
-    "discord_name": "heyitsarcadia"
+    "discord_name": "heyitsarcadia",
+    "rank": 1
   },
   "359472455259127820": {
     "xp": 0,
@@ -670,7 +742,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 500,
-    "discord_name": "GT: HeroicFool69 (Stormcrow2)"
+    "discord_name": "GT: HeroicFool69 (Stormcrow2)",
+    "rank": 1
   },
   "1126543913654698044": {
     "xp": 0,
@@ -683,7 +756,8 @@
     "mmr": 500,
     "discord_name": "Skaduf The Greatest Halo Player",
     "twitch_name": "skaduf",
-    "twitch_url": "https://twitch.tv/skaduf"
+    "twitch_url": "https://twitch.tv/skaduf",
+    "rank": 1
   },
   "1118666385921425478": {
     "xp": 0,
@@ -694,10 +768,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 500,
-    "discord_name": "oKrazed"
+    "discord_name": "oKrazed",
+    "rank": 1
   },
   "1155320421672046672": {
-    "xp": 0,
+    "xp": 10,
     "wins": 0,
     "losses": 1,
     "series_wins": 0,
@@ -705,10 +780,11 @@
     "total_games": 1,
     "total_series": 0,
     "mmr": 750,
-    "discord_name": "Csquared"
+    "discord_name": "Csquared",
+    "rank": 1
   },
   "1258601786533609554": {
-    "xp": 0,
+    "xp": 50,
     "wins": 1,
     "losses": 0,
     "series_wins": 0,
@@ -716,10 +792,11 @@
     "total_games": 1,
     "total_series": 0,
     "mmr": 900,
-    "discord_name": "Burn iTz"
+    "discord_name": "Burn iTz",
+    "rank": 1
   },
   "710585633474740306": {
-    "xp": 0,
+    "xp": 10,
     "wins": 0,
     "losses": 1,
     "series_wins": 0,
@@ -727,7 +804,8 @@
     "total_games": 1,
     "total_series": 0,
     "mmr": 1000,
-    "discord_name": "VirulentGrunt"
+    "discord_name": "VirulentGrunt",
+    "rank": 1
   },
   "1051302763633573978": {
     "xp": 0,
@@ -738,10 +816,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 750,
-    "discord_name": "NomeOGx3"
+    "discord_name": "NomeOGx3",
+    "rank": 1
   },
   "1218796844088430692": {
-    "xp": 0,
+    "xp": 10,
     "wins": 0,
     "losses": 1,
     "series_wins": 0,
@@ -751,7 +830,8 @@
     "mmr": 725,
     "discord_name": "ll Legend ll",
     "twitch_name": "LtzLegend_",
-    "twitch_url": "https://twitch.tv/LtzLegend_"
+    "twitch_url": "https://twitch.tv/LtzLegend_",
+    "rank": 1
   },
   "1343263695769305190": {
     "xp": 0,
@@ -762,7 +842,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 100,
-    "discord_name": "Lux"
+    "discord_name": "Lux",
+    "rank": 1
   },
   "1233040240210477160": {
     "xp": 0,
@@ -776,7 +857,8 @@
     "discord_name": "TeoulisComple \ud83c\uddec\ud83c\uddf7",
     "twitch_name": "teouliscompleq",
     "twitch_url": "https://twitch.tv/teouliscompleq",
-    "alias": "happyhippoheythere"
+    "alias": "happyhippoheythere",
+    "rank": 1
   },
   "196752652569149440": {
     "xp": 0,
@@ -787,7 +869,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1200,
-    "discord_name": "BliNdFiRe"
+    "discord_name": "BliNdFiRe",
+    "rank": 1
   },
   "1348067996761063535": {
     "xp": 0,
@@ -798,7 +881,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 850,
-    "discord_name": "Zony"
+    "discord_name": "Zony",
+    "rank": 1
   },
   "1393893716338540675": {
     "xp": 0,
@@ -809,7 +893,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 600,
-    "discord_name": "lzl WeakSide"
+    "discord_name": "lzl WeakSide",
+    "rank": 1
   },
   "161726300304834560": {
     "xp": 0,
@@ -820,18 +905,24 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 500,
-    "discord_name": "Jay2"
+    "discord_name": "Jay2",
+    "rank": 1
   },
   "210280313262309376": {
-    "xp": 0,
+    "xp": 70,
     "wins": 1,
-    "losses": 0,
+    "losses": 2,
     "series_wins": 0,
     "series_losses": 0,
-    "total_games": 1,
+    "total_games": 3,
     "total_series": 0,
     "mmr": 1050,
-    "discord_name": "Grave"
+    "discord_name": "Grave",
+    "kills": 18,
+    "deaths": 36,
+    "assists": 11,
+    "headshots": 11,
+    "rank": 1
   },
   "174522691917840384": {
     "xp": 0,
@@ -842,7 +933,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 900,
-    "discord_name": "BxSouljah"
+    "discord_name": "BxSouljah",
+    "rank": 1
   },
   "154836949964816384": {
     "xp": 0,
@@ -853,7 +945,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 900,
-    "discord_name": "H4"
+    "discord_name": "H4",
+    "rank": 1
   },
   "198564445105029120": {
     "xp": 0,
@@ -864,7 +957,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 750,
-    "discord_name": "Vonlionton"
+    "discord_name": "Vonlionton",
+    "rank": 1
   },
   "205738438773833728": {
     "xp": 0,
@@ -875,7 +969,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1400,
-    "discord_name": "Xanticity"
+    "discord_name": "Xanticity",
+    "rank": 1
   },
   "799264724021280768": {
     "xp": 0,
@@ -886,10 +981,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 750,
-    "discord_name": "SoldieR"
+    "discord_name": "SoldieR",
+    "rank": 1
   },
   "164725201907613696": {
-    "xp": 0,
+    "xp": 50,
     "wins": 1,
     "losses": 0,
     "series_wins": 0,
@@ -899,7 +995,8 @@
     "mmr": 1350,
     "discord_name": "James | The Frenetic",
     "twitch_name": "thefrenetic",
-    "twitch_url": "https://twitch.tv/thefrenetic"
+    "twitch_url": "https://twitch.tv/thefrenetic",
+    "rank": 1
   },
   "135116534388490240": {
     "xp": 0,
@@ -910,7 +1007,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 850,
-    "discord_name": "J1"
+    "discord_name": "J1",
+    "rank": 1
   },
   "296360818465964032": {
     "xp": 0,
@@ -921,10 +1019,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 650,
-    "discord_name": "Pinesauce"
+    "discord_name": "Pinesauce",
+    "rank": 1
   },
   "1040724126836457624": {
-    "xp": 0,
+    "xp": 1090,
     "wins": 18,
     "losses": 19,
     "series_wins": 0,
@@ -932,7 +1031,8 @@
     "total_games": 38,
     "total_series": 0,
     "mmr": 463,
-    "discord_name": "M15F1T"
+    "discord_name": "M15F1T",
+    "rank": 12
   },
   "653385687852253215": {
     "xp": 0,
@@ -946,7 +1046,8 @@
     "discord_name": "DomerSimpson",
     "twitch_name": "domer_simpson_",
     "twitch_url": "https://twitch.tv/domer_simpson_",
-    "alias": "domer_simpson"
+    "alias": "domer_simpson",
+    "rank": 1
   },
   "352157745530667009": {
     "xp": 0,
@@ -957,10 +1058,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 600,
-    "discord_name": "TwoCaribous"
+    "discord_name": "TwoCaribous",
+    "rank": 1
   },
   "274372368686776321": {
-    "xp": 0,
+    "xp": 210,
     "wins": 4,
     "losses": 1,
     "series_wins": 0,
@@ -970,7 +1072,8 @@
     "mmr": 1400,
     "discord_name": "sneakybeav3r",
     "twitch_name": "SneeakyBeav3r",
-    "twitch_url": "https://twitch.tv/SneeakyBeav3r"
+    "twitch_url": "https://twitch.tv/SneeakyBeav3r",
+    "rank": 3
   },
   "156973309722886144": {
     "xp": 0,
@@ -984,7 +1087,8 @@
     "discord_name": "LD50 II",
     "twitch_name": "LD50_II",
     "twitch_url": "https://twitch.tv/LD50_II",
-    "alias": "ld50_ii"
+    "alias": "ld50_ii",
+    "rank": 1
   },
   "173928028173369345": {
     "xp": 0,
@@ -995,10 +1099,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1100,
-    "discord_name": "ZeeD"
+    "discord_name": "ZeeD",
+    "rank": 1
   },
   "175415359703089152": {
-    "xp": 0,
+    "xp": 20,
     "wins": 0,
     "losses": 2,
     "series_wins": 0,
@@ -1008,10 +1113,11 @@
     "mmr": 1350,
     "discord_name": "Obi Juan",
     "twitch_name": "defensevpower",
-    "twitch_url": "https://twitch.tv/defensevpower"
+    "twitch_url": "https://twitch.tv/defensevpower",
+    "rank": 1
   },
   "390747330631958528": {
-    "xp": 0,
+    "xp": 60,
     "wins": 1,
     "losses": 1,
     "series_wins": 0,
@@ -1019,10 +1125,11 @@
     "total_games": 2,
     "total_series": 0,
     "mmr": 1750,
-    "discord_name": "cOn"
+    "discord_name": "cOn",
+    "rank": 1
   },
   "180809401228197889": {
-    "xp": 0,
+    "xp": 20,
     "wins": 0,
     "losses": 2,
     "series_wins": 0,
@@ -1032,7 +1139,8 @@
     "mmr": 2000,
     "discord_name": "StoRmY v2",
     "twitch_name": "Stormy_v2",
-    "twitch_url": "https://twitch.tv/Stormy_v2"
+    "twitch_url": "https://twitch.tv/Stormy_v2",
+    "rank": 1
   },
   "164177623163994113": {
     "xp": 0,
@@ -1043,10 +1151,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1150,
-    "discord_name": "WildCherry"
+    "discord_name": "WildCherry",
+    "rank": 1
   },
   "174366760479358976": {
-    "xp": 0,
+    "xp": 10,
     "wins": 0,
     "losses": 1,
     "series_wins": 0,
@@ -1054,10 +1163,11 @@
     "total_games": 1,
     "total_series": 0,
     "mmr": 1100,
-    "discord_name": "Mathlete"
+    "discord_name": "Mathlete",
+    "rank": 1
   },
   "107703779188580352": {
-    "xp": 0,
+    "xp": 740,
     "wins": 13,
     "losses": 9,
     "series_wins": 0,
@@ -1065,20 +1175,26 @@
     "total_games": 22,
     "total_series": 0,
     "mmr": 1176,
-    "discord_name": "helldotcom"
+    "discord_name": "helldotcom",
+    "rank": 8
   },
   "111190770756657152": {
-    "xp": 0,
-    "wins": 0,
-    "losses": 2,
+    "xp": 290,
+    "wins": 5,
+    "losses": 4,
     "series_wins": 0,
     "series_losses": 0,
-    "total_games": 2,
+    "total_games": 9,
     "total_series": 0,
     "mmr": 1400,
     "discord_name": "EpiiiC",
     "twitch_name": "e212",
-    "twitch_url": "https://twitch.tv/e212"
+    "twitch_url": "https://twitch.tv/e212",
+    "kills": 199,
+    "deaths": 117,
+    "assists": 91,
+    "headshots": 150,
+    "rank": 4
   },
   "84785392234012672": {
     "xp": 0,
@@ -1089,7 +1205,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 800,
-    "discord_name": "re4thewin"
+    "discord_name": "re4thewin",
+    "rank": 1
   },
   "335626718062837760": {
     "xp": 0,
@@ -1103,7 +1220,8 @@
     "discord_name": "LosOjosRojos",
     "twitch_name": "LosOjosRojos_H2",
     "twitch_url": "https://twitch.tv/LosOjosRojos_H2",
-    "alias": "losojosrojos"
+    "alias": "losojosrojos",
+    "rank": 1
   },
   "291104674839527424": {
     "xp": 0,
@@ -1114,7 +1232,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1000,
-    "discord_name": "Siko"
+    "discord_name": "Siko",
+    "rank": 1
   },
   "301971773077848064": {
     "xp": 0,
@@ -1125,7 +1244,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 100,
-    "discord_name": "Korin"
+    "discord_name": "Korin",
+    "rank": 1
   },
   "188009416556150784": {
     "xp": 0,
@@ -1136,7 +1256,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1450,
-    "discord_name": "side"
+    "discord_name": "side",
+    "rank": 1
   },
   "772288046905032704": {
     "xp": 0,
@@ -1147,7 +1268,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1300,
-    "discord_name": "UltiMeGa"
+    "discord_name": "UltiMeGa",
+    "rank": 1
   },
   "598584495641198592": {
     "xp": 0,
@@ -1158,7 +1280,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1500,
-    "discord_name": "Welchs"
+    "discord_name": "Welchs",
+    "rank": 1
   },
   "167766278860177408": {
     "xp": 0,
@@ -1169,7 +1292,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 800,
-    "discord_name": "CYRiX"
+    "discord_name": "CYRiX",
+    "rank": 1
   },
   "177913649728323584": {
     "xp": 0,
@@ -1182,7 +1306,8 @@
     "mmr": 1500,
     "discord_name": "Kryptonite",
     "twitch_name": "slikryptoniite",
-    "twitch_url": "https://twitch.tv/slikryptoniite"
+    "twitch_url": "https://twitch.tv/slikryptoniite",
+    "rank": 1
   },
   "187356723135119360": {
     "xp": 0,
@@ -1193,7 +1318,8 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1000,
-    "discord_name": "Cortalisk"
+    "discord_name": "Cortalisk",
+    "rank": 1
   },
   "155302533345050624": {
     "xp": 0,
@@ -1204,10 +1330,11 @@
     "total_games": 0,
     "total_series": 0,
     "mmr": 1500,
-    "discord_name": "Famous"
+    "discord_name": "Famous",
+    "rank": 1
   },
   "168151188741685248": {
-    "xp": 0,
+    "xp": 50,
     "wins": 1,
     "losses": 0,
     "series_wins": 0,
@@ -1215,6 +1342,71 @@
     "total_games": 1,
     "total_series": 0,
     "mmr": 1200,
-    "discord_name": "AfroMaN"
+    "discord_name": "AfroMaN",
+    "rank": 1
+  },
+  "487996385250069885": {
+    "xp": 190,
+    "wins": 3,
+    "losses": 4,
+    "series_wins": 0,
+    "series_losses": 0,
+    "total_games": 7,
+    "total_series": 0,
+    "mmr": 750,
+    "discord_name": "Tetracide",
+    "kills": 135,
+    "deaths": 110,
+    "assists": 69,
+    "headshots": 90,
+    "rank": 3
+  },
+  "128917343702802995": {
+    "xp": 180,
+    "wins": 3,
+    "losses": 3,
+    "series_wins": 0,
+    "series_losses": 0,
+    "total_games": 6,
+    "total_series": 0,
+    "mmr": 750,
+    "discord_name": "2D",
+    "kills": 118,
+    "deaths": 133,
+    "assists": 76,
+    "headshots": 81,
+    "rank": 2
+  },
+  "849664140769236827": {
+    "xp": 140,
+    "wins": 2,
+    "losses": 4,
+    "series_wins": 0,
+    "series_losses": 0,
+    "total_games": 6,
+    "total_series": 0,
+    "mmr": 750,
+    "discord_name": "Ralph Port",
+    "kills": 80,
+    "deaths": 108,
+    "assists": 56,
+    "headshots": 49,
+    "rank": 2
+  },
+  "629725134607888696": {
+    "xp": 130,
+    "wins": 2,
+    "losses": 3,
+    "series_wins": 0,
+    "series_losses": 0,
+    "total_games": 5,
+    "total_series": 0,
+    "mmr": 750,
+    "discord_name": "getitoutdaFLUD",
+    "kills": 105,
+    "deaths": 90,
+    "assists": 50,
+    "headshots": 70,
+    "rank": 2
   }
 }
