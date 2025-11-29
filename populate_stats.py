@@ -20,6 +20,20 @@ XP_CONFIG_FILE = 'xp_config.json'
 # Playlist name for 4v4 games
 PLAYLIST_NAME = 'MLG 4v4'
 
+def get_loss_factor(rank, loss_factors):
+    """Get the loss factor for a given rank. Lower ranks lose less XP."""
+    rank_str = str(rank)
+    if rank >= 30:
+        return 1.0  # Full loss penalty
+    return loss_factors.get(rank_str, 1.0)
+
+def get_win_factor(rank, win_factors):
+    """Get the win factor for a given rank. Higher ranks gain less XP."""
+    rank_str = str(rank)
+    if rank <= 40:
+        return 1.0  # Full win bonus
+    return win_factors.get(rank_str, 0.50)
+
 def load_xp_config():
     """Load XP configuration for ranking."""
     with open(XP_CONFIG_FILE, 'r') as f:
@@ -246,8 +260,10 @@ def main():
     # Load configurations
     xp_config = load_xp_config()
     rank_thresholds = xp_config['rank_thresholds']
-    xp_win = xp_config['game_win']  # 50 XP per win
-    xp_loss = xp_config['game_loss']  # 10 XP per loss
+    xp_win = xp_config['game_win']  # 100 XP per win
+    xp_loss = xp_config['game_loss']  # -100 XP per loss
+    loss_factors = xp_config.get('loss_factors', {})
+    win_factors = xp_config.get('win_factors', {})
 
     # Load existing rankstats
     rankstats = load_rankstats()
@@ -287,57 +303,107 @@ def main():
 
     print(f"\nTotal 4v4 games found: {len(team_games)}")
 
-    # STEP 3: Process games and update player stats
-    print("\nStep 3: Processing games and updating player stats...")
-    player_game_stats = {}
+    # STEP 3: Process games SEQUENTIALLY and update player stats
+    print("\nStep 3: Processing games sequentially (in order played)...")
 
+    # Track cumulative stats and XP per player
+    player_game_stats = {}
+    player_xp = {}  # Track XP separately for sequential calculation
+
+    # First, identify all players and match them to rankstats
+    all_player_names = set()
     for game in team_games:
+        for player in game['players']:
+            all_player_names.add(player['name'])
+
+    # Match players to existing entries or create new ones
+    player_to_id = {}
+    for player_name in all_player_names:
+        user_id = find_player_by_name(rankstats, player_name)
+        if user_id:
+            player_to_id[player_name] = user_id
+        else:
+            # Create new entry for unmatched player
+            temp_id = str(abs(hash(player_name)) % 10**18)
+            player_to_id[player_name] = temp_id
+            rankstats[temp_id] = {
+                'xp': 0,
+                'wins': 0,
+                'losses': 0,
+                'series_wins': 0,
+                'series_losses': 0,
+                'total_games': 0,
+                'total_series': 0,
+                'mmr': 750,
+                'discord_name': player_name,
+                'rank': 1
+            }
+
+        # Initialize tracking
+        player_game_stats[player_name] = {
+            'kills': 0, 'deaths': 0, 'assists': 0,
+            'wins': 0, 'losses': 0, 'games': 0, 'headshots': 0
+        }
+        player_xp[player_name] = 0  # Start at 0 XP
+
+    # Track current rank per player (starts at rank 1)
+    player_rank = {name: 1 for name in all_player_names}
+
+    print(f"  Found {len(all_player_names)} unique players")
+
+    # Process each game in order
+    for game_num, game in enumerate(team_games, 1):
         winners, losers = determine_winners_losers(game)
-        print(f"  Game: {game['details'].get('Variant Name')} - Winners: {winners}, Losers: {losers}")
+        game_name = game['details'].get('Variant Name', 'Unknown')
+        print(f"\n  Game {game_num}: {game_name}")
 
         for player in game['players']:
             player_name = player['name']
 
-            if player_name not in player_game_stats:
-                player_game_stats[player_name] = {
-                    'kills': 0,
-                    'deaths': 0,
-                    'assists': 0,
-                    'wins': 0,
-                    'losses': 0,
-                    'games': 0,
-                    'headshots': 0
-                }
-
+            # Update cumulative stats
             player_game_stats[player_name]['kills'] += player.get('kills', 0)
             player_game_stats[player_name]['deaths'] += player.get('deaths', 0)
             player_game_stats[player_name]['assists'] += player.get('assists', 0)
             player_game_stats[player_name]['headshots'] += player.get('head_shots', 0)
             player_game_stats[player_name]['games'] += 1
 
+            # Calculate XP change based on win/loss with rank-based factors
+            old_xp = player_xp[player_name]
+            current_rank = player_rank[player_name]
+
             if player_name in winners:
                 player_game_stats[player_name]['wins'] += 1
+                # Apply win factor (high ranks gain less)
+                win_factor = get_win_factor(current_rank, win_factors)
+                xp_change = int(xp_win * win_factor)
+                player_xp[player_name] += xp_change
+                result = f"WIN (+{xp_change} @ {int(win_factor*100)}%)"
             elif player_name in losers:
                 player_game_stats[player_name]['losses'] += 1
+                # Apply loss factor (low ranks lose less)
+                loss_factor = get_loss_factor(current_rank, loss_factors)
+                xp_change = int(xp_loss * loss_factor)  # xp_loss is negative
+                player_xp[player_name] += xp_change
+                # Ensure XP cannot go below 0
+                if player_xp[player_name] < 0:
+                    player_xp[player_name] = 0
+                result = f"LOSS ({xp_change} @ {int(loss_factor*100)}%)"
+            else:
+                result = "TIE"
 
-    # STEP 4: Update rankstats with game stats
-    print("\nStep 4: Updating rankstats...")
-    matched_players = {}
-    unmatched_players = []
+            new_xp = player_xp[player_name]
+            new_rank = calculate_rank(new_xp, rank_thresholds)
+            player_rank[player_name] = new_rank  # Update rank for next game
+            print(f"    {player_name}: {result} | XP: {old_xp} -> {new_xp} | Rank: {new_rank}")
 
-    for player_name, stats in player_game_stats.items():
-        user_id = find_player_by_name(rankstats, player_name)
-        if user_id:
-            matched_players[player_name] = user_id
-        else:
-            unmatched_players.append(player_name)
+    # STEP 4: Update rankstats with final values
+    print("\n\nStep 4: Updating rankstats with final values...")
 
-    print(f"  Matched {len(matched_players)} players to existing entries")
-    print(f"  Unmatched players: {unmatched_players}")
-
-    # Update matched players
-    for player_name, user_id in matched_players.items():
+    for player_name in all_player_names:
+        user_id = player_to_id[player_name]
         stats = player_game_stats[player_name]
+        final_xp = player_xp[player_name]
+        final_rank = calculate_rank(final_xp, rank_thresholds)
 
         rankstats[user_id]['wins'] = stats['wins']
         rankstats[user_id]['losses'] = stats['losses']
@@ -346,37 +412,9 @@ def main():
         rankstats[user_id]['deaths'] = stats['deaths']
         rankstats[user_id]['assists'] = stats['assists']
         rankstats[user_id]['headshots'] = stats['headshots']
-
-        # Calculate XP and rank for MLG 4v4 playlist
-        xp = (stats['wins'] * xp_win) + (stats['losses'] * xp_loss)
-        rankstats[user_id]['xp'] = xp
-        rankstats[user_id]['rank'] = calculate_rank(xp, rank_thresholds)
-        rankstats[user_id][PLAYLIST_NAME] = calculate_rank(xp, rank_thresholds)
-
-    # Create entries for unmatched players
-    for player_name in unmatched_players:
-        stats = player_game_stats[player_name]
-        temp_id = str(abs(hash(player_name)) % 10**18)
-        xp = (stats['wins'] * xp_win) + (stats['losses'] * xp_loss)
-        rank = calculate_rank(xp, rank_thresholds)
-
-        rankstats[temp_id] = {
-            'xp': xp,
-            'wins': stats['wins'],
-            'losses': stats['losses'],
-            'series_wins': 0,
-            'series_losses': 0,
-            'total_games': stats['games'],
-            'total_series': 0,
-            'mmr': 750,
-            'discord_name': player_name,
-            'kills': stats['kills'],
-            'deaths': stats['deaths'],
-            'assists': stats['assists'],
-            'headshots': stats['headshots'],
-            'rank': rank,
-            PLAYLIST_NAME: rank
-        }
+        rankstats[user_id]['xp'] = final_xp
+        rankstats[user_id]['rank'] = final_rank
+        rankstats[user_id][PLAYLIST_NAME] = final_rank
 
     # STEP 5: Save all data files
     print("\nStep 5: Saving data files...")
