@@ -47,7 +47,7 @@
         'Grunt.png',            // 16
         'Radioactive.png',      // 17
         'Smiley.png',           // 18
-        'Frowney.png',          // 19
+        'Sol.png',              // 19
         'Triad.png',            // 20
         'Waypoint.png',         // 21
         'Brute Head.png',       // 22
@@ -76,7 +76,7 @@
         'Thor.png',             // 45
         'Wasp.png',             // 46
         'Mark of Shame.png',    // 47
-        'Sol.png',              // 48
+        'Frowney.png',          // 48
         'Runes.png',            // 49
         'Grunt Head.png',       // 50
         'Tsantsa.png',          // 51
