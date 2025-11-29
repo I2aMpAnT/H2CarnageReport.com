@@ -1,5 +1,5 @@
-// Emblem Generator JavaScript - Individual Image Version
-// Uses individual PNG files instead of sprite sheets
+// Emblem Generator JavaScript
+// Uses individual PNG files for emblems and backgrounds
 // Supports 4-color system: Emblem Primary/Secondary, Player Primary/Secondary
 
 (function() {
@@ -94,7 +94,7 @@
         'Number 9.png'          // 63
     ];
 
-    // Background filenames (index matches sprite sheet order, left-to-right, top-to-bottom)
+    // Background filenames (index matches EB parameter)
     const backgroundFiles = [
         'Solid.png',            // 0
         'Vertical Split.png',   // 1
