@@ -239,17 +239,12 @@ def determine_winners_losers(game):
     return [], []
 
 def find_player_by_name(rankstats, name):
-    """Find a player in rankstats by their discord_name or alias."""
+    """Find a player in rankstats by their stats profile name (discord_name field)."""
     name_lower = name.lower().strip()
 
     for user_id, data in rankstats.items():
         discord_name = data.get('discord_name', '').lower()
-        alias = data.get('alias', '').lower()
-        twitch_name = data.get('twitch_name', '').lower()
-
-        if discord_name == name_lower or alias == name_lower or twitch_name == name_lower:
-            return user_id
-        if name_lower in discord_name or discord_name in name_lower:
+        if discord_name == name_lower:
             return user_id
 
     return None
