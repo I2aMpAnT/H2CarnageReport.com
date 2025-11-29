@@ -16,6 +16,7 @@ GAMESTATS_FILE = 'gamestats.json'
 MATCHHISTORY_FILE = 'matchhistory.json'
 GAMESDATA_FILE = 'gameshistory.json'
 XP_CONFIG_FILE = 'xp_config.json'
+HTML_FILE = 'h2carnagereport.html'
 
 # Playlist name for 4v4 games
 PLAYLIST_NAME = 'MLG 4v4'
@@ -415,6 +416,9 @@ def main():
         rankstats[user_id]['xp'] = final_xp
         rankstats[user_id]['rank'] = final_rank
         rankstats[user_id][PLAYLIST_NAME] = final_rank
+        # Track highest rank achieved
+        current_highest = rankstats[user_id].get('highest_rank', 1)
+        rankstats[user_id]['highest_rank'] = max(current_highest, final_rank)
 
     # STEP 5: Save all data files
     print("\nStep 5: Saving data files...")
@@ -422,6 +426,10 @@ def main():
     with open(RANKSTATS_FILE, 'w') as f:
         json.dump(rankstats, f, indent=2)
     print(f"  Saved {RANKSTATS_FILE}")
+
+    # Add playlist to each game
+    for game in team_games:
+        game['playlist'] = PLAYLIST_NAME
 
     with open(GAMESDATA_FILE, 'w') as f:
         json.dump(team_games, f, indent=2)
@@ -493,7 +501,63 @@ def main():
         losses = d.get('losses', 0)
         print(f"  {name:20s} | Rank: {rank:2d} | XP: {xp:4d} | W-L: {wins}-{losses}")
 
+    # STEP 6: Update HTML file with embedded data
+    print("\nStep 6: Updating HTML file...")
+    update_html_file(team_games, rankstats)
+
     print("\nDone!")
+
+
+def update_html_file(games_data, rank_stats):
+    """Update the HTML file with embedded gamesData and rankStats."""
+    import re
+
+    with open(HTML_FILE, 'r') as f:
+        html_content = f.read()
+
+    # Update gamesData - find and replace the entire line
+    games_json = json.dumps(games_data)
+    # Use a function to avoid escape issues
+    def replace_games(match):
+        return f'let gamesData = {games_json};'
+
+    html_content = re.sub(
+        r'let gamesData = \[.*?\];',
+        replace_games,
+        html_content,
+        flags=re.DOTALL
+    )
+
+    # Add or update rankStats
+    rank_stats_json = json.dumps(rank_stats)
+
+    def replace_rankstats(match):
+        return f'let rankStats = {rank_stats_json};'
+
+    if 'let rankStats = ' in html_content:
+        html_content = re.sub(
+            r'let rankStats = \{.*?\};',
+            replace_rankstats,
+            html_content,
+            flags=re.DOTALL
+        )
+    else:
+        # Insert rankStats after gamesData line
+        def insert_rankstats(match):
+            return f'{match.group(0)}\n        let rankStats = {rank_stats_json};'
+
+        html_content = re.sub(
+            r'let gamesData = \[.*?\];',
+            insert_rankstats,
+            html_content,
+            flags=re.DOTALL
+        )
+
+    with open(HTML_FILE, 'w') as f:
+        f.write(html_content)
+
+    print(f"  Updated {HTML_FILE}")
+
 
 if __name__ == '__main__':
     main()
