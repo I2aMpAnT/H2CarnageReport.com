@@ -102,33 +102,7 @@
                 <div class="emblem-layout">
                     <div class="emblem-preview">
                         <canvas id="emblemCanvas" width="256" height="256"></canvas>
-                        <button class="btn-download" onclick="downloadEmblem()">Download PNG</button>
-                    </div>
-                    
-                    <div class="emblem-controls">
-                        <div class="color-section color-section-stacked">
-                            <div class="color-picker-group">
-                                <label>Primary Emblem Color</label>
-                                <div class="color-picker" id="emblemPrimaryPicker" data-target="emblemPrimary"></div>
-                                <input type="hidden" id="emblemPrimary" value="1">
-                            </div>
-                            <div class="color-picker-group">
-                                <label>Secondary Emblem Color</label>
-                                <div class="color-picker" id="emblemSecondaryPicker" data-target="emblemSecondary"></div>
-                                <input type="hidden" id="emblemSecondary" value="0">
-                            </div>
-                            <div class="color-picker-group">
-                                <label>Primary Background Color</label>
-                                <div class="color-picker" id="bgPrimaryPicker" data-target="bgPrimary"></div>
-                                <input type="hidden" id="bgPrimary" value="11">
-                            </div>
-                            <div class="color-picker-group">
-                                <label>Secondary Background Color</label>
-                                <div class="color-picker" id="bgSecondaryPicker" data-target="bgSecondary"></div>
-                                <input type="hidden" id="bgSecondary" value="0">
-                            </div>
-                        </div>
-                        
+
                         <div class="control-row">
                             <label>Emblem</label>
                             <select id="emblemForeground" onchange="updateEmblem()">
@@ -143,7 +117,7 @@
                                 <option value="8">Spartan</option>
                                 <option value="9">Delta</option>
                                 <option value="10">Helmet</option>
-                                <option value="11">Grunt Symbol</option>
+                                <option value="11">Seventh Column</option>
                                 <option value="12">Cube</option>
                                 <option value="13">Cleave</option>
                                 <option value="14">Grunt</option>
@@ -197,7 +171,7 @@
                                 <option value="62">Number 9</option>
                             </select>
                         </div>
-                        
+
                         <div class="control-row">
                             <label>Background</label>
                             <select id="emblemBackground" onchange="updateEmblem()">
@@ -235,12 +209,39 @@
                                 <option value="31">Triple Column</option>
                             </select>
                         </div>
-                        
+
                         <div class="control-row">
                             <label class="checkbox-label">
                                 <input type="checkbox" id="emblemToggle" onchange="updateEmblem()">
                                 Toggle Emblem
                             </label>
+                        </div>
+
+                        <button class="btn-download" onclick="downloadEmblem()">Download PNG</button>
+                    </div>
+                    
+                    <div class="emblem-controls">
+                        <div class="color-section color-section-stacked">
+                            <div class="color-picker-group">
+                                <label>Primary Emblem Color</label>
+                                <div class="color-picker" id="emblemPrimaryPicker" data-target="emblemPrimary"></div>
+                                <input type="hidden" id="emblemPrimary" value="1">
+                            </div>
+                            <div class="color-picker-group">
+                                <label>Secondary Emblem Color</label>
+                                <div class="color-picker" id="emblemSecondaryPicker" data-target="emblemSecondary"></div>
+                                <input type="hidden" id="emblemSecondary" value="0">
+                            </div>
+                            <div class="color-picker-group">
+                                <label>Primary Background Color</label>
+                                <div class="color-picker" id="bgPrimaryPicker" data-target="bgPrimary"></div>
+                                <input type="hidden" id="bgPrimary" value="11">
+                            </div>
+                            <div class="color-picker-group">
+                                <label>Secondary Background Color</label>
+                                <div class="color-picker" id="bgSecondaryPicker" data-target="bgSecondary"></div>
+                                <input type="hidden" id="bgSecondary" value="0">
+                            </div>
                         </div>
                     </div>
                 </div>
