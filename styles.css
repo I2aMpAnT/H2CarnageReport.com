@@ -3674,3 +3674,105 @@ header {
 .weapons-scoreboard {
     scroll-behavior: smooth;
 }
+
+/* ========================================= */
+/* EMBLEM GENERATOR STYLES */
+/* ========================================= */
+
+.emblem-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.emblem-preview {
+    text-align: center;
+}
+
+#emblemCanvas {
+    width: 100%;
+    max-width: 256px;
+    height: auto;
+    border: 3px solid #0099ff;
+    border-radius: 8px;
+    background: #000;
+    margin-bottom: 20px;
+    image-rendering: pixelated;
+}
+
+.btn-download {
+    width: 100%;
+    max-width: 256px;
+    padding: 12px;
+    background: linear-gradient(135deg, #0066cc, #0099ff);
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-download:hover {
+    background: linear-gradient(135deg, #0099ff, #00ccff);
+    transform: translateY(-2px);
+}
+
+.emblem-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.control-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-row label {
+    color: #00ccff;
+    font-weight: 600;
+}
+
+.control-row select {
+    padding: 10px;
+    background: rgba(0, 51, 102, 0.4);
+    border: 2px solid rgba(0, 153, 255, 0.4);
+    border-radius: 6px;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.control-row select:hover {
+    border-color: #0099ff;
+    background: rgba(0, 51, 102, 0.6);
+}
+
+.control-row select:focus {
+    outline: none;
+    border-color: #00ccff;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #0099ff;
+}
+
+@media (max-width: 768px) {
+    .emblem-layout {
+        grid-template-columns: 1fr;
+    }
+}
