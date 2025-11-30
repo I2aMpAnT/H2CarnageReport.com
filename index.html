@@ -78,6 +78,15 @@
             </div>
 
             <div id="main-tab-leaderboard" class="main-tab-content" style="display: none;">
+                <div class="leaderboard-filters">
+                    <label for="playlistFilter">Playlist:</label>
+                    <select id="playlistFilter" class="playlist-filter-select">
+                        <option value="all">All Playlists</option>
+                        <option value="MLG 4v4" selected>MLG 4v4</option>
+                        <option value="Double Team">Double Team</option>
+                        <option value="Head to Head">Head to Head</option>
+                    </select>
+                </div>
                 <div id="leaderboardContainer"></div>
             </div>
 
@@ -293,6 +302,9 @@
                     <h1 id="profilePlayerName" class="profile-name"></h1>
                 </div>
             </div>
+            <div class="profile-playlist-ranks-section">
+                <div id="profilePlaylistRanks" class="profile-playlist-ranks"></div>
+            </div>
             <div class="profile-stats-section">
                 <div id="profileOverallStats" class="profile-overall-stats"></div>
             </div>
@@ -334,6 +346,9 @@
             <div class="stats-grid" id="modalPlayerStats"></div>
         </div>
     </div>
+
+    <!-- Version Number -->
+    <div class="version-number">v1.0.0</div>
 
     <script src="script.js"></script>
     <script src="emblem.js"></script>

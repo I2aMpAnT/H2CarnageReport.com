@@ -1316,6 +1316,50 @@ header {
     padding: 12px 10px;
 }
 
+/* Leaderboard Filters */
+.leaderboard-filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px;
+    background: var(--background-medium);
+    border: 2px solid var(--unsc-blue);
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.leaderboard-filters label {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.playlist-filter-select {
+    font-family: 'Overpass', sans-serif;
+    font-size: 14px;
+    padding: 8px 12px;
+    background: var(--background-dark);
+    border: 1px solid rgba(168, 212, 255, 0.3);
+    color: var(--text-primary);
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.playlist-filter-select:hover {
+    border-color: var(--unsc-blue);
+}
+
+.playlist-filter-select:focus {
+    outline: none;
+    border-color: var(--unsc-blue);
+    box-shadow: 0 0 10px rgba(168, 212, 255, 0.2);
+}
+
+.playlist-filter-select option {
+    background: var(--background-dark);
+    color: var(--text-primary);
+}
+
 /* Leaderboard */
 .leaderboard {
     background: var(--background-medium);
@@ -3092,6 +3136,60 @@ header {
     margin: 0;
 }
 
+/* Playlist Ranks Section */
+.profile-playlist-ranks-section {
+    margin-bottom: 30px;
+}
+
+.playlist-ranks-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.playlist-rank-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--background-medium);
+    border: 1px solid rgba(168, 212, 255, 0.3);
+    padding: 15px 25px;
+    min-width: 200px;
+}
+
+.playlist-rank-card:hover {
+    border-color: var(--unsc-blue);
+    background: var(--background-light);
+}
+
+.playlist-rank-icon {
+    flex-shrink: 0;
+}
+
+.rank-icon-medium {
+    width: 48px;
+    height: 48px;
+}
+
+.playlist-rank-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.playlist-name {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.playlist-rank-value {
+    font-size: 18px;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
 .profile-stats-section {
     margin-bottom: 40px;
 }
@@ -4422,4 +4520,21 @@ header {
 
 .twitch-clip-views {
     color: var(--text-muted);
+}
+
+
+/* Version Number */
+.version-number {
+    position: fixed;
+    bottom: 10px;
+    right: 15px;
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0.6;
+    z-index: 100;
+    font-family: "Overpass", sans-serif;
+}
+
+.version-number:hover {
+    opacity: 1;
 }
