@@ -13,6 +13,9 @@ let profileNameToDiscordId = {};
 // Mapping from discord IDs to array of in-game profile names
 let discordIdToProfileNames = {};
 
+// Player emblems data from emblems.json
+let playerEmblems = {};
+
 // Map images - local files from mapimages folder
 const mapImages = {
     'Midship': 'mapimages/Midship.jpeg',
@@ -297,6 +300,37 @@ async function loadPlayerRanks() {
     }
 }
 
+// Load player emblems from emblems.json
+async function loadEmblems() {
+    try {
+        const response = await fetch('emblems.json');
+        if (!response.ok) {
+            console.log('[EMBLEMS] No emblems.json found');
+            return;
+        }
+        playerEmblems = await response.json();
+        console.log('[EMBLEMS] Loaded emblems for', Object.keys(playerEmblems).length, 'players');
+    } catch (error) {
+        console.log('[EMBLEMS] Error loading emblems:', error);
+    }
+}
+
+// Get emblem URL for a player (by in-game name or discord ID)
+function getPlayerEmblem(playerNameOrId) {
+    // First try direct discord ID lookup
+    if (playerEmblems[playerNameOrId]) {
+        return playerEmblems[playerNameOrId].emblem_url;
+    }
+
+    // Try to find via profile name mapping
+    const discordId = profileNameToDiscordId[playerNameOrId];
+    if (discordId && playerEmblems[discordId]) {
+        return playerEmblems[discordId].emblem_url;
+    }
+
+    return null;
+}
+
 // Build mappings between in-game profile names and discord IDs
 // This should be called after gamesData is loaded
 function buildProfileNameMappings() {
@@ -498,6 +532,10 @@ async function loadGamesData() {
         // Load player ranks from rankstats.json (supports playlist-based ranks)
         console.log('[DEBUG] Loading player ranks...');
         await loadPlayerRanks();
+
+        // Load player emblems
+        console.log('[DEBUG] Loading player emblems...');
+        await loadEmblems();
 
         // Build mappings between in-game names and discord IDs
         console.log('[DEBUG] Building profile name mappings...');
@@ -1350,9 +1388,14 @@ function renderWeapons(game) {
         return teamA - teamB;
     });
     
-    // Get all weapon columns with kills (excluding headshot kills)
+    // Get all weapon columns with kills (excluding headshot kills and grenades)
     const weaponCols = Object.keys(weapons[0] || {}).filter(k => k !== 'Player');
-    const killCols = weaponCols.filter(c => c.toLowerCase().includes('kills') && !c.toLowerCase().includes('headshot'));
+    const killCols = weaponCols.filter(c => {
+        const col = c.toLowerCase();
+        return col.includes('kills') &&
+               !col.includes('headshot') &&
+               !col.includes('grenade');
+    });
     
     let html = '<div class="weapons-scoreboard">';
     
@@ -1411,48 +1454,120 @@ function renderWeapons(game) {
 function renderTwitch(game) {
     const players = game.players;
     const details = game.details;
-    const gameTime = details['Start Time'] || 'Unknown';
-    
+    const gameStartTime = details['Start Time'] || 'Unknown';
+    const gameEndTime = details['End Time'] || '';
+    const gameDuration = details['Duration'] || '';
+
     let html = '<div class="twitch-section">';
-    
+
     html += '<div class="twitch-header">';
     html += '<div class="twitch-icon">📺</div>';
     html += '<h3>Twitch VODs & Clips</h3>';
     html += '<p class="twitch-subtitle">Linked content from players in this match</p>';
     html += '</div>';
-    
+
     html += '<div class="twitch-info-box">';
-    html += '<p>This feature will automatically search for Twitch VODs and clips from players who have linked their accounts.</p>';
-    html += `<p class="game-time-info">Game played: <strong>${gameTime}</strong></p>`;
+    html += `<p class="game-time-info">Game played: <strong>${gameStartTime}</strong>`;
+    if (gameDuration) {
+        html += ` (Duration: ${gameDuration})`;
+    }
+    html += '</p>';
     html += '</div>';
-    
-    html += '<div class="twitch-players-grid">';
-    
+
+    // Find players with linked Twitch accounts
+    const linkedPlayers = [];
+    const unlinkedPlayers = [];
+
     players.forEach(player => {
-        const team = player.team;
-        const teamClass = isValidTeam(team) ? `team-${team.toLowerCase()}` : '';
-        
-        html += `<div class="twitch-player-card ${teamClass}">`;
-        html += `<div class="twitch-player-header clickable-player" data-player="${player.name}">`;
-        html += getPlayerRankIcon(player.name, 'small');
-        html += `<span class="twitch-player-name">${player.name}</span>`;
-        html += `</div>`;
-        html += `<div class="twitch-player-status">`;
-        html += `<span class="twitch-not-linked">Not linked</span>`;
-        html += `</div>`;
-        html += `<div class="twitch-player-actions">`;
-        html += `<button class="twitch-link-btn" disabled>Link Twitch</button>`;
-        html += `</div>`;
-        html += `</div>`;
+        const discordId = getDiscordIdForProfile(player.name);
+        let twitchData = null;
+
+        if (discordId && rankstatsData[discordId]) {
+            const data = rankstatsData[discordId];
+            if (data.twitch_url && data.twitch_name) {
+                twitchData = {
+                    name: data.twitch_name,
+                    url: data.twitch_url
+                };
+            }
+        }
+
+        if (twitchData) {
+            linkedPlayers.push({ player, twitchData });
+        } else {
+            unlinkedPlayers.push(player);
+        }
     });
-    
-    html += '</div>';
-    
-    html += '<div class="twitch-coming-soon">';
-    html += '<p>🔗 Link your Twitch account to your Discord and gamertag to automatically display VODs and clips from your matches.</p>';
-    html += '<p class="twitch-note">Coming soon: Automatic VOD timestamp matching based on game time.</p>';
-    html += '</div>';
-    
+
+    // Show linked players with Twitch channels
+    if (linkedPlayers.length > 0) {
+        html += '<div class="twitch-linked-section">';
+        html += '<h4 class="twitch-section-title">Players with Linked Twitch</h4>';
+        html += '<div class="twitch-players-grid">';
+
+        linkedPlayers.forEach(({ player, twitchData }) => {
+            const team = player.team;
+            const teamClass = isValidTeam(team) ? `team-${team.toLowerCase()}` : '';
+            const displayName = getDisplayNameForProfile(player.name);
+
+            html += `<div class="twitch-player-card twitch-linked ${teamClass}">`;
+            html += `<div class="twitch-player-header clickable-player" data-player="${player.name}">`;
+            html += getPlayerRankIcon(player.name, 'small');
+            html += `<span class="twitch-player-name">${displayName}</span>`;
+            html += `</div>`;
+            html += `<div class="twitch-player-status">`;
+            html += `<a href="${twitchData.url}" target="_blank" class="twitch-channel-link">`;
+            html += `<span class="twitch-linked-icon">📺</span> ${twitchData.name}`;
+            html += `</a>`;
+            html += `</div>`;
+            html += `<div class="twitch-player-actions">`;
+            html += `<a href="${twitchData.url}/videos" target="_blank" class="twitch-vod-btn">View VODs</a>`;
+            html += `<a href="${twitchData.url}/clips" target="_blank" class="twitch-clip-btn">View Clips</a>`;
+            html += `</div>`;
+            html += `</div>`;
+        });
+
+        html += '</div>';
+        html += '</div>';
+    }
+
+    // Show unlinked players
+    if (unlinkedPlayers.length > 0) {
+        html += '<div class="twitch-unlinked-section">';
+        html += '<h4 class="twitch-section-title">Players Without Linked Twitch</h4>';
+        html += '<div class="twitch-players-grid">';
+
+        unlinkedPlayers.forEach(player => {
+            const team = player.team;
+            const teamClass = isValidTeam(team) ? `team-${team.toLowerCase()}` : '';
+            const displayName = getDisplayNameForProfile(player.name);
+
+            html += `<div class="twitch-player-card ${teamClass}">`;
+            html += `<div class="twitch-player-header clickable-player" data-player="${player.name}">`;
+            html += getPlayerRankIcon(player.name, 'small');
+            html += `<span class="twitch-player-name">${displayName}</span>`;
+            html += `</div>`;
+            html += `<div class="twitch-player-status">`;
+            html += `<span class="twitch-not-linked">Not linked</span>`;
+            html += `</div>`;
+            html += `</div>`;
+        });
+
+        html += '</div>';
+        html += '</div>';
+    }
+
+    if (linkedPlayers.length === 0) {
+        html += '<div class="twitch-coming-soon">';
+        html += '<p>🔗 No players in this match have linked their Twitch accounts yet.</p>';
+        html += '<p class="twitch-note">Use /linktwitch in Discord to link your channel!</p>';
+        html += '</div>';
+    } else {
+        html += '<div class="twitch-tip">';
+        html += `<p>💡 Look for VODs from <strong>${gameStartTime}</strong> to find footage of this match.</p>`;
+        html += '</div>';
+    }
+
     html += '</div>';
     return html;
 }
@@ -1515,14 +1630,28 @@ function renderLeaderboard() {
         // Use first profile name for data-player attribute (for game history lookups)
         // If no profile names, use discord name as fallback
         const playerDataAttr = player.profileNames.length > 0 ? player.profileNames[0] : player.displayName;
-        // Color K/D based on value: green if >= 1.0, red if < 1.0
-        const kdClass = parseFloat(player.kd) >= 1.0 ? 'kd-positive' : 'kd-negative';
+
+        // For players with 0 games, show dashes instead of stats
+        const hasGames = player.games > 0;
+        let recordDisplay, kdDisplay, kdClass;
+
+        if (hasGames) {
+            recordDisplay = `${player.wins}-${player.losses} (${player.winrate}%)`;
+            kdDisplay = player.kd;
+            // Color K/D based on value: green if >= 1.0, red if < 1.0
+            kdClass = parseFloat(player.kd) >= 1.0 ? 'kd-positive' : 'kd-negative';
+        } else {
+            // Show dash for players with no games
+            recordDisplay = '<span class="stat-empty">—</span>';
+            kdDisplay = '<span class="stat-empty">—</span>';
+            kdClass = '';
+        }
 
         html += '<div class="leaderboard-row clickable-player" data-player="' + playerDataAttr + '" data-discord-id="' + player.discordId + '">';
         html += `<div class="lb-rank"><img src="${rankIconUrl}" alt="Rank ${player.rank}" class="rank-icon" /></div>`;
         html += `<div class="lb-player">${player.displayName}</div>`;
-        html += `<div class="lb-record">${player.wins}-${player.losses} (${player.winrate}%)</div>`;
-        html += `<div class="lb-kd ${kdClass}">${player.kd}</div>`;
+        html += `<div class="lb-record">${recordDisplay}</div>`;
+        html += `<div class="lb-kd ${kdClass}">${kdDisplay}</div>`;
         html += '</div>';
     });
 
@@ -3389,7 +3518,17 @@ function openPlayerProfile(playerName) {
     // Get the display name (discord nickname) for the player
     const displayName = getDisplayNameForProfile(playerName);
 
-    // Set player name and rank
+    // Set player emblem, name and rank
+    const emblemUrl = getPlayerEmblem(playerName);
+    const emblemElement = document.getElementById('profileEmblem');
+    if (emblemUrl) {
+        emblemElement.innerHTML = `<img src="${emblemUrl}" alt="Player Emblem" class="profile-emblem-img" />`;
+        emblemElement.style.display = 'block';
+    } else {
+        emblemElement.innerHTML = '';
+        emblemElement.style.display = 'none';
+    }
+
     document.getElementById('profilePlayerName').textContent = displayName;
     document.getElementById('profileRankIcon').innerHTML = getPlayerRankIcon(playerName, 'large');
 

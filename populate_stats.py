@@ -20,6 +20,7 @@ MATCHHISTORY_FILE = 'matchhistory.json'
 GAMESDATA_FILE = 'gameshistory.json'
 XP_CONFIG_FILE = 'xp_config.json'
 PLAYERS_FILE = 'players.json'
+EMBLEMS_FILE = 'emblems.json'
 HTML_FILE = 'h2carnagereport.html'
 ACTIVE_MATCHES_FILE = 'active_matches.json'
 
@@ -225,6 +226,7 @@ def build_profile_lookup(players):
     Uses stats_profile field from players.json (populated by the bot from identity XLSX files).
     The bot parses identity files to get MAC -> profile_name, then stores stats_profile
     for each user based on their mac_addresses.
+    Also includes aliases from the /linkalias command.
     """
     profile_to_user = {}
 
@@ -238,6 +240,12 @@ def build_profile_lookup(players):
         display_name = data.get('display_name', '')
         if display_name:
             profile_to_user[display_name.lower()] = user_id
+
+        # Include aliases from /linkalias command
+        aliases = data.get('aliases', [])
+        for alias in aliases:
+            if alias:
+                profile_to_user[alias.lower()] = user_id
 
     return profile_to_user
 
@@ -607,6 +615,16 @@ def main():
         user_id = find_player_by_name(rankstats, player_name, profile_lookup)
         if user_id:
             player_to_id[player_name] = user_id
+            # Update alias from players.json if available
+            if user_id in players:
+                player_data = players[user_id]
+                # Set alias from first entry in aliases array (for website display)
+                # Priority: aliases[0] > display_name
+                aliases = player_data.get('aliases', [])
+                if aliases:
+                    rankstats[user_id]['alias'] = aliases[0]
+                elif player_data.get('display_name'):
+                    rankstats[user_id]['alias'] = player_data['display_name']
         else:
             # Create new entry for unmatched player
             temp_id = str(abs(hash(player_name)) % 10**18)
@@ -806,6 +824,27 @@ def main():
     with open(GAMESDATA_FILE, 'w') as f:
         json.dump(all_games, f, indent=2)
     print(f"  Saved {GAMESDATA_FILE} ({len(all_games)} total games)")
+
+    # Extract and save player emblems (most recent emblem for each player)
+    # Maps discord_id to their emblem_url
+    emblems = {}
+    for game in all_games:
+        for player in game['players']:
+            emblem_url = player.get('emblem_url')
+            if emblem_url:
+                player_name = player['name']
+                # Get discord ID for this player
+                user_id = player_to_id.get(player_name)
+                if user_id:
+                    emblems[user_id] = {
+                        'emblem_url': emblem_url,
+                        'player_name': player_name,
+                        'discord_name': rankstats.get(user_id, {}).get('discord_name', player_name)
+                    }
+
+    with open(EMBLEMS_FILE, 'w') as f:
+        json.dump(emblems, f, indent=2)
+    print(f"  Saved {EMBLEMS_FILE} ({len(emblems)} player emblems)")
 
     # Create gamestats.json (includes all games)
     gamestats = {}
