@@ -128,8 +128,8 @@ function findVodForTime(vods, gameStartTime, gameDurationMinutes = 15) {
             // Calculate timestamp offset (how far into the VOD the game starts)
             const offsetMs = Math.max(0, gameStartUTC - vodStart);
             const offsetSeconds = Math.floor(offsetMs / 1000);
-            // Add 2 minute buffer to account for lobby/loading time before actual gameplay
-            const adjustedOffset = offsetSeconds + 120;
+            // Add small buffer for lobby time (20 seconds)
+            const adjustedOffset = offsetSeconds + 20;
             return { vod, timestampSeconds: adjustedOffset };
         }
     }
@@ -149,11 +149,86 @@ let twitchHubLoaded = false;
 let twitchHubVods = [];
 let twitchHubClips = [];
 
-// Load the Twitch Hub - fetches VODs and clips from all linked players
+// Get all game time ranges from gamesData
+function getGameTimeRanges() {
+    const ranges = [];
+    gamesData.forEach(game => {
+        if (game.details && game.details['Start Time'] && game.details['End Time']) {
+            // Parse "11/28/2025 20:03" format
+            const startStr = game.details['Start Time'];
+            const endStr = game.details['End Time'];
+            const startDate = parseGameDateTime(startStr);
+            const endDate = parseGameDateTime(endStr);
+            if (startDate && endDate) {
+                ranges.push({ start: startDate, end: endDate });
+            }
+        }
+    });
+    return ranges;
+}
+
+// Parse game date time string "MM/DD/YYYY HH:MM" to Date object
+function parseGameDateTime(dateStr) {
+    if (!dateStr) return null;
+    try {
+        // Format: "11/28/2025 20:03"
+        const parts = dateStr.split(' ');
+        if (parts.length !== 2) return null;
+        const dateParts = parts[0].split('/');
+        const timeParts = parts[1].split(':');
+        if (dateParts.length !== 3 || timeParts.length !== 2) return null;
+        const month = parseInt(dateParts[0]) - 1;
+        const day = parseInt(dateParts[1]);
+        const year = parseInt(dateParts[2]);
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        return new Date(year, month, day, hours, minutes);
+    } catch (e) {
+        return null;
+    }
+}
+
+// Check if a VOD overlaps with any game time
+function vodOverlapsWithGames(vod, gameRanges) {
+    const vodStart = new Date(vod.createdAt);
+    const vodEnd = new Date(vodStart.getTime() + (vod.lengthSeconds * 1000));
+
+    for (const range of gameRanges) {
+        // Check if VOD time range overlaps with game time range
+        if (vodStart <= range.end && vodEnd >= range.start) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Check if a clip's source VOD overlaps with any game time
+// Clips are from VODs, so we check if the clip could have been created from a game VOD
+function clipOverlapsWithGames(clip, gameRanges, allVods) {
+    // If we have VOD info, check if any matching VOD overlaps with games
+    // Otherwise, check if clip creation time falls within a game session window
+    const clipDate = new Date(clip.createdAt);
+
+    for (const range of gameRanges) {
+        // Check if clip was created during or shortly after a game session (within 1 hour)
+        // This accounts for clips being created from VODs during the stream
+        const sessionEnd = new Date(range.end.getTime() + (60 * 60 * 1000)); // 1 hour after game
+        if (clipDate >= range.start && clipDate <= sessionEnd) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Load the Twitch Hub - fetches VODs and clips that overlap with tracked games
 async function loadTwitchHub() {
     if (twitchHubLoaded) return;
 
     console.log('[TWITCH_HUB] Loading Twitch Hub...');
+
+    // Get game time ranges for filtering
+    const gameRanges = getGameTimeRanges();
+    console.log(`[TWITCH_HUB] Found ${gameRanges.length} game time ranges for filtering`);
 
     // Get all players with linked Twitch accounts
     const linkedTwitchUsers = [];
@@ -162,7 +237,7 @@ async function loadTwitchHub() {
             linkedTwitchUsers.push({
                 discordId,
                 twitchName: data.twitch_name,
-                displayName: data.alias || data.discord_name || data.twitch_name
+                displayName: data.display_name || data.discord_name || data.twitch_name
             });
         }
     }
@@ -195,11 +270,22 @@ async function loadTwitchHub() {
     const vodsResults = await Promise.all(vodsPromises);
     const clipsResults = await Promise.all(clipsPromises);
 
-    // Flatten and sort by date
-    twitchHubVods = vodsResults.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    twitchHubClips = clipsResults.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // Flatten results
+    const allVods = vodsResults.flat();
+    const allClips = clipsResults.flat();
 
-    console.log(`[TWITCH_HUB] Loaded ${twitchHubVods.length} VODs and ${twitchHubClips.length} clips`);
+    console.log(`[TWITCH_HUB] Fetched ${allVods.length} total VODs and ${allClips.length} total clips`);
+
+    // Filter to only VODs/clips that overlap with game times
+    twitchHubVods = allVods
+        .filter(vod => vodOverlapsWithGames(vod, gameRanges))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    twitchHubClips = allClips
+        .filter(clip => clipOverlapsWithGames(clip, gameRanges))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    console.log(`[TWITCH_HUB] After filtering: ${twitchHubVods.length} VODs and ${twitchHubClips.length} clips match game times`);
 
     // Render the content
     renderTwitchHubVods();
@@ -748,10 +834,10 @@ function buildProfileNameMappings() {
         // Try to find a matching discord ID
         for (const [discordId, data] of Object.entries(rankstatsData)) {
             const discordName = (data.discord_name || '').toLowerCase();
-            const alias = (data.alias || '').toLowerCase();
+            const inGameNamesArr = (data.in_game_names || []).map(n => n.toLowerCase());
 
-            // Check if in-game name matches discord_name or alias
-            if (inGameNameLower === discordName || inGameNameLower === alias) {
+            // Check if in-game name matches discord_name or any in_game_names entry
+            if (inGameNameLower === discordName || inGameNamesArr.includes(inGameNameLower)) {
                 profileNameToDiscordId[inGameName] = discordId;
                 if (!discordIdToProfileNames[discordId]) {
                     discordIdToProfileNames[discordId] = [];
@@ -809,22 +895,22 @@ function buildProfileNameMappings() {
 }
 
 // Get the display name for an in-game profile name
-// Priority: alias > discord_name > in-game name
+// Priority: display_name > discord_name > in-game name
 function getDisplayNameForProfile(inGameName) {
     const discordId = profileNameToDiscordId[inGameName];
     if (discordId && rankstatsData[discordId]) {
         const data = rankstatsData[discordId];
-        return data.alias || data.discord_name || inGameName;
+        return data.display_name || data.discord_name || inGameName;
     }
     return inGameName;
 }
 
 // Get the display name for a discord ID
-// Priority: alias > discord_name
+// Priority: display_name > discord_name
 function getDisplayNameForDiscordId(discordId) {
     if (rankstatsData[discordId]) {
         const data = rankstatsData[discordId];
-        return data.alias || data.discord_name || 'Unknown';
+        return data.display_name || data.discord_name || 'Unknown';
     }
     return 'Unknown';
 }
@@ -2173,8 +2259,8 @@ function renderLeaderboard() {
 
         return {
             discordId: discordId,
-            // Priority: alias > discord_name
-            displayName: data.alias || data.discord_name || 'Unknown',
+            // Priority: display_name > discord_name
+            displayName: data.display_name || data.discord_name || 'Unknown',
             profileNames: profileNames,
             rank: data.rank || 1,
             wins: wins,
@@ -2325,15 +2411,17 @@ function setupPvpSearchBox(inputElement, resultsElement, playerNum) {
             });
         });
 
-        // Also search by alias and discord names in rankstatsData
+        // Also search by discord names and in_game_names in rankstatsData
         Object.entries(rankstatsData).forEach(([discordId, data]) => {
-            const alias = data.alias || '';
             const discordName = data.discord_name || '';
-            // Display name priority: alias > discord_name
-            const displayName = alias || discordName;
+            const inGameNamesArr = data.in_game_names || [];
+            // Display name priority: display_name > discord_name
+            const displayName = data.display_name || discordName;
 
-            // Search matches alias OR discord_name
-            if (alias.toLowerCase().includes(query) || discordName.toLowerCase().includes(query)) {
+            // Search matches discord_name or any in_game_names entry
+            const matchesDiscord = discordName.toLowerCase().includes(query);
+            const matchesInGame = inGameNamesArr.some(n => n.toLowerCase().includes(query));
+            if (matchesDiscord || matchesInGame) {
                 const profileNames = discordIdToProfileNames[discordId] || [];
                 if (profileNames.length > 0) {
                     profileNames.forEach(profileName => {
@@ -2464,15 +2552,17 @@ function setupSearchBox(inputElement, resultsElement, boxNumber) {
             });
         });
 
-        // Also search by alias and discord names in rankstatsData
+        // Also search by discord names and in_game_names in rankstatsData
         Object.entries(rankstatsData).forEach(([discordId, data]) => {
-            const alias = data.alias || '';
             const discordName = data.discord_name || '';
-            // Display name priority: alias > discord_name
-            const displayName = alias || discordName;
+            const inGameNamesArr = data.in_game_names || [];
+            // Display name priority: display_name > discord_name
+            const displayName = data.display_name || discordName;
 
-            // Search matches alias OR discord_name
-            if (alias.toLowerCase().includes(query) || discordName.toLowerCase().includes(query)) {
+            // Search matches discord_name or any in_game_names entry
+            const matchesDiscord = discordName.toLowerCase().includes(query);
+            const matchesInGame = inGameNamesArr.some(n => n.toLowerCase().includes(query));
+            if (matchesDiscord || matchesInGame) {
                 // Find associated profile names
                 const profileNames = discordIdToProfileNames[discordId] || [];
                 if (profileNames.length > 0) {
