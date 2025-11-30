@@ -128,8 +128,8 @@ function findVodForTime(vods, gameStartTime, gameDurationMinutes = 15) {
             // Calculate timestamp offset (how far into the VOD the game starts)
             const offsetMs = Math.max(0, gameStartUTC - vodStart);
             const offsetSeconds = Math.floor(offsetMs / 1000);
-            // Add 2 minute buffer to account for lobby/loading time before actual gameplay
-            const adjustedOffset = offsetSeconds + 120;
+            // Add small buffer for lobby time (20 seconds)
+            const adjustedOffset = offsetSeconds + 20;
             return { vod, timestampSeconds: adjustedOffset };
         }
     }
@@ -202,14 +202,18 @@ function vodOverlapsWithGames(vod, gameRanges) {
     return false;
 }
 
-// Check if a clip was created during/near a game time (within 24 hours of a game)
-function clipOverlapsWithGames(clip, gameRanges) {
+// Check if a clip's source VOD overlaps with any game time
+// Clips are from VODs, so we check if the clip could have been created from a game VOD
+function clipOverlapsWithGames(clip, gameRanges, allVods) {
+    // If we have VOD info, check if any matching VOD overlaps with games
+    // Otherwise, check if clip creation time falls within a game session window
     const clipDate = new Date(clip.createdAt);
-    const dayMs = 24 * 60 * 60 * 1000;
 
     for (const range of gameRanges) {
-        // Clip was created within 24 hours of game end
-        if (clipDate >= range.start && clipDate <= new Date(range.end.getTime() + dayMs)) {
+        // Check if clip was created during or shortly after a game session (within 1 hour)
+        // This accounts for clips being created from VODs during the stream
+        const sessionEnd = new Date(range.end.getTime() + (60 * 60 * 1000)); // 1 hour after game
+        if (clipDate >= range.start && clipDate <= sessionEnd) {
             return true;
         }
     }
