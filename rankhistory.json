@@ -1,7 +1,7 @@
 {
   "_comment": "Rank history - tracks XP changes over time for each player. Server should populate this after each game.",
   "652998057087991838": {
-    "discord_name": "TwoDashAngo",
+    "discord_name": "TwoDash",
     "history": [
       { "timestamp": "2025-11-28T20:18:00", "playlist": "MLG 4v4", "xp_change": 50, "xp_total": 100, "rank_before": 1, "rank_after": 2, "result": "win" },
       { "timestamp": "2025-11-28T20:22:00", "playlist": "MLG 4v4", "xp_change": -10, "xp_total": 90, "rank_before": 2, "rank_after": 1, "result": "loss" },
@@ -50,8 +50,8 @@
       { "timestamp": "2025-11-28T21:05:00", "playlist": "MLG 4v4", "xp_change": 60, "xp_total": 190, "rank_before": 2, "rank_after": 3, "result": "loss" }
     ]
   },
-  "205511780846321664": {
-    "discord_name": "Ralph Port",
+  "269681242335739905": {
+    "discord_name": "keylord",
     "history": [
       { "timestamp": "2025-11-28T20:18:00", "playlist": "MLG 4v4", "xp_change": -10, "xp_total": 40, "rank_before": 1, "rank_after": 1, "result": "loss" },
       { "timestamp": "2025-11-28T20:22:00", "playlist": "MLG 4v4", "xp_change": 50, "xp_total": 90, "rank_before": 1, "rank_after": 1, "result": "win" },
@@ -61,7 +61,7 @@
     ]
   },
   "334212655613214721": {
-    "discord_name": "getitoutdaFLUD",
+    "discord_name": "fluhd",
     "history": [
       { "timestamp": "2025-11-28T20:18:00", "playlist": "MLG 4v4", "xp_change": -10, "xp_total": 40, "rank_before": 1, "rank_after": 1, "result": "loss" },
       { "timestamp": "2025-11-28T20:22:00", "playlist": "MLG 4v4", "xp_change": 50, "xp_total": 90, "rank_before": 1, "rank_after": 1, "result": "win" },

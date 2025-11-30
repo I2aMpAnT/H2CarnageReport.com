@@ -37,9 +37,10 @@
     "total_series": 0,
     "mmr": 900,
     "discord_name": "Keylord",
+    "display_name": "keylord",
+    "in_game_names": ["Ralph Port"],
     "twitch_name": "justinkeylord",
     "twitch_url": "https://twitch.tv/justinkeylord",
-    "alias": "keylord",
     "rank": 1
   },
   "132652800378142720": {
@@ -205,7 +206,7 @@
     "total_series": 0,
     "mmr": 1400,
     "discord_name": "fluhd",
-    "alias": "getitoutdaFLUD",
+    "in_game_names": ["getitoutdaFLUD"],
     "twitch_name": "floodandshiro",
     "twitch_url": "https://twitch.tv/floodandshiro",
     "rank": 1
@@ -1355,7 +1356,8 @@
     "total_games": 5,
     "total_series": 0,
     "mmr": 750,
-    "discord_name": "2D",
+    "discord_name": "TwoDash",
+    "in_game_names": ["2D"],
     "rank": 4,
     "MLG 4v4": 4,
     "highest_rank": 4,

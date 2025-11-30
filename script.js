@@ -162,7 +162,7 @@ async function loadTwitchHub() {
             linkedTwitchUsers.push({
                 discordId,
                 twitchName: data.twitch_name,
-                displayName: data.alias || data.discord_name || data.twitch_name
+                displayName: data.display_name || data.discord_name || data.twitch_name
             });
         }
     }
@@ -748,10 +748,10 @@ function buildProfileNameMappings() {
         // Try to find a matching discord ID
         for (const [discordId, data] of Object.entries(rankstatsData)) {
             const discordName = (data.discord_name || '').toLowerCase();
-            const alias = (data.alias || '').toLowerCase();
+            const inGameNamesArr = (data.in_game_names || []).map(n => n.toLowerCase());
 
-            // Check if in-game name matches discord_name or alias
-            if (inGameNameLower === discordName || inGameNameLower === alias) {
+            // Check if in-game name matches discord_name or any in_game_names entry
+            if (inGameNameLower === discordName || inGameNamesArr.includes(inGameNameLower)) {
                 profileNameToDiscordId[inGameName] = discordId;
                 if (!discordIdToProfileNames[discordId]) {
                     discordIdToProfileNames[discordId] = [];
@@ -809,22 +809,22 @@ function buildProfileNameMappings() {
 }
 
 // Get the display name for an in-game profile name
-// Priority: alias > discord_name > in-game name
+// Priority: display_name > discord_name > in-game name
 function getDisplayNameForProfile(inGameName) {
     const discordId = profileNameToDiscordId[inGameName];
     if (discordId && rankstatsData[discordId]) {
         const data = rankstatsData[discordId];
-        return data.alias || data.discord_name || inGameName;
+        return data.display_name || data.discord_name || inGameName;
     }
     return inGameName;
 }
 
 // Get the display name for a discord ID
-// Priority: alias > discord_name
+// Priority: display_name > discord_name
 function getDisplayNameForDiscordId(discordId) {
     if (rankstatsData[discordId]) {
         const data = rankstatsData[discordId];
-        return data.alias || data.discord_name || 'Unknown';
+        return data.display_name || data.discord_name || 'Unknown';
     }
     return 'Unknown';
 }
@@ -2173,8 +2173,8 @@ function renderLeaderboard() {
 
         return {
             discordId: discordId,
-            // Priority: alias > discord_name
-            displayName: data.alias || data.discord_name || 'Unknown',
+            // Priority: display_name > discord_name
+            displayName: data.display_name || data.discord_name || 'Unknown',
             profileNames: profileNames,
             rank: data.rank || 1,
             wins: wins,
@@ -2325,15 +2325,17 @@ function setupPvpSearchBox(inputElement, resultsElement, playerNum) {
             });
         });
 
-        // Also search by alias and discord names in rankstatsData
+        // Also search by discord names and in_game_names in rankstatsData
         Object.entries(rankstatsData).forEach(([discordId, data]) => {
-            const alias = data.alias || '';
             const discordName = data.discord_name || '';
-            // Display name priority: alias > discord_name
-            const displayName = alias || discordName;
+            const inGameNamesArr = data.in_game_names || [];
+            // Display name priority: display_name > discord_name
+            const displayName = data.display_name || discordName;
 
-            // Search matches alias OR discord_name
-            if (alias.toLowerCase().includes(query) || discordName.toLowerCase().includes(query)) {
+            // Search matches discord_name or any in_game_names entry
+            const matchesDiscord = discordName.toLowerCase().includes(query);
+            const matchesInGame = inGameNamesArr.some(n => n.toLowerCase().includes(query));
+            if (matchesDiscord || matchesInGame) {
                 const profileNames = discordIdToProfileNames[discordId] || [];
                 if (profileNames.length > 0) {
                     profileNames.forEach(profileName => {
@@ -2464,15 +2466,17 @@ function setupSearchBox(inputElement, resultsElement, boxNumber) {
             });
         });
 
-        // Also search by alias and discord names in rankstatsData
+        // Also search by discord names and in_game_names in rankstatsData
         Object.entries(rankstatsData).forEach(([discordId, data]) => {
-            const alias = data.alias || '';
             const discordName = data.discord_name || '';
-            // Display name priority: alias > discord_name
-            const displayName = alias || discordName;
+            const inGameNamesArr = data.in_game_names || [];
+            // Display name priority: display_name > discord_name
+            const displayName = data.display_name || discordName;
 
-            // Search matches alias OR discord_name
-            if (alias.toLowerCase().includes(query) || discordName.toLowerCase().includes(query)) {
+            // Search matches discord_name or any in_game_names entry
+            const matchesDiscord = discordName.toLowerCase().includes(query);
+            const matchesInGame = inGameNamesArr.some(n => n.toLowerCase().includes(query));
+            if (matchesDiscord || matchesInGame) {
                 // Find associated profile names
                 const profileNames = discordIdToProfileNames[discordId] || [];
                 if (profileNames.length > 0) {
