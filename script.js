@@ -1515,12 +1515,14 @@ function renderLeaderboard() {
         // Use first profile name for data-player attribute (for game history lookups)
         // If no profile names, use discord name as fallback
         const playerDataAttr = player.profileNames.length > 0 ? player.profileNames[0] : player.displayName;
+        // Color K/D based on value: green if >= 1.0, red if < 1.0
+        const kdClass = parseFloat(player.kd) >= 1.0 ? 'kd-positive' : 'kd-negative';
 
         html += '<div class="leaderboard-row clickable-player" data-player="' + playerDataAttr + '" data-discord-id="' + player.discordId + '">';
         html += `<div class="lb-rank"><img src="${rankIconUrl}" alt="Rank ${player.rank}" class="rank-icon" /></div>`;
         html += `<div class="lb-player">${player.displayName}</div>`;
         html += `<div class="lb-record">${player.wins}-${player.losses} (${player.winrate}%)</div>`;
-        html += `<div class="lb-kd">${player.kd}</div>`;
+        html += `<div class="lb-kd ${kdClass}">${player.kd}</div>`;
         html += '</div>';
     });
 
