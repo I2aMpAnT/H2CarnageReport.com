@@ -31,7 +31,7 @@
     ]
   },
   "175060415833833472": {
-    "discord_name": "Tetracide",
+    "discord_name": "Josiah",
     "history": [
       { "timestamp": "2025-11-28T20:18:00", "playlist": "MLG 4v4", "xp_change": 50, "xp_total": 100, "rank_before": 1, "rank_after": 2, "result": "win" },
       { "timestamp": "2025-11-28T20:22:00", "playlist": "MLG 4v4", "xp_change": -10, "xp_total": 90, "rank_before": 2, "rank_after": 1, "result": "loss" },
