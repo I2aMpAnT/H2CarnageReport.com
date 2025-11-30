@@ -1921,8 +1921,21 @@ header {
 }
 
 .twitch-icon {
-    font-size: 36px;
     margin-bottom: 10px;
+}
+
+.twitch-icon-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.twitch-linked-icon-img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+    vertical-align: middle;
+    margin-right: 4px;
 }
 
 .twitch-header h3 {

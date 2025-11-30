@@ -1922,7 +1922,7 @@ function renderTwitch(game) {
     let html = '<div class="twitch-section">';
 
     html += '<div class="twitch-header">';
-    html += '<div class="twitch-icon">📺</div>';
+    html += '<div class="twitch-icon"><img src="assets/Twitch.png" alt="Twitch" class="twitch-icon-img"></div>';
     html += '<h3>Twitch VODs & Clips</h3>';
     html += '<p class="twitch-subtitle">Linked content from players in this match</p>';
     html += '</div>';
@@ -1983,7 +1983,7 @@ function renderTwitch(game) {
             html += `</div>`;
             html += `<div class="twitch-player-status">`;
             html += `<a href="${twitchData.url}" target="_blank" class="twitch-channel-link">`;
-            html += `<span class="twitch-linked-icon">📺</span> ${twitchData.name}`;
+            html += `<img src="assets/Twitch.png" alt="Twitch" class="twitch-linked-icon-img"> ${twitchData.name}`;
             html += `</a>`;
             html += `</div>`;
             html += `</div>`;
