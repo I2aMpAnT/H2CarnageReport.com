@@ -1376,7 +1376,7 @@
     "headshots": 69
   },
   "467006237617687770": {
-    "xp": 190,
+    "xp": 120,
     "wins": 2,
     "losses": 3,
     "series_wins": 0,
@@ -1388,9 +1388,9 @@
     "in_game_names": ["Ralph Port"],
     "twitch_name": "justinkeylord",
     "twitch_url": "https://twitch.tv/justinkeylord",
-    "rank": 3,
-    "MLG 4v4": 3,
-    "highest_rank": 3,
+    "rank": 2,
+    "MLG 4v4": 2,
+    "highest_rank": 2,
     "kills": 80,
     "deaths": 104,
     "assists": 56,
