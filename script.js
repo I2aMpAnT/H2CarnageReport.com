@@ -128,7 +128,9 @@ function findVodForTime(vods, gameStartTime, gameDurationMinutes = 15) {
             // Calculate timestamp offset (how far into the VOD the game starts)
             const offsetMs = Math.max(0, gameStartUTC - vodStart);
             const offsetSeconds = Math.floor(offsetMs / 1000);
-            return { vod, timestampSeconds: offsetSeconds };
+            // Add 2 minute buffer to account for lobby/loading time before actual gameplay
+            const adjustedOffset = offsetSeconds + 120;
+            return { vod, timestampSeconds: adjustedOffset };
         }
     }
     return null;
