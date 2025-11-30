@@ -4521,3 +4521,20 @@ header {
 .twitch-clip-views {
     color: var(--text-muted);
 }
+
+
+/* Version Number */
+.version-number {
+    position: fixed;
+    bottom: 10px;
+    right: 15px;
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0.6;
+    z-index: 100;
+    font-family: "Overpass", sans-serif;
+}
+
+.version-number:hover {
+    opacity: 1;
+}
