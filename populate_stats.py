@@ -27,13 +27,14 @@ RANKHISTORY_FILE = 'rankhistory.json'
 # Default playlist name for 4v4 games (fallback)
 PLAYLIST_NAME = 'MLG 4v4'
 
-# Valid MLG 4v4 / Team Hardcore map/gametype combinations (11 total)
+# Valid MLG 4v4 / Team Hardcore map/gametype combinations
+# Uses keyword matching (case-insensitive) to handle variations like "MLG TS 2007" matching "ts"
 VALID_MLG_4V4_COMBOS = {
-    "Midship": ["MLG CTF5", "MLG CTF MidWar", "MLG Team Slayer", "MLG Oddball", "MLG Bomb"],
-    "Beaver Creek": ["MLG Team Slayer"],
-    "Lockout": ["MLG Team Slayer", "MLG Oddball"],
-    "Warlock": ["MLG Team Slayer", "MLG CTF5"],
-    "Sanctuary": ["MLG CTF3", "MLG Team Slayer"]
+    "Midship": ["ctf", "ts", "slayer", "oddball", "ball", "bomb", "assault"],
+    "Beaver Creek": ["ts", "slayer"],
+    "Lockout": ["ts", "slayer", "oddball", "ball"],
+    "Warlock": ["ts", "slayer", "ctf"],
+    "Sanctuary": ["ctf", "ts", "slayer"]
 }
 
 # Playlist types
@@ -113,15 +114,23 @@ def load_active_matches():
         return None
 
 def is_valid_mlg_combo(map_name, gametype):
-    """Check if map/gametype is a valid MLG 4v4 / Team Hardcore combination."""
+    """Check if map/gametype is a valid MLG 4v4 / Team Hardcore combination.
+
+    Uses keyword matching - if the gametype contains any of the valid keywords
+    for that map, it's considered valid. This handles variations like:
+    - "MLG TS 2007" matches "ts" or "slayer"
+    - "MLG Ball 2007" matches "ball" or "oddball"
+    - "MLG CTF Sanc" matches "ctf"
+    """
     if map_name not in VALID_MLG_4V4_COMBOS:
         return False
 
-    valid_gametypes = VALID_MLG_4V4_COMBOS[map_name]
-    # Check if gametype matches any valid gametype (case-insensitive, partial match)
+    valid_keywords = VALID_MLG_4V4_COMBOS[map_name]
     gametype_lower = gametype.lower()
-    for valid_gt in valid_gametypes:
-        if valid_gt.lower() in gametype_lower or gametype_lower in valid_gt.lower():
+
+    # Check if gametype contains any valid keyword for this map
+    for keyword in valid_keywords:
+        if keyword in gametype_lower:
             return True
     return False
 
