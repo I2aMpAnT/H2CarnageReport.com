@@ -2073,8 +2073,8 @@ function renderWeapons(game) {
                 hasKills = true;
                 const weaponName = killCol.replace(/ kills/gi, '').trim();
                 const iconUrl = getWeaponIcon(weaponName);
-                
-                html += `<div class="weapon-badge" title="${weaponName}">`;
+
+                html += `<div class="weapon-badge" title="${formatWeaponName(weaponName)}">`;
                 if (iconUrl) {
                     html += `<img src="${iconUrl}" alt="${weaponName}" class="weapon-icon">`;
                 } else {
@@ -2885,7 +2885,7 @@ function displaySearchResults(results, resultsElement, boxNumber) {
                 html += `<img src="${iconUrl}" alt="${result.name}" class="search-result-icon">`;
             }
             html += `<div class="search-result-type">${result.type}</div>`;
-            html += `<div class="search-result-name">${result.name.charAt(0).toUpperCase() + result.name.slice(1)}</div>`;
+            html += `<div class="search-result-name">${formatWeaponName(result.name)}</div>`;
         } else if (result.type === 'player') {
             html += `<div class="search-result-type">${result.type}</div>`;
             html += `<div class="search-result-name">${result.displayName || result.name}</div>`;
@@ -2962,7 +2962,7 @@ function openSearchResultsPage(type, name) {
     } else if (type === 'weapon') {
         const weaponIcon = weaponIcons[name.toLowerCase()];
         const iconHtml = weaponIcon ? `<img src="${weaponIcon}" class="title-weapon-icon" alt="${name}">` : '';
-        searchResultsTitle.innerHTML = `${iconHtml} ${name.charAt(0).toUpperCase() + name.slice(1)}`;
+        searchResultsTitle.innerHTML = `${iconHtml} ${formatWeaponName(name)}`;
         searchResultsContent.innerHTML = renderWeaponSearchResults(name);
     }
 }
@@ -3343,7 +3343,7 @@ function renderWeaponSearchResults(weaponName) {
     window.currentSearchPlayerStats = Object.fromEntries(
         Object.entries(playerWeaponStats).map(([name, stats]) => [name, { kills: stats.kills, deaths: 0, games: stats.games }])
     );
-    window.currentSearchContext = weaponName.charAt(0).toUpperCase() + weaponName.slice(1);
+    window.currentSearchContext = formatWeaponName(weaponName);
 
     const weaponIcon = weaponIcons[weaponName.toLowerCase()];
 
@@ -3415,7 +3415,7 @@ function renderWeaponSearchResults(weaponName) {
     html += '</div>'; // End breakdowns-container
 
     // Games header
-    html += `<div class="section-header">Games with ${weaponName.charAt(0).toUpperCase() + weaponName.slice(1)} Kills (${weaponGames.length})</div>`;
+    html += `<div class="section-header">Games with ${formatWeaponName(weaponName)} Kills (${weaponGames.length})</div>`;
 
     // Games list
     html += '<div class="search-games-list">';
@@ -3833,8 +3833,40 @@ function formatTime(seconds) {
 }
 
 function formatMedalName(name) {
-    return name.split('_').map(word => 
+    return name.split('_').map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+}
+
+function formatWeaponName(name) {
+    // Handle special cases
+    const specialCases = {
+        'smg': 'SMG',
+        'br': 'BR',
+        'brute plasma rifle': 'Brute Plasma Rifle',
+        'plasma pistol': 'Plasma Pistol',
+        'plasma rifle': 'Plasma Rifle',
+        'battle rifle': 'Battle Rifle',
+        'sniper rifle': 'Sniper Rifle',
+        'beam rifle': 'Beam Rifle',
+        'rocket launcher': 'Rocket Launcher',
+        'fuel rod': 'Fuel Rod',
+        'brute shot': 'Brute Shot',
+        'energy sword': 'Energy Sword',
+        'frag grenade': 'Frag Grenade',
+        'plasma grenade': 'Plasma Grenade',
+        'sentinal beam': 'Sentinel Beam',
+        'sentinel beam': 'Sentinel Beam'
+    };
+
+    const lower = name.toLowerCase();
+    if (specialCases[lower]) {
+        return specialCases[lower];
+    }
+
+    // Default: capitalize each word
+    return name.split(' ').map(word =>
+        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
     ).join(' ');
 }
 
@@ -3988,7 +4020,7 @@ function showWeaponBreakdown() {
             html += `<div class="weapon-breakdown-placeholder">${weapon.substring(0, 2).toUpperCase()}</div>`;
         }
         html += `<div class="weapon-breakdown-info">`;
-        html += `<div class="weapon-breakdown-name">${weapon}</div>`;
+        html += `<div class="weapon-breakdown-name">${formatWeaponName(weapon)}</div>`;
         html += `<div class="weapon-breakdown-stats">${kills} kills (${percentage}%)</div>`;
         html += `</div>`;
         html += `</div>`;
