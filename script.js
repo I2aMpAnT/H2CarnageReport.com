@@ -822,7 +822,7 @@ async function loadEmblems() {
 
 // Get emblem URL for a player (by in-game name or discord ID)
 function getPlayerEmblem(playerNameOrId) {
-    // First try direct discord ID lookup
+    // First try direct discord ID lookup in emblems.json
     if (playerEmblems[playerNameOrId]) {
         return playerEmblems[playerNameOrId].emblem_url;
     }
@@ -831,6 +831,26 @@ function getPlayerEmblem(playerNameOrId) {
     const discordId = profileNameToDiscordId[playerNameOrId];
     if (discordId && playerEmblems[discordId]) {
         return playerEmblems[discordId].emblem_url;
+    }
+
+    // Fallback: Search in gamesData detailed_stats for the most recent emblem
+    // This handles cases where emblems.json doesn't exist
+    let playerName = playerNameOrId;
+
+    // If playerNameOrId is a discord ID, get the in-game name
+    if (discordIdToProfileNames[playerNameOrId] && discordIdToProfileNames[playerNameOrId].length > 0) {
+        playerName = discordIdToProfileNames[playerNameOrId][0];
+    }
+
+    // Search games in reverse order to get the most recent emblem
+    for (let i = gamesData.length - 1; i >= 0; i--) {
+        const game = gamesData[i];
+        if (game.detailed_stats) {
+            const playerStats = game.detailed_stats.find(s => s.player === playerName);
+            if (playerStats && playerStats.emblem_url) {
+                return playerStats.emblem_url;
+            }
+        }
     }
 
     return null;
@@ -1106,7 +1126,15 @@ async function loadGamesData() {
 
         console.log('[DEBUG] Rendering leaderboard...');
         renderLeaderboard();
-        
+
+        // Add playlist filter event listener
+        const playlistFilter = document.getElementById('playlistFilter');
+        if (playlistFilter) {
+            playlistFilter.addEventListener('change', function() {
+                renderLeaderboard(this.value);
+            });
+        }
+
         console.log('[DEBUG] Initializing search...');
         initializeSearch();
         
@@ -2271,9 +2299,15 @@ async function loadTwitchVodsForGame(gameId, linkedPlayers, gameStartTime, durat
     container.innerHTML = html;
 }
 
-function renderLeaderboard() {
+function renderLeaderboard(selectedPlaylist = null) {
     const leaderboardContainer = document.getElementById('leaderboardContainer');
     if (!leaderboardContainer) return;
+
+    // Get selected playlist from dropdown if not provided
+    if (selectedPlaylist === null) {
+        const playlistFilter = document.getElementById('playlistFilter');
+        selectedPlaylist = playlistFilter ? playlistFilter.value : 'all';
+    }
 
     // Build leaderboard from rankstatsData (includes ALL players, even with 0 games)
     if (Object.keys(rankstatsData).length === 0) {
@@ -2285,6 +2319,19 @@ function renderLeaderboard() {
     const players = Object.entries(rankstatsData).map(([discordId, data]) => {
         // Get profile names (in-game names) for this discord ID
         const profileNames = discordIdToProfileNames[discordId] || [];
+
+        // For playlist filtering, use playlist-specific rank if available
+        let rank, hasPlaylistData;
+        if (selectedPlaylist !== 'all' && data[selectedPlaylist]) {
+            rank = data[selectedPlaylist];
+            hasPlaylistData = true;
+        } else if (selectedPlaylist === 'all') {
+            rank = data.rank || 1;
+            hasPlaylistData = data.total_games > 0;
+        } else {
+            rank = 1;
+            hasPlaylistData = false;
+        }
 
         // Use stats directly from rankstats (already aggregated by backend)
         const kills = data.kills || 0;
@@ -2298,19 +2345,30 @@ function renderLeaderboard() {
             // Priority: display_name > discord_name
             displayName: data.display_name || data.discord_name || 'Unknown',
             profileNames: profileNames,
-            rank: data.rank || 1,
+            rank: rank,
             wins: wins,
             losses: losses,
             games: games,
             kills: kills,
             deaths: deaths,
             kd: deaths > 0 ? (kills / deaths).toFixed(2) : kills.toFixed(2),
-            winrate: games > 0 ? ((wins / games) * 100).toFixed(1) : '0.0'
+            winrate: games > 0 ? ((wins / games) * 100).toFixed(1) : '0.0',
+            hasPlaylistData: hasPlaylistData
         };
     });
 
+    // Filter players based on playlist selection
+    let filteredPlayers;
+    if (selectedPlaylist !== 'all') {
+        // Only show players who have played in this playlist
+        filteredPlayers = players.filter(p => p.hasPlaylistData);
+    } else {
+        // Show all players with games
+        filteredPlayers = players.filter(p => p.games > 0);
+    }
+
     // Sort by rank descending (50 at top, 1 at bottom), then by wins, then by K/D
-    players.sort((a, b) => {
+    filteredPlayers.sort((a, b) => {
         if (b.rank !== a.rank) return b.rank - a.rank;
         if (b.wins !== a.wins) return b.wins - a.wins;
         return parseFloat(b.kd) - parseFloat(a.kd);
@@ -2324,7 +2382,11 @@ function renderLeaderboard() {
     html += '<div>K/D</div>';
     html += '</div>';
 
-    players.forEach((player) => {
+    if (filteredPlayers.length === 0) {
+        html += '<div class="leaderboard-row"><div class="no-data-message" style="grid-column: 1/-1; text-align: center; padding: 20px;">No players found for this playlist</div></div>';
+    }
+
+    filteredPlayers.forEach((player) => {
         const rankIconUrl = `https://r2-cdn.insignia.live/h2-rank/${player.rank}.png`;
         // Use first profile name for data-player attribute (for game history lookups)
         // If no profile names, use discord name as fallback
@@ -4245,11 +4307,63 @@ function openPlayerProfile(playerName) {
     // Get player's games
     currentProfileGames = getPlayerGames(playerName);
 
+    // Render playlist ranks
+    renderProfilePlaylistRanks(playerName);
+
     // Populate filter dropdowns
     populateProfileFilters();
 
     // Render games list
     renderProfileGames(currentProfileGames);
+}
+
+// Render playlist-specific ranks for the player profile
+function renderProfilePlaylistRanks(playerName) {
+    const container = document.getElementById('profilePlaylistRanks');
+    if (!container) return;
+
+    // Get discord ID for the player
+    const discordId = profileNameToDiscordId[playerName];
+    const playerData = discordId ? rankstatsData[discordId] : null;
+
+    if (!playerData) {
+        container.innerHTML = '';
+        return;
+    }
+
+    // Available playlists
+    const playlists = ['MLG 4v4', 'Double Team', 'Head to Head'];
+
+    let html = '<div class="playlist-ranks-grid">';
+
+    playlists.forEach(playlist => {
+        const playlistRank = playerData[playlist] || null;
+        const hasPlaylistData = playlistRank !== null;
+
+        if (hasPlaylistData) {
+            const rankIconUrl = `https://r2-cdn.insignia.live/h2-rank/${playlistRank}.png`;
+            html += `
+                <div class="playlist-rank-card">
+                    <div class="playlist-rank-icon">
+                        <img src="${rankIconUrl}" alt="Rank ${playlistRank}" class="rank-icon-medium" />
+                    </div>
+                    <div class="playlist-rank-info">
+                        <div class="playlist-name">${playlist}</div>
+                        <div class="playlist-rank-value">Rank ${playlistRank}</div>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    html += '</div>';
+
+    // Only show if player has at least one playlist rank
+    if (html.includes('playlist-rank-card')) {
+        container.innerHTML = html;
+    } else {
+        container.innerHTML = '';
+    }
 }
 
 function closePlayerProfile() {

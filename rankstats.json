@@ -181,19 +181,25 @@
     "rank": 1
   },
   "334212655613214721": {
-    "xp": 0,
-    "wins": 0,
-    "losses": 0,
+    "xp": 120,
+    "wins": 2,
+    "losses": 3,
     "series_wins": 0,
     "series_losses": 0,
-    "total_games": 0,
+    "total_games": 5,
     "total_series": 0,
     "mmr": 1400,
     "discord_name": "fluhd",
     "in_game_names": ["getitoutdaFLUD"],
     "twitch_name": "floodandshiro",
     "twitch_url": "https://twitch.tv/floodandshiro",
-    "rank": 1
+    "rank": 2,
+    "MLG 4v4": 2,
+    "highest_rank": 2,
+    "kills": 105,
+    "deaths": 90,
+    "assists": 50,
+    "headshots": 70
   },
   "212720585279537153": {
     "xp": 0,
