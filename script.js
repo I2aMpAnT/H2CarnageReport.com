@@ -7,6 +7,9 @@ let playerRanks = {};
 // Full rankstats data from rankstats.json (keyed by discord ID)
 let rankstatsData = {};
 
+// Rank history data from rankhistory.json (keyed by discord ID)
+let rankHistoryData = {};
+
 // Mapping from in-game profile names to discord IDs
 let profileNameToDiscordId = {};
 
@@ -390,6 +393,76 @@ async function loadPlayerRanks() {
     }
 }
 
+// Load rank history from rankhistory.json
+async function loadRankHistory() {
+    try {
+        const response = await fetch('rankhistory.json');
+        if (!response.ok) {
+            console.log('[RANK_HISTORY] No rankhistory.json found');
+            return;
+        }
+        rankHistoryData = await response.json();
+        console.log('[RANK_HISTORY] Loaded history for', Object.keys(rankHistoryData).filter(k => !k.startsWith('_')).length, 'players');
+    } catch (error) {
+        console.log('[RANK_HISTORY] Error loading rank history:', error);
+    }
+}
+
+// Get pre-game rank for a player at a specific game time
+// Looks up the rank_before from the most recent history entry before the game time
+function getRankAtTime(playerName, gameEndTime) {
+    // Find discord ID for this player
+    const discordId = profileNameToDiscordId[playerName];
+    if (!discordId || !rankHistoryData[discordId]) {
+        return null;
+    }
+
+    const history = rankHistoryData[discordId].history;
+    if (!history || history.length === 0) {
+        return null;
+    }
+
+    // Parse game end time (format: "11/28/2025 20:18" or ISO format)
+    let gameTime;
+    if (gameEndTime.includes('/')) {
+        // Parse MM/DD/YYYY HH:MM format
+        const [datePart, timePart] = gameEndTime.split(' ');
+        const [month, day, year] = datePart.split('/');
+        gameTime = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart}:00`);
+    } else {
+        gameTime = new Date(gameEndTime);
+    }
+
+    // Find the history entry that matches this game time (within 5 minutes tolerance)
+    // The entry's rank_before is what we want
+    for (const entry of history) {
+        const entryTime = new Date(entry.timestamp);
+        const diffMinutes = Math.abs((gameTime - entryTime) / (1000 * 60));
+
+        if (diffMinutes <= 5) {
+            return entry.rank_before;
+        }
+    }
+
+    // If no exact match, find the most recent entry before the game time
+    let mostRecentBefore = null;
+    for (const entry of history) {
+        const entryTime = new Date(entry.timestamp);
+        if (entryTime < gameTime) {
+            if (!mostRecentBefore || entryTime > new Date(mostRecentBefore.timestamp)) {
+                mostRecentBefore = entry;
+            }
+        }
+    }
+
+    if (mostRecentBefore) {
+        return mostRecentBefore.rank_after;
+    }
+
+    // If no history before, return rank 1 (starting rank)
+    return 1;
+}
+
 // Load player emblems from emblems.json
 async function loadEmblems() {
     try {
@@ -562,6 +635,53 @@ function getPlayerRankIcon(playerName, size = 'small') {
     return `<img src="https://r2-cdn.insignia.live/h2-rank/${rank}.png" alt="Rank ${rank}" class="${sizeClass}" />`;
 }
 
+// Get rank icon for a specific rank number
+function getRankIconForValue(rank, size = 'small') {
+    if (!rank || rank < 1) return '';
+    const sizeClass = size === 'small' ? 'rank-icon-small' : 'rank-icon';
+    return `<img src="https://r2-cdn.insignia.live/h2-rank/${rank}.png" alt="Rank ${rank}" class="${sizeClass}" />`;
+}
+
+// Get pre-game rank icon for a player in a specific game
+// Uses rank history, then pre_game_rank from player data, otherwise falls back to current rank
+function getPreGameRankIcon(player, size = 'small', game = null) {
+    // First try to look up from rank history using game end time
+    if (game && game.details && game.details['End Time']) {
+        const preGameRank = getRankAtTime(player.name, game.details['End Time']);
+        if (preGameRank) {
+            return getRankIconForValue(preGameRank, size);
+        }
+    }
+
+    // Check if player object has pre_game_rank
+    if (player.pre_game_rank && player.pre_game_rank > 0) {
+        return getRankIconForValue(player.pre_game_rank, size);
+    }
+    // Fallback to current rank
+    return getPlayerRankIcon(player.name, size);
+}
+
+// Get pre-game rank icon by looking up player name in game data
+function getPreGameRankIconByName(playerName, game, size = 'small') {
+    // First try to look up from rank history using game end time
+    if (game && game.details && game.details['End Time']) {
+        const preGameRank = getRankAtTime(playerName, game.details['End Time']);
+        if (preGameRank) {
+            return getRankIconForValue(preGameRank, size);
+        }
+    }
+
+    // Fall back to player object's pre_game_rank if available
+    if (game && game.players) {
+        const player = game.players.find(p => p.name === playerName);
+        if (player) {
+            return getPreGameRankIcon(player, size, game);
+        }
+    }
+    // Fallback to current rank
+    return getPlayerRankIcon(playerName, size);
+}
+
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
     loadGamesData();
@@ -630,6 +750,10 @@ async function loadGamesData() {
         // Build mappings between in-game names and discord IDs
         console.log('[DEBUG] Building profile name mappings...');
         buildProfileNameMappings();
+
+        // Load rank history (must be after mappings are built)
+        console.log('[DEBUG] Loading rank history...');
+        await loadRankHistory();
 
         loadingArea.style.display = 'none';
         statsArea.style.display = 'block';
@@ -1027,10 +1151,10 @@ function renderScoreboard(game) {
         html += `<div class="scoreboard-row" ${teamAttr} style="grid-template-columns: ${gridTemplate}">`;
         
         html += `<div class="sb-player clickable-player" data-player="${player.name}">`;
-        html += getPlayerRankIcon(player.name, 'small');
+        html += getPreGameRankIcon(player, 'small', game);
         html += `<span class="player-name-text">${player.name}</span>`;
         html += `</div>`;
-        
+
         html += `<div class="sb-score">${player.score || 0}</div>`;
         html += `<div class="sb-kills">${player.kills || 0}</div>`;
         html += `<div class="sb-deaths">${player.deaths || 0}</div>`;
@@ -1135,10 +1259,10 @@ function renderPVP(game) {
         
         // Row header (killer name)
         html += `<div class="pvp-row-header clickable-player" data-player="${killer.name}">`;
-        html += getPlayerRankIcon(killer.name, 'small');
+        html += getPreGameRankIcon(killer, 'small', game);
         html += `<span class="player-name-text">${killer.name}</span>`;
         html += `</div>`;
-        
+
         // Kill counts for each victim
         sortedPlayers.forEach(victim => {
             const kills = killMatrix[killer.name][victim.name] || 0;
@@ -1219,7 +1343,7 @@ function renderDetailedStats(game) {
         const timeAlive = formatTime(stat.total_time_alive || 0);
 
         html += `<tr ${teamAttr}>`;
-        html += `<td><span class="player-with-rank">${getPlayerRankIcon(stat.player, 'small')}<span>${stat.player}</span></span></td>`;
+        html += `<td><span class="player-with-rank">${getPreGameRankIconByName(stat.player, game, 'small')}<span>${stat.player}</span></span></td>`;
         html += `<td>${stat.kills}</td>`;
         html += `<td>${stat.assists}</td>`;
         html += `<td>${stat.deaths}</td>`;
@@ -1272,8 +1396,8 @@ function renderDetailedStats(game) {
             const team = playerTeams[stat.player];
             const teamAttr = team ? `data-team="${team}"` : '';
 
-            html += `<tr ${teamAttr}><td><span class="player-with-rank">${getPlayerRankIcon(stat.player, 'small')}<span>${stat.player}</span></span></td>`;
-            
+            html += `<tr ${teamAttr}><td><span class="player-with-rank">${getPreGameRankIconByName(stat.player, game, 'small')}<span>${stat.player}</span></span></td>`;
+
             if (hasCTF) {
                 html += `<td>${stat.ctf_scores || 0}</td>`;
                 html += `<td>${stat.ctf_flag_steals || 0}</td>`;
@@ -1342,7 +1466,7 @@ function renderMedals(game) {
         
         html += `<div class="medals-row" ${teamAttr}>`;
         html += `<div class="medals-player-col clickable-player" data-player="${playerMedals.player}">`;
-        html += getPlayerRankIcon(playerMedals.player, 'small');
+        html += getPreGameRankIconByName(playerMedals.player, game, 'small');
         html += `<span class="player-name-text">${playerMedals.player}</span>`;
         html += `</div>`;
         html += `<div class="medals-icons-col">`;
@@ -1441,7 +1565,7 @@ function renderAccuracy(game) {
         
         html += `<div class="accuracy-row" ${teamAttr}>`;
         html += `<div class="accuracy-player-col clickable-player" data-player="${playerName}">`;
-        html += getPlayerRankIcon(playerName, 'small');
+        html += getPreGameRankIconByName(playerName, game, 'small');
         html += `<span class="player-name-text">${playerName}</span>`;
         html += `</div>`;
         html += `<div class="accuracy-total-col">${totalHit}</div>`;
@@ -1503,7 +1627,7 @@ function renderWeapons(game) {
         
         html += `<div class="weapons-row" ${teamAttr}>`;
         html += `<div class="weapons-player-col clickable-player" data-player="${playerName}">`;
-        html += getPlayerRankIcon(playerName, 'small');
+        html += getPreGameRankIconByName(playerName, game, 'small');
         html += `<span class="player-name-text">${playerName}</span>`;
         html += `</div>`;
         html += `<div class="weapons-kills-col">`;
@@ -1621,7 +1745,7 @@ function renderTwitch(game) {
 
             html += `<div class="twitch-player-card twitch-linked ${teamClass}">`;
             html += `<div class="twitch-player-header clickable-player" data-player="${player.name}">`;
-            html += getPlayerRankIcon(player.name, 'small');
+            html += getPreGameRankIcon(player, 'small', game);
             html += `<span class="twitch-player-name">${displayName}</span>`;
             html += `</div>`;
             html += `<div class="twitch-player-status">`;
@@ -1649,7 +1773,7 @@ function renderTwitch(game) {
 
             html += `<div class="twitch-player-card ${teamClass}">`;
             html += `<div class="twitch-player-header clickable-player" data-player="${player.name}">`;
-            html += getPlayerRankIcon(player.name, 'small');
+            html += getPreGameRankIcon(player, 'small', game);
             html += `<span class="twitch-player-name">${displayName}</span>`;
             html += `</div>`;
             html += `<div class="twitch-player-status">`;
