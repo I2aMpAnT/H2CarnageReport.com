@@ -2268,16 +2268,38 @@ async function loadTwitchVodsForGame(gameId, linkedPlayers, gameStartTime, durat
                 });
             }
 
-            // Fetch clips for this player
+            // Fetch clips for this player and filter by VOD metadata
             const clips = await fetchTwitchClips(twitchData.name);
             const displayName = getDisplayNameForProfile(player.name);
-            clips.slice(0, 5).forEach(clip => {
-                clipEmbeds.push({
-                    ...clip,
-                    player: displayName,
-                    twitchName: twitchData.name,
-                    team: player.team
-                });
+
+            // Calculate game time range
+            const gameStart = new Date(gameStartTime);
+            const gameEnd = new Date(gameStart.getTime() + (durationMinutes * 60 * 1000));
+
+            // Filter clips that match this game's time range using VOD metadata
+            clips.forEach(clip => {
+                let clipContentTime = null;
+
+                // If clip has VOD metadata, calculate actual content time
+                if (clip.videoId && clip.videoOffsetSeconds !== undefined && clip.videoOffsetSeconds !== null) {
+                    // Find matching VOD
+                    const matchingVod = vods.find(v => v.id === clip.videoId);
+                    if (matchingVod) {
+                        const vodStart = new Date(matchingVod.createdAt);
+                        clipContentTime = new Date(vodStart.getTime() + (clip.videoOffsetSeconds * 1000));
+                    }
+                }
+
+                // Check if clip content time falls within game time range
+                if (clipContentTime && clipContentTime >= gameStart && clipContentTime <= gameEnd) {
+                    clipEmbeds.push({
+                        ...clip,
+                        player: displayName,
+                        twitchName: twitchData.name,
+                        team: player.team,
+                        clipContentTime: clipContentTime
+                    });
+                }
             });
         } catch (error) {
             console.error(`Error loading Twitch content for ${twitchData.name}:`, error);
