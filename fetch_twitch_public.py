@@ -184,18 +184,35 @@ def vod_covers_time(vod: dict, target_start: datetime, target_end: datetime) -> 
 
 
 def main():
-    # The accounts to check
-    usernames = ["kidm0de", "e212", "c6rocky", "h2roasted"]
-    match_time_str = "2025-11-28 20:50"
-    duration_minutes = 15
+    import argparse
 
-    match_time = parse_datetime(match_time_str)
-    match_end = match_time + timedelta(minutes=duration_minutes)
+    parser = argparse.ArgumentParser(description="Fetch Twitch VODs and Clips for a match time period")
+    parser.add_argument("--usernames", "-u", help="Comma-separated Twitch usernames")
+    parser.add_argument("--date", "-d", help="Match date/time in local time (e.g., '2025-11-28 20:50')")
+    parser.add_argument("--duration", "-m", type=int, default=15, help="Match duration in minutes")
+    parser.add_argument("--utc-offset", "-z", type=int, default=-5,
+                       help="UTC offset in hours (default: -5 for EST)")
+
+    args = parser.parse_args()
+
+    # Default values if not specified
+    usernames = args.usernames.split(",") if args.usernames else ["kidm0de", "e212", "c6rocky", "h2roasted"]
+    usernames = [u.strip() for u in usernames]
+    match_time_str = args.date or "2025-11-28 20:50"
+    duration_minutes = args.duration
+    utc_offset_hours = args.utc_offset
+
+    # Parse local time and convert to UTC
+    match_time_local = parse_datetime(match_time_str)
+    # Convert local time to UTC by subtracting the offset (EST is -5, so we add 5 hours)
+    match_time_utc = match_time_local - timedelta(hours=utc_offset_hours)
+    match_end_utc = match_time_utc + timedelta(minutes=duration_minutes)
 
     print("=" * 60)
     print("TWITCH VOD & CLIP FETCHER")
     print("=" * 60)
-    print(f"\nMatch Time: {match_time_str} (Duration: {duration_minutes} min)")
+    print(f"\nMatch Time (Local): {match_time_str} (Duration: {duration_minutes} min)")
+    print(f"Match Time (UTC):   {match_time_utc.strftime('%Y-%m-%d %H:%M')}")
     print(f"Accounts: {', '.join(usernames)}")
     print()
 
@@ -218,7 +235,7 @@ def main():
         else:
             found_match = False
             for vod in videos:
-                covers, offset = vod_covers_time(vod, match_time, match_end)
+                covers, offset = vod_covers_time(vod, match_time_utc, match_end_utc)
                 if covers:
                     found_match = True
                     vod_id = vod["id"]
