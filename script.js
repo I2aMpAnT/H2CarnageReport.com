@@ -149,11 +149,82 @@ let twitchHubLoaded = false;
 let twitchHubVods = [];
 let twitchHubClips = [];
 
-// Load the Twitch Hub - fetches VODs and clips from all linked players
+// Get all game time ranges from gamesData
+function getGameTimeRanges() {
+    const ranges = [];
+    gamesData.forEach(game => {
+        if (game.details && game.details['Start Time'] && game.details['End Time']) {
+            // Parse "11/28/2025 20:03" format
+            const startStr = game.details['Start Time'];
+            const endStr = game.details['End Time'];
+            const startDate = parseGameDateTime(startStr);
+            const endDate = parseGameDateTime(endStr);
+            if (startDate && endDate) {
+                ranges.push({ start: startDate, end: endDate });
+            }
+        }
+    });
+    return ranges;
+}
+
+// Parse game date time string "MM/DD/YYYY HH:MM" to Date object
+function parseGameDateTime(dateStr) {
+    if (!dateStr) return null;
+    try {
+        // Format: "11/28/2025 20:03"
+        const parts = dateStr.split(' ');
+        if (parts.length !== 2) return null;
+        const dateParts = parts[0].split('/');
+        const timeParts = parts[1].split(':');
+        if (dateParts.length !== 3 || timeParts.length !== 2) return null;
+        const month = parseInt(dateParts[0]) - 1;
+        const day = parseInt(dateParts[1]);
+        const year = parseInt(dateParts[2]);
+        const hours = parseInt(timeParts[0]);
+        const minutes = parseInt(timeParts[1]);
+        return new Date(year, month, day, hours, minutes);
+    } catch (e) {
+        return null;
+    }
+}
+
+// Check if a VOD overlaps with any game time
+function vodOverlapsWithGames(vod, gameRanges) {
+    const vodStart = new Date(vod.createdAt);
+    const vodEnd = new Date(vodStart.getTime() + (vod.lengthSeconds * 1000));
+
+    for (const range of gameRanges) {
+        // Check if VOD time range overlaps with game time range
+        if (vodStart <= range.end && vodEnd >= range.start) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Check if a clip was created during/near a game time (within 24 hours of a game)
+function clipOverlapsWithGames(clip, gameRanges) {
+    const clipDate = new Date(clip.createdAt);
+    const dayMs = 24 * 60 * 60 * 1000;
+
+    for (const range of gameRanges) {
+        // Clip was created within 24 hours of game end
+        if (clipDate >= range.start && clipDate <= new Date(range.end.getTime() + dayMs)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Load the Twitch Hub - fetches VODs and clips that overlap with tracked games
 async function loadTwitchHub() {
     if (twitchHubLoaded) return;
 
     console.log('[TWITCH_HUB] Loading Twitch Hub...');
+
+    // Get game time ranges for filtering
+    const gameRanges = getGameTimeRanges();
+    console.log(`[TWITCH_HUB] Found ${gameRanges.length} game time ranges for filtering`);
 
     // Get all players with linked Twitch accounts
     const linkedTwitchUsers = [];
@@ -195,11 +266,22 @@ async function loadTwitchHub() {
     const vodsResults = await Promise.all(vodsPromises);
     const clipsResults = await Promise.all(clipsPromises);
 
-    // Flatten and sort by date
-    twitchHubVods = vodsResults.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    twitchHubClips = clipsResults.flat().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    // Flatten results
+    const allVods = vodsResults.flat();
+    const allClips = clipsResults.flat();
 
-    console.log(`[TWITCH_HUB] Loaded ${twitchHubVods.length} VODs and ${twitchHubClips.length} clips`);
+    console.log(`[TWITCH_HUB] Fetched ${allVods.length} total VODs and ${allClips.length} total clips`);
+
+    // Filter to only VODs/clips that overlap with game times
+    twitchHubVods = allVods
+        .filter(vod => vodOverlapsWithGames(vod, gameRanges))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    twitchHubClips = allClips
+        .filter(clip => clipOverlapsWithGames(clip, gameRanges))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    console.log(`[TWITCH_HUB] After filtering: ${twitchHubVods.length} VODs and ${twitchHubClips.length} clips match game times`);
 
     // Render the content
     renderTwitchHubVods();
