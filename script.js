@@ -770,15 +770,23 @@ function getRankAtTime(playerName, gameEndTime, discordId = null) {
         gameTime = new Date(gameEndTime);
     }
 
-    // Find the history entry that matches this game time (within 5 minutes tolerance)
+    // Find the CLOSEST history entry within 5 minutes tolerance
     // The entry's rank_before is what we want
+    let closestMatch = null;
+    let closestDiff = Infinity;
+
     for (const entry of history) {
         const entryTime = new Date(entry.timestamp);
         const diffMinutes = Math.abs((gameTime - entryTime) / (1000 * 60));
 
-        if (diffMinutes <= 5) {
-            return entry.rank_before;
+        if (diffMinutes <= 5 && diffMinutes < closestDiff) {
+            closestMatch = entry;
+            closestDiff = diffMinutes;
         }
+    }
+
+    if (closestMatch) {
+        return closestMatch.rank_before;
     }
 
     // If no exact match, find the most recent entry before the game time
