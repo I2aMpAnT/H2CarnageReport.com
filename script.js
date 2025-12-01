@@ -4102,6 +4102,172 @@ function closeMedalBreakdown() {
     }
 }
 
+// Show breakdown of which players this player killed (using versus data)
+function showProfileKillsBreakdown() {
+    if (!currentProfilePlayer) return;
+
+    // Calculate kills against each opponent from versus data
+    const killsByOpponent = {};
+
+    currentProfileGames.forEach(game => {
+        const versusData = game.versus?.[currentProfilePlayer];
+        if (versusData) {
+            Object.entries(versusData).forEach(([opponent, kills]) => {
+                if (opponent !== currentProfilePlayer && kills > 0) {
+                    if (!killsByOpponent[opponent]) {
+                        killsByOpponent[opponent] = { kills: 0, games: 0 };
+                    }
+                    killsByOpponent[opponent].kills += kills;
+                    killsByOpponent[opponent].games++;
+                }
+            });
+        }
+    });
+
+    // Sort by most kills
+    const sortedOpponents = Object.entries(killsByOpponent).sort((a, b) => b[1].kills - a[1].kills);
+    const totalKills = sortedOpponents.reduce((sum, [_, data]) => sum + data.kills, 0);
+
+    // Create modal
+    let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
+    html += '<div class="weapon-breakdown-modal" onclick="event.stopPropagation()">';
+    html += `<div class="weapon-breakdown-header">`;
+    html += `<h2>${getDisplayNameForProfile(currentProfilePlayer)} - Kill Breakdown</h2>`;
+    html += `<button class="modal-close" onclick="closeMedalBreakdown()">&times;</button>`;
+    html += `</div>`;
+    html += '<div class="weapon-breakdown-grid player-breakdown-grid">';
+
+    if (sortedOpponents.length === 0) {
+        html += '<div class="no-data">No kill data available</div>';
+    }
+
+    for (const [opponent, data] of sortedOpponents) {
+        const percentage = totalKills > 0 ? ((data.kills / totalKills) * 100).toFixed(1) : '0';
+        const opponentDiscordId = profileNameToDiscordId[opponent];
+        const emblemUrl = getPlayerEmblem(opponent);
+        const emblemParams = emblemUrl ? parseEmblemParams(emblemUrl) : null;
+
+        html += `<div class="weapon-breakdown-item player-breakdown-item">`;
+        html += `<div class="player-breakdown-emblem">`;
+        if (emblemParams && typeof generateEmblemDataUrl === 'function') {
+            html += `<div class="emblem-placeholder" data-emblem-params='${JSON.stringify(emblemParams)}'></div>`;
+        } else {
+            html += `<div class="emblem-placeholder-empty"></div>`;
+        }
+        html += `</div>`;
+        html += `<div class="weapon-breakdown-info">`;
+        html += `<div class="weapon-breakdown-name clickable-player" data-player="${opponent}" onclick="event.stopPropagation(); closeMedalBreakdown(); showPlayerProfile('${opponent}')">${getDisplayNameForProfile(opponent)}</div>`;
+        html += `<div class="weapon-breakdown-stats">${data.kills} kills (${percentage}%)</div>`;
+        html += `<div class="weapon-breakdown-substats">${data.games} games together</div>`;
+        html += `</div>`;
+        html += `</div>`;
+    }
+
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    // Add to page
+    const overlay = document.createElement('div');
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay.firstChild);
+
+    // Load emblems async
+    loadBreakdownEmblems();
+}
+
+// Show breakdown of which players killed this player (using versus data)
+function showProfileDeathsBreakdown() {
+    if (!currentProfilePlayer) return;
+
+    // Calculate deaths from each opponent from versus data
+    const deathsByOpponent = {};
+
+    currentProfileGames.forEach(game => {
+        if (!game.versus) return;
+
+        // For each player in the game, check how many times they killed currentProfilePlayer
+        Object.entries(game.versus).forEach(([killer, victims]) => {
+            if (killer !== currentProfilePlayer && victims[currentProfilePlayer]) {
+                const deaths = victims[currentProfilePlayer];
+                if (deaths > 0) {
+                    if (!deathsByOpponent[killer]) {
+                        deathsByOpponent[killer] = { deaths: 0, games: 0 };
+                    }
+                    deathsByOpponent[killer].deaths += deaths;
+                    deathsByOpponent[killer].games++;
+                }
+            }
+        });
+    });
+
+    // Sort by most deaths
+    const sortedOpponents = Object.entries(deathsByOpponent).sort((a, b) => b[1].deaths - a[1].deaths);
+    const totalDeaths = sortedOpponents.reduce((sum, [_, data]) => sum + data.deaths, 0);
+
+    // Create modal
+    let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
+    html += '<div class="weapon-breakdown-modal" onclick="event.stopPropagation()">';
+    html += `<div class="weapon-breakdown-header">`;
+    html += `<h2>${getDisplayNameForProfile(currentProfilePlayer)} - Death Breakdown</h2>`;
+    html += `<button class="modal-close" onclick="closeMedalBreakdown()">&times;</button>`;
+    html += `</div>`;
+    html += '<div class="weapon-breakdown-grid player-breakdown-grid">';
+
+    if (sortedOpponents.length === 0) {
+        html += '<div class="no-data">No death data available</div>';
+    }
+
+    for (const [killer, data] of sortedOpponents) {
+        const percentage = totalDeaths > 0 ? ((data.deaths / totalDeaths) * 100).toFixed(1) : '0';
+        const emblemUrl = getPlayerEmblem(killer);
+        const emblemParams = emblemUrl ? parseEmblemParams(emblemUrl) : null;
+
+        html += `<div class="weapon-breakdown-item player-breakdown-item">`;
+        html += `<div class="player-breakdown-emblem">`;
+        if (emblemParams && typeof generateEmblemDataUrl === 'function') {
+            html += `<div class="emblem-placeholder" data-emblem-params='${JSON.stringify(emblemParams)}'></div>`;
+        } else {
+            html += `<div class="emblem-placeholder-empty"></div>`;
+        }
+        html += `</div>`;
+        html += `<div class="weapon-breakdown-info">`;
+        html += `<div class="weapon-breakdown-name clickable-player" data-player="${killer}" onclick="event.stopPropagation(); closeMedalBreakdown(); showPlayerProfile('${killer}')">${getDisplayNameForProfile(killer)}</div>`;
+        html += `<div class="weapon-breakdown-stats">${data.deaths} deaths (${percentage}%)</div>`;
+        html += `<div class="weapon-breakdown-substats">${data.games} games together</div>`;
+        html += `</div>`;
+        html += `</div>`;
+    }
+
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    // Add to page
+    const overlay = document.createElement('div');
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay.firstChild);
+
+    // Load emblems async
+    loadBreakdownEmblems();
+}
+
+// Load emblems for breakdown modals
+async function loadBreakdownEmblems() {
+    const placeholders = document.querySelectorAll('.emblem-placeholder[data-emblem-params]');
+    for (const placeholder of placeholders) {
+        try {
+            const params = JSON.parse(placeholder.dataset.emblemParams);
+            const dataUrl = await generateEmblemDataUrl(params);
+            if (dataUrl) {
+                placeholder.innerHTML = `<img src="${dataUrl}" alt="Emblem" class="breakdown-emblem-img">`;
+            }
+        } catch (e) {
+            console.error('Error loading emblem:', e);
+        }
+    }
+}
+
 function showPlayersFacedBreakdown() {
     const playerName = window.currentSearchContext;
     if (!playerName) return;
@@ -4544,11 +4710,11 @@ function renderProfileStats(stats) {
             <div class="stat-value">${stats.kd}</div>
             <div class="stat-label">K/D Ratio</div>
         </div>
-        <div class="profile-stat-card clickable-stat" onclick="showWeaponBreakdown()">
+        <div class="profile-stat-card clickable-stat" onclick="showProfileKillsBreakdown()">
             <div class="stat-value">${stats.kills}</div>
             <div class="stat-label">Total Kills</div>
         </div>
-        <div class="profile-stat-card">
+        <div class="profile-stat-card clickable-stat" onclick="showProfileDeathsBreakdown()">
             <div class="stat-value">${stats.deaths}</div>
             <div class="stat-label">Total Deaths</div>
         </div>
