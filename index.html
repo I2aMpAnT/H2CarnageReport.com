@@ -25,7 +25,6 @@
                 </a>
             </div>
             <img src="HaloCarnageReport Logo.png" alt="Carnage Report Logo" class="logo">
-            <div class="version-tag">v2025.11.30.3</div>
         </header>
 
         <div class="search-section">
@@ -46,6 +45,7 @@
                 <button class="main-tab-btn active" id="btn-main-gamehistory" onclick="switchMainTab('gamehistory')">Game History</button>
                 <button class="main-tab-btn" id="btn-main-leaderboard" onclick="switchMainTab('leaderboard')">Leaderboard</button>
                 <button class="main-tab-btn" id="btn-main-pvp" onclick="switchMainTab('pvp')">PVP</button>
+                <button class="main-tab-btn" id="btn-main-twitch" onclick="switchMainTab('twitch')">Twitch</button>
                 <button class="main-tab-btn" id="btn-main-emblem" onclick="switchMainTab('emblem')">Emblem Generator</button>
             </div>
 
@@ -77,6 +77,15 @@
             </div>
 
             <div id="main-tab-leaderboard" class="main-tab-content" style="display: none;">
+                <div class="leaderboard-filters">
+                    <label for="playlistFilter">Playlist:</label>
+                    <select id="playlistFilter" class="playlist-filter-select">
+                        <option value="all">All Playlists</option>
+                        <option value="MLG 4v4" selected>MLG 4v4</option>
+                        <option value="Double Team">Double Team</option>
+                        <option value="Head to Head">Head to Head</option>
+                    </select>
+                </div>
                 <div id="leaderboardContainer"></div>
             </div>
 
@@ -97,6 +106,28 @@
                 </div>
             </div>
 
+            <div id="main-tab-twitch" class="main-tab-content" style="display: none;">
+                <div class="twitch-hub-container">
+                    <h2 class="twitch-hub-title">Twitch Hub</h2>
+                    <p class="twitch-hub-subtitle">VODs and Clips from our community</p>
+
+                    <div class="twitch-hub-tabs">
+                        <button class="twitch-hub-tab active" onclick="switchTwitchHubTab('vods')">VODs</button>
+                        <button class="twitch-hub-tab" onclick="switchTwitchHubTab('clips')">Clips</button>
+                    </div>
+
+                    <div id="twitch-hub-vods" class="twitch-hub-content" style="display: block;">
+                        <div class="twitch-hub-loading">Loading VODs...</div>
+                        <div id="twitch-vods-grid" class="twitch-hub-grid"></div>
+                    </div>
+
+                    <div id="twitch-hub-clips" class="twitch-hub-content" style="display: none;">
+                        <div class="twitch-hub-loading">Loading Clips...</div>
+                        <div id="twitch-clips-grid" class="twitch-hub-grid"></div>
+                    </div>
+                </div>
+            </div>
+
             <div id="main-tab-emblem" class="main-tab-content" style="display: none;">
                 <h2>Emblem Generator</h2>
                 
@@ -107,7 +138,7 @@
                         <div class="control-row">
                             <label>Emblem</label>
                             <select id="emblemForeground" onchange="updateEmblem()">
-                                <option value="0">Seventh Column</option>
+                                <option value="0" selected>Seventh Column</option>
                                 <option value="1">Bullseye</option>
                                 <option value="2">Vortex</option>
                                 <option value="3">Halt</option>
@@ -115,7 +146,7 @@
                                 <option value="5">Da Bomb</option>
                                 <option value="6">Trinity</option>
                                 <option value="7">Delta</option>
-                                <option value="8" selected>Rampancy</option>
+                                <option value="8">Rampancy</option>
                                 <option value="9">Sergeant</option>
                                 <option value="10">Phoenix</option>
                                 <option value="11">Champion</option>
@@ -177,11 +208,11 @@
                         <div class="control-row">
                             <label>Background</label>
                             <select id="emblemBackground" onchange="updateEmblem()">
-                                <option value="0">Solid</option>
+                                <option value="0" selected>Solid</option>
                                 <option value="1">Vertical Split</option>
                                 <option value="2">Horizontal Split 1</option>
                                 <option value="3">Horizontal Split 2</option>
-                                <option value="4" selected>Vertical Gradient</option>
+                                <option value="4">Vertical Gradient</option>
                                 <option value="5">Horizontal Gradient</option>
                                 <option value="6">Triple Column</option>
                                 <option value="7">Triple Row</option>
@@ -225,7 +256,7 @@
                             <div class="color-picker-group">
                                 <label>Primary Player Color</label>
                                 <div class="color-picker" id="bgPrimaryPicker" data-target="bgPrimary"></div>
-                                <input type="hidden" id="bgPrimary" value="11">
+                                <input type="hidden" id="bgPrimary" value="10">
                             </div>
                             <div class="color-picker-group">
                                 <label>Secondary Player Color</label>
@@ -235,12 +266,12 @@
                             <div class="color-picker-group">
                                 <label>Primary Emblem Color</label>
                                 <div class="color-picker" id="emblemPrimaryPicker" data-target="emblemPrimary"></div>
-                                <input type="hidden" id="emblemPrimary" value="1">
+                                <input type="hidden" id="emblemPrimary" value="0">
                             </div>
                             <div class="color-picker-group">
                                 <label>Secondary Emblem Color</label>
                                 <div class="color-picker" id="emblemSecondaryPicker" data-target="emblemSecondary"></div>
-                                <input type="hidden" id="emblemSecondary" value="0">
+                                <input type="hidden" id="emblemSecondary" value="1">
                             </div>
                         </div>
                         <div style="text-align: center; margin-top: 15px;">
@@ -269,6 +300,9 @@
                     <div id="profileRankIcon" class="profile-rank"></div>
                     <h1 id="profilePlayerName" class="profile-name"></h1>
                 </div>
+            </div>
+            <div class="profile-playlist-ranks-section">
+                <div id="profilePlaylistRanks" class="profile-playlist-ranks"></div>
             </div>
             <div class="profile-stats-section">
                 <div id="profileOverallStats" class="profile-overall-stats"></div>
@@ -311,6 +345,9 @@
             <div class="stats-grid" id="modalPlayerStats"></div>
         </div>
     </div>
+
+    <!-- Version Number -->
+    <div class="version-number">v1.1.0</div>
 
     <script src="script.js"></script>
     <script src="emblem.js"></script>
