@@ -2970,7 +2970,12 @@ function renderPlayerSearchResults(playerName) {
     const stats = calculatePlayerStats(playerName);
     const playerGames = gamesData.filter(game =>
         game.players.some(p => p.name === playerName)
-    );
+    ).sort((a, b) => {
+        // Sort by date, most recent first
+        const dateA = new Date(a.details['Start Time'] || a.details['End Time'] || 0);
+        const dateB = new Date(b.details['Start Time'] || b.details['End Time'] || 0);
+        return dateB - dateA;
+    });
 
     // Store medal breakdown for modal
     window.currentSearchMedalBreakdown = stats.medalBreakdown;
