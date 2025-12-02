@@ -590,9 +590,22 @@
         return window.getStaticEmblemUrl(params);
     }
 
-    // Copy emblem URL to clipboard
+    // Copy static emblem PNG URL to clipboard
     window.copyEmblemUrl = function() {
-        const url = getEmblemUrl();
+        // Get current emblem parameters
+        const params = {
+            P: parseInt(document.getElementById('bgPrimary')?.value || 10),
+            S: parseInt(document.getElementById('bgSecondary')?.value || 0),
+            EP: parseInt(document.getElementById('emblemPrimary')?.value || 0),
+            ES: parseInt(document.getElementById('emblemSecondary')?.value || 1),
+            EF: parseInt(document.getElementById('emblemForeground')?.value || 0),
+            EB: parseInt(document.getElementById('emblemBackground')?.value || 0),
+            ET: document.getElementById('emblemToggle')?.checked ? 1 : 0
+        };
+
+        // Use static pre-rendered PNG URL
+        const url = window.getStaticEmblemUrl(params);
+
         navigator.clipboard.writeText(url).then(() => {
             // Show brief feedback
             const canvas = document.getElementById('emblemCanvas');
@@ -624,7 +637,7 @@
         const canvas = document.getElementById('emblemCanvas');
         if (canvas) {
             canvas.style.cursor = 'pointer';
-            canvas.title = 'Click to copy emblem URL';
+            canvas.title = 'Click to copy static PNG URL';
             canvas.addEventListener('click', copyEmblemUrl);
         }
     }
