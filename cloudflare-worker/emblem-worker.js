@@ -66,7 +66,7 @@ const backgroundFiles = [
 // ============== PNG Decoder ==============
 // Minimal PNG decoder for Cloudflare Workers
 
-function decodePNG(arrayBuffer) {
+async function decodePNG(arrayBuffer) {
   const data = new Uint8Array(arrayBuffer);
   let offset = 8; // Skip PNG signature
 
@@ -102,8 +102,8 @@ function decodePNG(arrayBuffer) {
     pos += chunk.length;
   }
 
-  // Decompress using DecompressionStream (available in Workers)
-  const decompressed = inflate(compressed);
+  // Decompress using DecompressionStream
+  const decompressed = await inflateAsync(compressed);
 
   // Unfilter and extract RGBA data
   const bytesPerPixel = colorType === 6 ? 4 : (colorType === 2 ? 3 : 1);
@@ -167,37 +167,36 @@ function paethPredictor(a, b, c) {
   return c;
 }
 
-// Simple inflate implementation for zlib data
-function inflate(data) {
-  // Skip zlib header (2 bytes)
-  const deflateData = data.slice(2, -4); // Also skip adler32 checksum
+// Inflate using DecompressionStream (available in Cloudflare Workers)
+async function inflateAsync(data) {
+  // data is zlib compressed (header + deflate + adler32)
+  // DecompressionStream expects raw deflate, so we skip zlib header (2 bytes) and checksum (4 bytes)
+  const deflateData = data.slice(2, -4);
 
-  // Use built-in DecompressionStream if available, otherwise simple inflate
-  const result = [];
-  let pos = 0;
+  const ds = new DecompressionStream('deflate-raw');
+  const writer = ds.writable.getWriter();
+  writer.write(deflateData);
+  writer.close();
 
-  while (pos < deflateData.length) {
-    const bfinal = deflateData[pos] & 1;
-    const btype = (deflateData[pos] >> 1) & 3;
+  const chunks = [];
+  const reader = ds.readable.getReader();
 
-    if (btype === 0) {
-      // Uncompressed block
-      pos++;
-      const len = deflateData[pos] | (deflateData[pos + 1] << 8);
-      pos += 4; // Skip len and nlen
-      for (let i = 0; i < len; i++) {
-        result.push(deflateData[pos++]);
-      }
-    } else {
-      // For compressed blocks, we need a full deflate implementation
-      // This is a simplified version - for production use pako or similar
-      throw new Error('Compressed PNG blocks require full deflate implementation');
-    }
-
-    if (bfinal) break;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
   }
 
-  return new Uint8Array(result);
+  // Concatenate chunks
+  const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+  const result = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, offset);
+    offset += chunk.length;
+  }
+
+  return result;
 }
 
 // ============== PNG Encoder ==============
