@@ -68,6 +68,15 @@ const backgroundFiles = [
 
 async function decodePNG(arrayBuffer) {
   const data = new Uint8Array(arrayBuffer);
+
+  // Validate PNG signature
+  const signature = [137, 80, 78, 71, 13, 10, 26, 10];
+  for (let i = 0; i < 8; i++) {
+    if (data[i] !== signature[i]) {
+      throw new Error('Invalid PNG signature - not a PNG file');
+    }
+  }
+
   let offset = 8; // Skip PNG signature
 
   let width = 0, height = 0, bitDepth = 0, colorType = 0;
@@ -91,6 +100,14 @@ async function decodePNG(arrayBuffer) {
     }
 
     offset += 12 + length;
+  }
+
+  // Validate we got the required data
+  if (width === 0 || height === 0) {
+    throw new Error('Invalid PNG - no IHDR chunk found');
+  }
+  if (chunks.length === 0) {
+    throw new Error('Invalid PNG - no IDAT chunks found');
   }
 
   // Concatenate IDAT chunks
@@ -148,6 +165,17 @@ async function decodePNG(arrayBuffer) {
         imageData[dstIdx + 1] = row[x * 3 + 1];
         imageData[dstIdx + 2] = row[x * 3 + 2];
         imageData[dstIdx + 3] = 255;
+      } else if (colorType === 0) { // Grayscale
+        const gray = row[x];
+        imageData[dstIdx] = gray;
+        imageData[dstIdx + 1] = gray;
+        imageData[dstIdx + 2] = gray;
+        imageData[dstIdx + 3] = 255;
+      } else if (colorType === 4) { // Grayscale + Alpha
+        imageData[dstIdx] = row[x * 2];
+        imageData[dstIdx + 1] = row[x * 2];
+        imageData[dstIdx + 2] = row[x * 2];
+        imageData[dstIdx + 3] = row[x * 2 + 1];
       }
     }
 
@@ -551,8 +579,11 @@ export default {
         fetch(bgUrl)
       ]);
 
-      if (!fgResponse.ok || !bgResponse.ok) {
-        throw new Error('Failed to fetch source images');
+      if (!fgResponse.ok) {
+        throw new Error(`Failed to fetch foreground: ${fgUrl} (${fgResponse.status})`);
+      }
+      if (!bgResponse.ok) {
+        throw new Error(`Failed to fetch background: ${bgUrl} (${bgResponse.status})`);
       }
 
       // Decode PNGs
@@ -561,8 +592,17 @@ export default {
         bgResponse.arrayBuffer()
       ]);
 
-      const fgImage = await decodePNG(fgBuffer);
-      const bgImage = await decodePNG(bgBuffer);
+      let fgImage, bgImage;
+      try {
+        fgImage = await decodePNG(fgBuffer);
+      } catch (e) {
+        throw new Error(`Failed to decode foreground PNG: ${e.message}`);
+      }
+      try {
+        bgImage = await decodePNG(bgBuffer);
+      } catch (e) {
+        throw new Error(`Failed to decode background PNG: ${e.message}`);
+      }
 
       // Process images
       const bgProcessed = processBackground(bgImage.data, bgImage.width, bgImage.height,
