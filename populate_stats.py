@@ -29,6 +29,7 @@ EMBLEMS_FILE = 'emblems.json'
 ACTIVE_MATCHES_FILE = 'active_matches.json'
 RANKHISTORY_FILE = 'rankhistory.json'
 MANUAL_PLAYLISTS_FILE = 'manual_playlists.json'
+PROCESSED_STATE_FILE = 'processed_state.json'
 
 # Base URL for downloadable files on the VPS
 STATS_BASE_URL = 'http://104.207.143.249/stats'
@@ -148,6 +149,77 @@ def load_manual_playlists():
             return json.load(f)
     except:
         return {}
+
+def load_processed_state():
+    """
+    Load processed_state.json which tracks what has been processed.
+
+    Format:
+    {
+        "games": {
+            "filename.xlsx": "playlist_or_null"
+        },
+        "manual_playlists_hash": "hash_of_manual_playlists_json"
+    }
+    """
+    try:
+        with open(PROCESSED_STATE_FILE, 'r') as f:
+            return json.load(f)
+    except:
+        return {"games": {}, "manual_playlists_hash": ""}
+
+def save_processed_state(state):
+    """Save processed state to file"""
+    with open(PROCESSED_STATE_FILE, 'w') as f:
+        json.dump(state, f, indent=2)
+
+def get_manual_playlists_hash(manual_playlists):
+    """Get a hash of manual_playlists to detect changes"""
+    import hashlib
+    content = json.dumps(manual_playlists, sort_keys=True)
+    return hashlib.md5(content.encode()).hexdigest()
+
+def check_for_changes(stats_files, manual_playlists, processed_state):
+    """
+    Check what needs to be processed.
+
+    Returns:
+        (needs_full_rebuild, new_files, changed_playlists)
+        - needs_full_rebuild: True if we need to recalc everything
+        - new_files: List of new game files to process
+        - changed_playlists: Dict of files whose playlist changed
+    """
+    old_games = processed_state.get("games", {})
+    old_hash = processed_state.get("manual_playlists_hash", "")
+    new_hash = get_manual_playlists_hash(manual_playlists)
+
+    new_files = []
+    changed_playlists = {}
+
+    for filename in stats_files:
+        old_playlist = old_games.get(filename)
+        new_playlist = manual_playlists.get(filename)  # None if not in manual
+
+        if filename not in old_games:
+            # Brand new file
+            new_files.append(filename)
+        elif old_playlist != new_playlist:
+            # Playlist assignment changed
+            changed_playlists[filename] = {"old": old_playlist, "new": new_playlist}
+
+    # If any old game's playlist changed, we need full rebuild
+    # (because XP calculations depend on game order and player rank at time)
+    needs_full_rebuild = len(changed_playlists) > 0
+
+    return needs_full_rebuild, new_files, changed_playlists
+
+
+def load_player_state_from_processed(processed_state):
+    """
+    Load saved player XP/rank state from processed_state.json.
+    Returns dict of {user_id: {playlist: {'xp': int, 'rank': int, ...}}}
+    """
+    return processed_state.get("player_state", {})
 
 def is_valid_mlg_combo(map_name, base_gametype):
     """Check if map + base gametype is a valid MLG 4v4 combination.
@@ -789,23 +861,79 @@ def main():
     if manual_playlists:
         print(f"Loaded {len(manual_playlists)} manual playlist override(s)")
 
-    # STEP 1: Zero out ALL player stats
-    print("\nStep 1: Zeroing out all player stats...")
-    for user_id in rankstats:
-        rankstats[user_id]['xp'] = 0
-        rankstats[user_id]['wins'] = 0
-        rankstats[user_id]['losses'] = 0
-        rankstats[user_id]['total_games'] = 0
-        rankstats[user_id]['series_wins'] = 0
-        rankstats[user_id]['series_losses'] = 0
-        rankstats[user_id]['total_series'] = 0
-        rankstats[user_id]['rank'] = 1
-        # Remove any detailed stats
-        for key in ['kills', 'deaths', 'assists', 'headshots']:
-            if key in rankstats[user_id]:
-                del rankstats[user_id][key]
+    # Check for changes since last run
+    stats_files = sorted([f for f in os.listdir(STATS_DIR) if f.endswith('.xlsx') and '_identity' not in f])
+    processed_state = load_processed_state()
+    needs_full_rebuild, new_files, changed_playlists = check_for_changes(stats_files, manual_playlists, processed_state)
 
-    print(f"  Zeroed stats for {len(rankstats)} players")
+    if not new_files and not changed_playlists:
+        print("\nNo changes detected - nothing to process!")
+        print("  (Add new game files or update manual_playlists.json to trigger processing)")
+        return
+
+    print(f"\nChanges detected:")
+    if new_files:
+        print(f"  New files: {len(new_files)}")
+        for f in new_files[:5]:
+            print(f"    - {f}")
+        if len(new_files) > 5:
+            print(f"    ... and {len(new_files) - 5} more")
+    if changed_playlists:
+        print(f"  Playlist changes: {len(changed_playlists)}")
+        for f, change in list(changed_playlists.items())[:3]:
+            print(f"    - {f}: {change['old']} -> {change['new']}")
+
+    # Determine processing mode
+    incremental_mode = not needs_full_rebuild and len(new_files) > 0
+    saved_player_state = load_player_state_from_processed(processed_state) if incremental_mode else {}
+
+    if needs_full_rebuild:
+        print("\n  -> Playlist changes require full recalculation from start")
+    elif incremental_mode and saved_player_state:
+        print("\n  -> Incremental mode: resuming from saved state, processing new games only")
+    else:
+        print("\n  -> Full processing (no saved state found)")
+        incremental_mode = False
+
+    # STEP 1: Zero out or restore player stats
+    if incremental_mode and saved_player_state:
+        print("\nStep 1: Restoring player stats from saved state...")
+        for user_id, state in saved_player_state.items():
+            if user_id in rankstats:
+                # Restore per-playlist state
+                for playlist, pl_state in state.get('playlists', {}).items():
+                    if 'playlists' not in rankstats[user_id]:
+                        rankstats[user_id]['playlists'] = {}
+                    rankstats[user_id]['playlists'][playlist] = pl_state.copy()
+                    rankstats[user_id][playlist] = pl_state.get('rank', 1)
+                # Restore overall stats
+                rankstats[user_id]['xp'] = state.get('xp', 0)
+                rankstats[user_id]['rank'] = state.get('rank', 1)
+                rankstats[user_id]['wins'] = state.get('wins', 0)
+                rankstats[user_id]['losses'] = state.get('losses', 0)
+                rankstats[user_id]['total_games'] = state.get('total_games', 0)
+                rankstats[user_id]['kills'] = state.get('kills', 0)
+                rankstats[user_id]['deaths'] = state.get('deaths', 0)
+                rankstats[user_id]['assists'] = state.get('assists', 0)
+                rankstats[user_id]['headshots'] = state.get('headshots', 0)
+                rankstats[user_id]['highest_rank'] = state.get('highest_rank', 1)
+        print(f"  Restored state for {len(saved_player_state)} players")
+    else:
+        print("\nStep 1: Zeroing out all player stats...")
+        for user_id in rankstats:
+            rankstats[user_id]['xp'] = 0
+            rankstats[user_id]['wins'] = 0
+            rankstats[user_id]['losses'] = 0
+            rankstats[user_id]['total_games'] = 0
+            rankstats[user_id]['series_wins'] = 0
+            rankstats[user_id]['series_losses'] = 0
+            rankstats[user_id]['total_series'] = 0
+            rankstats[user_id]['rank'] = 1
+            # Remove any detailed stats
+            for key in ['kills', 'deaths', 'assists', 'headshots']:
+                if key in rankstats[user_id]:
+                    del rankstats[user_id][key]
+        print(f"  Zeroed stats for {len(rankstats)} players")
 
     # STEP 2: Find and parse ALL games, determining playlist for each
     # ALL matches are logged for stats, but only playlist-tagged matches count for rank
@@ -970,15 +1098,45 @@ def main():
         player_playlist_rank[name] = {}
         player_playlist_highest_rank[name] = {}
 
+    # In incremental mode, restore player XP/rank state from saved state
+    if incremental_mode and saved_player_state:
+        print("\n  Restoring player XP/rank state from saved state...")
+        for user_id, state in saved_player_state.items():
+            # Find player names that map to this user_id
+            for player_name, pid in player_to_id.items():
+                if pid == user_id:
+                    # Restore per-playlist XP and rank
+                    for playlist, pl_state in state.get('playlists', {}).items():
+                        player_playlist_xp[player_name][playlist] = pl_state.get('xp', 0)
+                        player_playlist_rank[player_name][playlist] = pl_state.get('rank', 1)
+                        player_playlist_highest_rank[player_name][playlist] = pl_state.get('highest_rank', 1)
+                        player_playlist_wins[player_name][playlist] = pl_state.get('wins', 0)
+                        player_playlist_losses[player_name][playlist] = pl_state.get('losses', 0)
+                        player_playlist_games[player_name][playlist] = pl_state.get('games', 0)
+                    # Restore game stats (kills, deaths, etc.)
+                    if player_name in player_game_stats:
+                        player_game_stats[player_name]['kills'] = state.get('kills', 0)
+                        player_game_stats[player_name]['deaths'] = state.get('deaths', 0)
+                        player_game_stats[player_name]['assists'] = state.get('assists', 0)
+                        player_game_stats[player_name]['headshots'] = state.get('headshots', 0)
+                        player_game_stats[player_name]['games'] = state.get('total_games', 0)
+
     # Initialize rank history tracking (for rankhistory.json)
     # Structure: {discord_id: {"discord_name": str, "history": [...]}}
-    rankhistory = {}
+    rankhistory = load_rankhistory() if incremental_mode else {}
 
     print(f"  Found {len(all_player_names)} unique players")
 
-    # STEP 3a: Process ALL games for stats (kills, deaths, etc.)
-    print("\n  Processing ALL games for stats...")
-    for game_num, game in enumerate(all_games, 1):
+    # STEP 3a: Process games for stats (kills, deaths, etc.)
+    # In incremental mode, only process new games (old stats restored from saved state)
+    if incremental_mode:
+        games_to_process_for_stats = [g for g in all_games if g.get('source_file') in new_files]
+        print(f"\n  Processing {len(games_to_process_for_stats)} NEW games for stats (incremental mode)...")
+    else:
+        games_to_process_for_stats = all_games
+        print(f"\n  Processing {len(games_to_process_for_stats)} games for stats...")
+
+    for game_num, game in enumerate(games_to_process_for_stats, 1):
         game_name = game['details'].get('Variant Name', 'Unknown')
         playlist = game.get('playlist')
         playlist_tag = f"[{playlist}]" if playlist else "[UNRANKED]"
@@ -986,18 +1144,25 @@ def main():
         for player in game['players']:
             player_name = player['name']
 
-            # Update cumulative stats from ALL games
+            # Update cumulative stats
             player_game_stats[player_name]['kills'] += player.get('kills', 0)
             player_game_stats[player_name]['deaths'] += player.get('deaths', 0)
             player_game_stats[player_name]['assists'] += player.get('assists', 0)
             player_game_stats[player_name]['headshots'] += player.get('head_shots', 0)
             player_game_stats[player_name]['games'] += 1
 
-    print(f"  Processed {len(all_games)} games for stats")
+    print(f"  Processed {len(games_to_process_for_stats)} games for stats")
 
     # STEP 3b: Process RANKED games for XP/wins/losses (per playlist)
-    print("\n  Processing RANKED games for XP (per playlist)...")
-    for game_num, game in enumerate(ranked_games, 1):
+    # In incremental mode, only process new games
+    if incremental_mode:
+        games_to_process_for_xp = [g for g in ranked_games if g.get('source_file') in new_files]
+        print(f"\n  Processing {len(games_to_process_for_xp)} NEW ranked games for XP (incremental mode)...")
+    else:
+        games_to_process_for_xp = ranked_games
+        print(f"\n  Processing {len(games_to_process_for_xp)} RANKED games for XP (per playlist)...")
+
+    for game_num, game in enumerate(games_to_process_for_xp, 1):
         winners, losers = determine_winners_losers(game)
         game_name = game['details'].get('Variant Name', 'Unknown')
         playlist = game.get('playlist')
@@ -1331,6 +1496,34 @@ def main():
 
     # Note: Website now loads data via fetch() from JSON files
     # No need to embed data in HTML anymore
+
+    # Save processed state for incremental updates
+    print("\n  Saving processed state for future incremental updates...")
+    new_player_state = {}
+    for user_id, data in rankstats.items():
+        # Only save players with actual game data
+        if data.get('total_games', 0) > 0 or data.get('wins', 0) > 0 or data.get('losses', 0) > 0:
+            new_player_state[user_id] = {
+                'xp': data.get('xp', 0),
+                'rank': data.get('rank', 1),
+                'wins': data.get('wins', 0),
+                'losses': data.get('losses', 0),
+                'total_games': data.get('total_games', 0),
+                'kills': data.get('kills', 0),
+                'deaths': data.get('deaths', 0),
+                'assists': data.get('assists', 0),
+                'headshots': data.get('headshots', 0),
+                'highest_rank': data.get('highest_rank', 1),
+                'playlists': data.get('playlists', {})
+            }
+
+    new_processed_state = {
+        "games": {game['source_file']: game.get('playlist') for game in all_games},
+        "manual_playlists_hash": get_manual_playlists_hash(manual_playlists),
+        "player_state": new_player_state
+    }
+    save_processed_state(new_processed_state)
+    print(f"  Saved {PROCESSED_STATE_FILE} ({len(new_player_state)} players, {len(all_games)} games)")
 
     print("\nDone!")
 
