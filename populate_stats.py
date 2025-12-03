@@ -1063,38 +1063,74 @@ def main():
     # STEP 4: Update rankstats with final values
     print("\n\nStep 4: Updating rankstats with final values...")
 
+    # Group player names by user_id to consolidate stats for aliases
+    user_id_to_names = {}
     for player_name in all_player_names:
         user_id = player_to_id[player_name]
-        stats = player_game_stats[player_name]
+        if user_id not in user_id_to_names:
+            user_id_to_names[user_id] = []
+        user_id_to_names[user_id].append(player_name)
 
-        # Overall stats from ALL games
-        rankstats[user_id]['total_games'] = stats['games']
-        rankstats[user_id]['kills'] = stats['kills']
-        rankstats[user_id]['deaths'] = stats['deaths']
-        rankstats[user_id]['assists'] = stats['assists']
-        rankstats[user_id]['headshots'] = stats['headshots']
+    for user_id, player_names in user_id_to_names.items():
+        # Consolidate stats from all aliases for this user
+        total_games = 0
+        total_kills = 0
+        total_deaths = 0
+        total_assists = 0
+        total_headshots = 0
 
-        # Calculate total wins/losses across all playlists (for legacy compatibility)
-        total_wins = sum(player_playlist_wins[player_name].values())
-        total_losses = sum(player_playlist_losses[player_name].values())
-        total_ranked_games = sum(player_playlist_games[player_name].values())
+        for player_name in player_names:
+            stats = player_game_stats[player_name]
+            total_games += stats['games']
+            total_kills += stats['kills']
+            total_deaths += stats['deaths']
+            total_assists += stats['assists']
+            total_headshots += stats['headshots']
+
+        # Overall stats from ALL games (consolidated)
+        rankstats[user_id]['total_games'] = total_games
+        rankstats[user_id]['kills'] = total_kills
+        rankstats[user_id]['deaths'] = total_deaths
+        rankstats[user_id]['assists'] = total_assists
+        rankstats[user_id]['headshots'] = total_headshots
+
+        # Calculate total wins/losses across all playlists and all aliases
+        total_wins = 0
+        total_losses = 0
+        for player_name in player_names:
+            total_wins += sum(player_playlist_wins[player_name].values())
+            total_losses += sum(player_playlist_losses[player_name].values())
 
         rankstats[user_id]['wins'] = total_wins
         rankstats[user_id]['losses'] = total_losses
 
-        # Per-playlist ranking data
+        # Per-playlist ranking data (consolidated from all aliases)
+        # First, collect all playlists this user played in across all aliases
+        all_playlists = set()
+        for player_name in player_names:
+            all_playlists.update(player_playlist_xp[player_name].keys())
+
         playlists_data = {}
         overall_highest_rank = 1
         primary_playlist = None
         primary_xp = 0
 
-        for playlist in player_playlist_xp[player_name]:
-            playlist_xp = player_playlist_xp[player_name][playlist]
+        for playlist in all_playlists:
+            # Sum stats across all aliases for this playlist
+            playlist_xp = 0
+            playlist_highest = 1
+            playlist_wins = 0
+            playlist_losses = 0
+            playlist_games = 0
+
+            for player_name in player_names:
+                playlist_xp += player_playlist_xp[player_name].get(playlist, 0)
+                playlist_highest = max(playlist_highest, player_playlist_highest_rank[player_name].get(playlist, 1))
+                playlist_wins += player_playlist_wins[player_name].get(playlist, 0)
+                playlist_losses += player_playlist_losses[player_name].get(playlist, 0)
+                playlist_games += player_playlist_games[player_name].get(playlist, 0)
+
             playlist_rank = calculate_rank(playlist_xp, rank_thresholds)
-            playlist_highest = player_playlist_highest_rank[player_name].get(playlist, 1)
-            playlist_wins = player_playlist_wins[player_name].get(playlist, 0)
-            playlist_losses = player_playlist_losses[player_name].get(playlist, 0)
-            playlist_games = player_playlist_games[player_name].get(playlist, 0)
 
             playlists_data[playlist] = {
                 'xp': playlist_xp,
