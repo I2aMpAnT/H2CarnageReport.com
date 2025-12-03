@@ -286,6 +286,72 @@ def determine_playlist(file_path, active_match=None):
 
     return None
 
+def build_mac_to_discord_lookup(players):
+    """
+    Build a lookup from MAC address to Discord user_id from players.json.
+    MAC addresses are normalized to lowercase without colons.
+    """
+    mac_to_user = {}
+    for user_id, data in players.items():
+        mac_addresses = data.get('mac_addresses', [])
+        for mac in mac_addresses:
+            # Normalize MAC: remove colons and lowercase
+            normalized_mac = mac.replace(':', '').lower()
+            mac_to_user[normalized_mac] = user_id
+    return mac_to_user
+
+
+def parse_identity_file(identity_path):
+    """
+    Parse an identity XLSX file and return a mapping of in-game name to MAC address.
+    Identity files contain: Player Name, Xbox Identifier, Machine Identifier (MAC)
+    """
+    try:
+        df = pd.read_excel(identity_path)
+        name_to_mac = {}
+        for _, row in df.iterrows():
+            player_name = str(row.get('Player Name', '')).strip()
+            # Machine Identifier is the MAC address (without colons)
+            mac = str(row.get('Machine Identifier', '')).strip().lower()
+            if player_name and mac:
+                name_to_mac[player_name.lower()] = mac
+        return name_to_mac
+    except Exception as e:
+        print(f"  Warning: Could not parse identity file {identity_path}: {e}")
+        return {}
+
+
+def get_identity_file_for_game(game_file):
+    """
+    Find the corresponding identity file for a game file.
+    Game files: 20251128_201839.xlsx
+    Identity files: 20251128_074332_identity.xlsx (use closest timestamp before game)
+    """
+    import re
+    game_basename = os.path.basename(game_file)
+    game_timestamp = game_basename.replace('.xlsx', '')
+
+    # Look for identity files in the same directory
+    stats_dir = os.path.dirname(game_file) or STATS_DIR
+    identity_files = sorted([f for f in os.listdir(stats_dir) if '_identity.xlsx' in f])
+
+    if not identity_files:
+        return None
+
+    # Find the most recent identity file with timestamp <= game timestamp
+    best_identity = None
+    for identity_file in identity_files:
+        identity_timestamp = identity_file.replace('_identity.xlsx', '')
+        if identity_timestamp <= game_timestamp:
+            best_identity = identity_file
+
+    # If no identity file before, use the earliest one
+    if not best_identity and identity_files:
+        best_identity = identity_files[0]
+
+    return os.path.join(stats_dir, best_identity) if best_identity else None
+
+
 def build_profile_lookup(players):
     """
     Build a lookup from stats profile name to Discord user_id.
@@ -315,6 +381,36 @@ def build_profile_lookup(players):
                 profile_to_user[alias.lower()] = user_id
 
     return profile_to_user
+
+
+def resolve_player_to_discord(player_name, identity_name_to_mac, mac_to_discord, profile_lookup, rankstats):
+    """
+    Resolve a player's in-game name to their Discord ID using multiple methods.
+
+    Priority:
+    1. Identity file MAC -> Discord ID (most reliable)
+    2. Profile lookup from players.json aliases
+    3. Discord name match in rankstats
+    """
+    name_lower = player_name.strip().lower()
+
+    # Method 1: Use identity file MAC address
+    if name_lower in identity_name_to_mac:
+        mac = identity_name_to_mac[name_lower]
+        if mac in mac_to_discord:
+            return mac_to_discord[mac]
+
+    # Method 2: Profile lookup (aliases, display_name, stats_profile)
+    if name_lower in profile_lookup:
+        return profile_lookup[name_lower]
+
+    # Method 3: Discord name match in rankstats
+    for user_id, data in rankstats.items():
+        discord_name = data.get('discord_name', '').lower()
+        if discord_name == name_lower:
+            return user_id
+
+    return None
 
 def calculate_rank(xp, rank_thresholds):
     """Calculate rank based on XP and thresholds."""
@@ -578,6 +674,10 @@ def main():
     profile_lookup = build_profile_lookup(players)
     print(f"Built {len(profile_lookup)} profile->user mappings")
 
+    # Build MAC address to Discord ID lookup from players.json
+    mac_to_discord = build_mac_to_discord_lookup(players)
+    print(f"Built {len(mac_to_discord)} MAC->Discord mappings")
+
     # Load active matches from Discord bot (if any)
     active_match = load_active_matches()
     if active_match:
@@ -669,56 +769,93 @@ def main():
     player_playlist_losses = {}  # {player_name: {playlist: losses}}
     player_playlist_games = {}  # {player_name: {playlist: games}}
 
+    # Parse all identity files and build per-game name->MAC mappings
+    # Each identity file covers a session, use it for games in that session
+    print("\n  Loading identity files for MAC->name resolution...")
+    all_identity_mappings = {}  # {identity_file: {name_lower: mac}}
+    identity_files = sorted([f for f in os.listdir(STATS_DIR) if '_identity.xlsx' in f])
+    for identity_file in identity_files:
+        identity_path = os.path.join(STATS_DIR, identity_file)
+        name_to_mac = parse_identity_file(identity_path)
+        all_identity_mappings[identity_file] = name_to_mac
+        print(f"    {identity_file}: {len(name_to_mac)} player(s)")
+
+    # Get combined identity mapping (for games that don't have a specific identity file)
+    combined_identity = {}
+    for mapping in all_identity_mappings.values():
+        combined_identity.update(mapping)
+
     # First, identify all players from ALL games and match them to rankstats
+    # Uses identity file MAC -> Discord ID resolution (game by game)
     all_player_names = set()
+    player_to_id = {}  # {player_name: discord_id}
+
     for game in all_games:
-        for player in game['players']:
-            all_player_names.add(player['name'])
+        game_file = game.get('source_file', '')
+        file_path = os.path.join(STATS_DIR, game_file)
 
-    # Match players to existing entries or create new ones
-    # Uses MAC ID-linked profile matching from players.json
-    player_to_id = {}
-    for player_name in all_player_names:
-        user_id = find_player_by_name(rankstats, player_name, profile_lookup)
-        if user_id:
-            player_to_id[player_name] = user_id
-            # Update alias from players.json if available
-            if user_id in players:
-                player_data = players[user_id]
-                # Set alias from first entry in aliases array (for website display)
-                # Priority: aliases[0] > display_name
-                aliases = player_data.get('aliases', [])
-                if aliases:
-                    rankstats[user_id]['alias'] = aliases[0]
-                elif player_data.get('display_name'):
-                    rankstats[user_id]['alias'] = player_data['display_name']
+        # Find and use the identity file for this game's session
+        identity_file = get_identity_file_for_game(file_path)
+        if identity_file:
+            identity_basename = os.path.basename(identity_file)
+            identity_name_to_mac = all_identity_mappings.get(identity_basename, {})
         else:
-            # Create new entry for unmatched player
-            temp_id = str(abs(hash(player_name)) % 10**18)
-            player_to_id[player_name] = temp_id
-            rankstats[temp_id] = {
-                'xp': 0,
-                'wins': 0,
-                'losses': 0,
-                'series_wins': 0,
-                'series_losses': 0,
-                'total_games': 0,
-                'total_series': 0,
-                'mmr': 750,
-                'discord_name': player_name,
-                'rank': 1
-            }
+            identity_name_to_mac = combined_identity
 
-        # Initialize overall stats tracking (from ALL games)
-        player_game_stats[player_name] = {
-            'kills': 0, 'deaths': 0, 'assists': 0,
-            'games': 0, 'headshots': 0
-        }
-        # Initialize per-playlist tracking (only from ranked games)
-        player_playlist_xp[player_name] = {}
-        player_playlist_wins[player_name] = {}
-        player_playlist_losses[player_name] = {}
-        player_playlist_games[player_name] = {}
+        for player in game['players']:
+            player_name = player['name']
+            all_player_names.add(player_name)
+
+            # Skip if already resolved
+            if player_name in player_to_id:
+                continue
+
+            # Resolve player using identity MAC -> Discord ID
+            user_id = resolve_player_to_discord(
+                player_name, identity_name_to_mac, mac_to_discord, profile_lookup, rankstats
+            )
+
+            if user_id:
+                player_to_id[player_name] = user_id
+                # Update alias from players.json if available
+                if user_id in players:
+                    player_data = players[user_id]
+                    # Set alias from first entry in aliases array (for website display)
+                    # Priority: aliases[0] > display_name
+                    aliases = player_data.get('aliases', [])
+                    if aliases:
+                        rankstats[user_id]['alias'] = aliases[0]
+                    elif player_data.get('display_name'):
+                        rankstats[user_id]['alias'] = player_data['display_name']
+            else:
+                # Create new entry for unmatched player
+                temp_id = str(abs(hash(player_name)) % 10**18)
+                player_to_id[player_name] = temp_id
+                rankstats[temp_id] = {
+                    'xp': 0,
+                    'wins': 0,
+                    'losses': 0,
+                    'series_wins': 0,
+                    'series_losses': 0,
+                    'total_games': 0,
+                    'total_series': 0,
+                    'mmr': 750,
+                    'discord_name': player_name,
+                    'rank': 1
+                }
+                print(f"    Warning: Could not resolve '{player_name}' to Discord ID")
+
+            # Initialize overall stats tracking (from ALL games) - only if not already initialized
+            if player_name not in player_game_stats:
+                player_game_stats[player_name] = {
+                    'kills': 0, 'deaths': 0, 'assists': 0,
+                    'games': 0, 'headshots': 0
+                }
+                # Initialize per-playlist tracking (only from ranked games)
+                player_playlist_xp[player_name] = {}
+                player_playlist_wins[player_name] = {}
+                player_playlist_losses[player_name] = {}
+                player_playlist_games[player_name] = {}
 
     # Track current rank per player per playlist
     player_playlist_rank = {}  # {player_name: {playlist: rank}}
