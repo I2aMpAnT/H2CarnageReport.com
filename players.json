@@ -29,6 +29,7 @@
   "293507586131492864": {
     "twitch_name": "kidm0de",
     "twitch_url": "https://twitch.tv/kidm0de",
+    "aliases": ["KidMode"],
     "mac_addresses": [
       "00:0D:3A:84:44:2F"
     ]
@@ -64,6 +65,7 @@
   "426757496557010948": {
     "twitch_name": "c6rocky",
     "twitch_url": "https://twitch.tv/c6rocky",
+    "aliases": ["Rocky"],
     "mac_addresses": [
       "00:0D:3A:B0:F7:F5"
     ]
@@ -127,6 +129,7 @@
   "136324687926919168": {
     "twitch_name": "h2roasted",
     "twitch_url": "https://twitch.tv/h2roasted",
+    "aliases": ["roasted"],
     "mac_addresses": [
       "00:0D:3A:68:04:71"
     ]
@@ -135,6 +138,7 @@
     "twitch_name": "justinkeylord",
     "twitch_url": "https://twitch.tv/justinkeylord",
     "display_name": "keylord",
+    "aliases": ["Ralph Port"],
     "mac_addresses": [
       "00:12:5A:02:53:7F"
     ]
@@ -146,6 +150,7 @@
   "111190770756657152": {
     "twitch_name": "e212",
     "twitch_url": "https://twitch.tv/e212",
+    "aliases": ["EpiiiC"],
     "mac_addresses": [
       "00:50:F2:22:4E:58"
     ]
@@ -181,6 +186,7 @@
     "display_name": "domer_simpson"
   },
   "175060415833833472": {
+    "aliases": ["Tetracide"],
     "mac_addresses": [
       "7C:ED:8D:B9:8F:46"
     ]
@@ -191,6 +197,7 @@
     ]
   },
   "652998057087991838": {
+    "aliases": ["2D"],
     "mac_addresses": [
       "00:0D:3A:44:CC:44"
     ]

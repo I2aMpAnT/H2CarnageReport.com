@@ -128,9 +128,17 @@ def is_valid_mlg_combo(map_name, base_gametype):
     valid_gametypes = VALID_MLG_4V4_COMBOS[map_name]
     base_gametype_lower = base_gametype.lower()
 
+    # Normalize game type names (handle both "CTF" and "capture_the_flag" etc.)
+    gametype_aliases = {
+        'capture_the_flag': 'ctf',
+        'king_of_the_hill': 'koth',
+        'king': 'koth',
+    }
+    normalized_gametype = gametype_aliases.get(base_gametype_lower, base_gametype_lower)
+
     # Check if base gametype matches any valid type for this map
     for valid_type in valid_gametypes:
-        if valid_type in base_gametype_lower:
+        if valid_type in normalized_gametype or normalized_gametype in valid_type:
             return True
     return False
 
@@ -602,7 +610,7 @@ def main():
     # STEP 2: Find and parse ALL games, determining playlist for each
     # ALL matches are logged for stats, but only playlist-tagged matches count for rank
     print("\nStep 2: Finding and categorizing games...")
-    stats_files = sorted([f for f in os.listdir(STATS_DIR) if f.endswith('.xlsx')])
+    stats_files = sorted([f for f in os.listdir(STATS_DIR) if f.endswith('.xlsx') and '_identity' not in f])
 
     # Store ALL games (for stats tracking)
     all_games = []

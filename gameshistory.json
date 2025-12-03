@@ -1,6 +1,231 @@
 [
   {
     "details": {
+      "Game Type": "slayer",
+      "Variant Name": "MLG FFA 2007",
+      "Map Name": "Midship",
+      "Start Time": "11/28/2025 7:42",
+      "End Time": "11/28/2025 7:43",
+      "Duration": "00:29"
+    },
+    "players": [
+      {
+        "name": "I2aMpAnT",
+        "place": "1st",
+        "score": "-1",
+        "score_numeric": -1,
+        "kills": 0,
+        "deaths": 1,
+        "assists": 0,
+        "kda": 1.0,
+        "suicides": 1,
+        "team": "none",
+        "shots_fired": 0,
+        "shots_hit": 0,
+        "accuracy": 0.0,
+        "head_shots": 0,
+        "discord_id": "884896715432411178"
+      }
+    ],
+    "versus": {
+      "I2aMpAnT": {
+        "I2aMpAnT": 1
+      }
+    },
+    "detailed_stats": [
+      {
+        "player": "I2aMpAnT",
+        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=11&S=0&EP=1&ES=0&EF=8&EB=4&ET=0",
+        "kills": 0,
+        "assists": 0,
+        "deaths": 1,
+        "headshots": 0,
+        "betrayals": 0,
+        "suicides": 1,
+        "best_spree": 0,
+        "total_time_alive": 19,
+        "ctf_scores": 0,
+        "ctf_flag_steals": 0,
+        "ctf_flag_saves": 0
+      }
+    ],
+    "medals": [
+      {
+        "player": "I2aMpAnT",
+        "double_kill": 0,
+        "triple_kill": 0,
+        "killtacular": 0,
+        "kill_frenzy": 0,
+        "killtrocity": 0,
+        "killamanjaro": 0,
+        "sniper_kill": 0,
+        "road_kill": 0,
+        "bone_cracker": 0,
+        "assassin": 0,
+        "vehicle_destroyed": 0,
+        "car_jacking": 0,
+        "stick_it": 0,
+        "killing_spree": 0,
+        "running_riot": 0,
+        "rampage": 0,
+        "beserker": 0,
+        "over_kill": 0,
+        "flag_taken": 0,
+        "flag_carrier_kill": 0,
+        "flag_returned": 0,
+        "bomb_planted": 0,
+        "bomb_carrier_kill": 0,
+        "bomb_returned": 0
+      }
+    ],
+    "weapons": [
+      {
+        "Player": "I2aMpAnT",
+        "magnum kills": 0,
+        "magnum headshot kills": 0,
+        "magnum deaths": 0,
+        "magnum suicide": 0,
+        "magnum shots fired": 0,
+        "magnum shots hit": 0,
+        "plasma pistol kills": 0,
+        "plasma pistol headshot kills": 0,
+        "plasma pistol deaths": 0,
+        "plasma pistol suicide": 0,
+        "plasma pistol shots fired": 0,
+        "plasma pistol shots hit": 0,
+        "needler kills": 0,
+        "needler headshot kills": 0,
+        "needler deaths": 0,
+        "needler suicide": 0,
+        "needler shots fired": 0,
+        "needler shots hit": 0,
+        "smg kills": 0,
+        "smg headshot kills": 0,
+        "smg deaths": 0,
+        "smg suicide": 0,
+        "smg shots fired": 0,
+        "smg shots hit": 0,
+        "plasma rifle kills": 0,
+        "plasma rifle headshot kills": 0,
+        "plasma rifle deaths": 0,
+        "plasma rifle suicide": 0,
+        "plasma rifle shots fired": 0,
+        "plasma rifle shots hit": 0,
+        "battle rifle kills": 0,
+        "battle rifle headshot kills": 0,
+        "battle rifle deaths": 0,
+        "battle rifle suicide": 0,
+        "battle rifle shots fired": 0,
+        "battle rifle shots hit": 0,
+        "carbine kills": 0,
+        "carbine headshot kills": 0,
+        "carbine deaths": 0,
+        "carbine suicide": 0,
+        "carbine shots fired": 0,
+        "carbine shots hit": 0,
+        "shotgun kills": 0,
+        "shotgun headshot kills": 0,
+        "shotgun deaths": 0,
+        "shotgun suicide": 0,
+        "shotgun shots fired": 0,
+        "shotgun shots hit": 0,
+        "sniper rifle kills": 0,
+        "sniper rifle headshot kills": 0,
+        "sniper rifle deaths": 0,
+        "sniper rifle suicide": 0,
+        "sniper rifle shots fired": 0,
+        "sniper rifle shots hit": 0,
+        "beam rifle kills": 0,
+        "beam rifle headshot kills": 0,
+        "beam rifle deaths": 0,
+        "beam rifle suicide": 0,
+        "beam rifle shots fired": 0,
+        "beam rifle shots hit": 0,
+        "brute plasma rifle kills": 0,
+        "brute plasma rifle headshot kills": 0,
+        "brute plasma rifle deaths": 0,
+        "brute plasma rifle suicide": 0,
+        "brute plasma rifle shots fired": 0,
+        "brute plasma rifle shots hit": 0,
+        "rocket launcher kills": 0,
+        "rocket launcher headshot kills": 0,
+        "rocket launcher deaths": 0,
+        "rocket launcher suicide": 0,
+        "rocket launcher shots fired": 0,
+        "rocket launcher shots hit": 0,
+        "fuel rod kills": 0,
+        "fuel rod headshot kills": 0,
+        "fuel rod deaths": 0,
+        "fuel rod suicide": 0,
+        "fuel rod shots fired": 0,
+        "fuel rod shots hit": 0,
+        "brute shot kills": 0,
+        "brute shot headshot kills": 0,
+        "brute shot deaths": 0,
+        "brute shot suicide": 0,
+        "brute shot shots fired": 0,
+        "brute shot shots hit": 0,
+        "unused 1 kills": 0,
+        "unused 1 headshot kills": 0,
+        "unused 1 deaths": 0,
+        "unused 1 suicide": 0,
+        "unused 1 shots fired": 0,
+        "unused 1 shots hit": 0,
+        "sentinal beam kills": 0,
+        "sentinal beam headshot kills": 0,
+        "sentinal beam deaths": 0,
+        "sentinal beam suicide": 0,
+        "sentinal beam shots fired": 0,
+        "sentinal beam shots hit": 0,
+        "unused 2 kills": 0,
+        "unused 2 headshot kills": 0,
+        "unused 2 deaths": 0,
+        "unused 2 suicide": 0,
+        "unused 2 shots fired": 0,
+        "unused 2 shots hit": 0,
+        "energy sword kills": 0,
+        "energy sword headshot kills": 0,
+        "energy sword deaths": 0,
+        "energy sword suicide": 0,
+        "energy sword shots fired": 0,
+        "energy sword shots hit": 0,
+        "frag grenade kills": 0,
+        "frag grenade headshot kills": 0,
+        "frag grenade deaths": 0,
+        "frag grenade suicide": 0,
+        "frag grenade shots fired": 0,
+        "frag grenade shots hit": 0,
+        "plasma grenade kills": 0,
+        "plasma grenade headshot kills": 0,
+        "plasma grenade deaths": 0,
+        "plasma grenade suicide": 0,
+        "plasma grenade shots fired": 0,
+        "plasma grenade shots hit": 0,
+        "flag kills": 0,
+        "flag headshot kills": 0,
+        "flag deaths": 0,
+        "flag suicide": 0,
+        "flag shots fired": 0,
+        "flag shots hit": 0,
+        "bomb kills": 0,
+        "bomb headshot kills": 0,
+        "bomb deaths": 0,
+        "bomb suicide": 0,
+        "bomb shots fired": 0,
+        "bomb shots hit": 0,
+        "oddball kills": 0,
+        "oddball headshot kills": 0,
+        "oddball deaths": 0,
+        "oddball suicide": 0,
+        "oddball shots fired": 0,
+        "oddball shots hit": 0
+      }
+    ],
+    "source_file": "20251128_074332.xlsx",
+    "playlist": null
+  },
+  {
+    "details": {
       "Game Type": "capture_the_flag",
       "Variant Name": "MLG CTF MidWar",
       "Map Name": "Midship",
@@ -24,7 +249,7 @@
         "shots_hit": 395,
         "accuracy": 47.02,
         "head_shots": 14,
-        "discord_id": "449344331426203546"
+        "discord_id": "652998057087991838"
       },
       {
         "name": "KidMode",
@@ -75,7 +300,7 @@
         "shots_hit": 432,
         "accuracy": 38.23,
         "head_shots": 23,
-        "discord_id": "460394656304217571"
+        "discord_id": "175060415833833472"
       },
       {
         "name": "Rocky",
@@ -109,7 +334,7 @@
         "shots_hit": 396,
         "accuracy": 45.52,
         "head_shots": 14,
-        "discord_id": "467006237617687770"
+        "discord_id": "269681242335739905"
       },
       {
         "name": "getitoutdaFLUD",
@@ -231,7 +456,7 @@
     "detailed_stats": [
       {
         "player": "EpiiiC",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=12&S=0&EP=1&ES=0&EF=52&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=12&S=0&EP=1&ES=0&EF=52&EB=14&ET=0",
         "kills": 41,
         "assists": 25,
         "deaths": 22,
@@ -246,7 +471,7 @@
       },
       {
         "player": "roasted",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
         "kills": 21,
         "assists": 17,
         "deaths": 32,
@@ -261,7 +486,7 @@
       },
       {
         "player": "Tetracide",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
         "kills": 30,
         "assists": 13,
         "deaths": 26,
@@ -276,7 +501,7 @@
       },
       {
         "player": "Rocky",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=11&S=1&EP=1&ES=0&EF=58&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=11&S=1&EP=1&ES=0&EF=58&EB=18&ET=0",
         "kills": 30,
         "assists": 15,
         "deaths": 30,
@@ -291,7 +516,7 @@
       },
       {
         "player": "getitoutdaFLUD",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=13&S=4&EP=13&ES=4&EF=6&EB=13&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=13&S=4&EP=13&ES=4&EF=4&EB=13&ET=0",
         "kills": 30,
         "assists": 14,
         "deaths": 30,
@@ -306,7 +531,7 @@
       },
       {
         "player": "2D",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
         "kills": 23,
         "assists": 20,
         "deaths": 29,
@@ -321,7 +546,7 @@
       },
       {
         "player": "Ralph Port",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
         "kills": 23,
         "assists": 20,
         "deaths": 30,
@@ -336,7 +561,7 @@
       },
       {
         "player": "KidMode",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
         "kills": 27,
         "assists": 16,
         "deaths": 27,
@@ -1760,7 +1985,7 @@
         "shots_hit": 97,
         "accuracy": 41.81,
         "head_shots": 4,
-        "discord_id": "467006237617687770"
+        "discord_id": "269681242335739905"
       },
       {
         "name": "Rocky",
@@ -1811,7 +2036,7 @@
         "shots_hit": 102,
         "accuracy": 39.69,
         "head_shots": 4,
-        "discord_id": "449344331426203546"
+        "discord_id": "652998057087991838"
       },
       {
         "name": "Tetracide",
@@ -1828,7 +2053,7 @@
         "shots_hit": 119,
         "accuracy": 44.24,
         "head_shots": 3,
-        "discord_id": "460394656304217571"
+        "discord_id": "175060415833833472"
       },
       {
         "name": "EpiiiC",
@@ -1933,7 +2158,7 @@
     "detailed_stats": [
       {
         "player": "EpiiiC",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=12&S=0&EP=1&ES=0&EF=52&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=12&S=0&EP=1&ES=0&EF=52&EB=14&ET=0",
         "kills": 3,
         "assists": 4,
         "deaths": 9,
@@ -1948,7 +2173,7 @@
       },
       {
         "player": "roasted",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
         "kills": 8,
         "assists": 2,
         "deaths": 7,
@@ -1963,7 +2188,7 @@
       },
       {
         "player": "Tetracide",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
         "kills": 3,
         "assists": 5,
         "deaths": 6,
@@ -1978,7 +2203,7 @@
       },
       {
         "player": "Rocky",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=11&S=1&EP=1&ES=0&EF=58&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=11&S=1&EP=1&ES=0&EF=58&EB=18&ET=0",
         "kills": 6,
         "assists": 4,
         "deaths": 4,
@@ -1993,7 +2218,7 @@
       },
       {
         "player": "getitoutdaFLUD",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=13&S=4&EP=13&ES=4&EF=6&EB=13&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=13&S=4&EP=13&ES=4&EF=4&EB=13&ET=0",
         "kills": 8,
         "assists": 2,
         "deaths": 3,
@@ -2008,7 +2233,7 @@
       },
       {
         "player": "2D",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
         "kills": 5,
         "assists": 3,
         "deaths": 10,
@@ -2023,7 +2248,7 @@
       },
       {
         "player": "Ralph Port",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
         "kills": 8,
         "assists": 2,
         "deaths": 4,
@@ -2038,7 +2263,7 @@
       },
       {
         "player": "KidMode",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
         "kills": 7,
         "assists": 3,
         "deaths": 5,
@@ -3462,7 +3687,7 @@
         "shots_hit": 341,
         "accuracy": 44.0,
         "head_shots": 12,
-        "discord_id": "467006237617687770"
+        "discord_id": "269681242335739905"
       },
       {
         "name": "Rocky",
@@ -3513,7 +3738,7 @@
         "shots_hit": 329,
         "accuracy": 36.04,
         "head_shots": 13,
-        "discord_id": "449344331426203546"
+        "discord_id": "652998057087991838"
       },
       {
         "name": "Tetracide",
@@ -3530,7 +3755,7 @@
         "shots_hit": 288,
         "accuracy": 36.23,
         "head_shots": 16,
-        "discord_id": "460394656304217571"
+        "discord_id": "175060415833833472"
       },
       {
         "name": "EpiiiC",
@@ -3635,7 +3860,7 @@
     "detailed_stats": [
       {
         "player": "EpiiiC",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=12&S=0&EP=1&ES=0&EF=52&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=13&S=4&EP=13&ES=4&EF=4&EB=13&ET=0",
         "kills": 29,
         "assists": 17,
         "deaths": 22,
@@ -3650,7 +3875,7 @@
       },
       {
         "player": "roasted",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
         "kills": 18,
         "assists": 17,
         "deaths": 31,
@@ -3665,7 +3890,7 @@
       },
       {
         "player": "Tetracide",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
         "kills": 27,
         "assists": 15,
         "deaths": 20,
@@ -3680,7 +3905,7 @@
       },
       {
         "player": "Rocky",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=11&S=1&EP=1&ES=0&EF=58&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=11&S=1&EP=1&ES=0&EF=58&EB=18&ET=0",
         "kills": 28,
         "assists": 9,
         "deaths": 23,
@@ -3695,7 +3920,7 @@
       },
       {
         "player": "getitoutdaFLUD",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=13&S=4&EP=13&ES=4&EF=6&EB=13&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=13&S=4&EP=13&ES=4&EF=4&EB=13&ET=0",
         "kills": 29,
         "assists": 15,
         "deaths": 24,
@@ -3710,7 +3935,7 @@
       },
       {
         "player": "2D",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
         "kills": 18,
         "assists": 14,
         "deaths": 27,
@@ -3725,7 +3950,7 @@
       },
       {
         "player": "Ralph Port",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
         "kills": 21,
         "assists": 17,
         "deaths": 31,
@@ -3740,7 +3965,7 @@
       },
       {
         "player": "KidMode",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
         "kills": 35,
         "assists": 9,
         "deaths": 27,
@@ -5147,7 +5372,7 @@
         "shots_hit": 167,
         "accuracy": 45.38,
         "head_shots": 11,
-        "discord_id": "460394656304217571"
+        "discord_id": "175060415833833472"
       },
       {
         "name": "KidMode",
@@ -5181,7 +5406,7 @@
         "shots_hit": 149,
         "accuracy": 42.82,
         "head_shots": 6,
-        "discord_id": "449344331426203546"
+        "discord_id": "652998057087991838"
       },
       {
         "name": "getitoutdaFLUD",
@@ -5215,7 +5440,7 @@
         "shots_hit": 135,
         "accuracy": 43.13,
         "head_shots": 5,
-        "discord_id": "467006237617687770"
+        "discord_id": "269681242335739905"
       },
       {
         "name": "Rocky",
@@ -5337,7 +5562,7 @@
     "detailed_stats": [
       {
         "player": "EpiiiC",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=12&S=0&EP=1&ES=0&EF=52&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=12&S=0&EP=1&ES=0&EF=52&EB=14&ET=0",
         "kills": 16,
         "assists": 4,
         "deaths": 10,
@@ -5352,7 +5577,7 @@
       },
       {
         "player": "roasted",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
         "kills": 5,
         "assists": 9,
         "deaths": 12,
@@ -5367,7 +5592,7 @@
       },
       {
         "player": "Tetracide",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
         "kills": 16,
         "assists": 6,
         "deaths": 6,
@@ -5382,7 +5607,7 @@
       },
       {
         "player": "Rocky",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=11&S=1&EP=1&ES=0&EF=58&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=11&S=1&EP=1&ES=0&EF=58&EB=18&ET=0",
         "kills": 8,
         "assists": 7,
         "deaths": 12,
@@ -5397,7 +5622,7 @@
       },
       {
         "player": "getitoutdaFLUD",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=13&S=4&EP=13&ES=4&EF=6&EB=13&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=13&S=4&EP=13&ES=4&EF=4&EB=13&ET=0",
         "kills": 10,
         "assists": 7,
         "deaths": 14,
@@ -5412,7 +5637,7 @@
       },
       {
         "player": "2D",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
         "kills": 7,
         "assists": 10,
         "deaths": 9,
@@ -5427,7 +5652,7 @@
       },
       {
         "player": "Ralph Port",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
         "kills": 9,
         "assists": 7,
         "deaths": 11,
@@ -5442,7 +5667,7 @@
       },
       {
         "player": "KidMode",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
         "kills": 10,
         "assists": 6,
         "deaths": 7,
@@ -6832,7 +7057,7 @@
         "shots_hit": 253,
         "accuracy": 29.11,
         "head_shots": 16,
-        "discord_id": "460394656304217571"
+        "discord_id": "175060415833833472"
       },
       {
         "name": "KidMode",
@@ -6866,7 +7091,7 @@
         "shots_hit": 227,
         "accuracy": 36.79,
         "head_shots": 13,
-        "discord_id": "449344331426203546"
+        "discord_id": "652998057087991838"
       },
       {
         "name": "EpiiiC",
@@ -6917,7 +7142,7 @@
         "shots_hit": 272,
         "accuracy": 46.26,
         "head_shots": 14,
-        "discord_id": "467006237617687770"
+        "discord_id": "269681242335739905"
       },
       {
         "name": "Rocky",
@@ -7039,7 +7264,7 @@
     "detailed_stats": [
       {
         "player": "EpiiiC",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=12&S=0&EP=1&ES=0&EF=52&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=12&S=0&EP=1&ES=0&EF=52&EB=14&ET=0",
         "kills": 34,
         "assists": 15,
         "deaths": 20,
@@ -7054,7 +7279,7 @@
       },
       {
         "player": "roasted",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=2&EP=0&ES=2&EF=22&EB=14&ET=0",
         "kills": 11,
         "assists": 11,
         "deaths": 29,
@@ -7069,7 +7294,7 @@
       },
       {
         "player": "Tetracide",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=12&EP=4&ES=3&EF=22&EB=14&ET=0",
         "kills": 19,
         "assists": 9,
         "deaths": 21,
@@ -7084,7 +7309,7 @@
       },
       {
         "player": "Rocky",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=11&S=1&EP=1&ES=0&EF=58&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=11&S=1&EP=1&ES=0&EF=58&EB=18&ET=0",
         "kills": 22,
         "assists": 11,
         "deaths": 26,
@@ -7099,7 +7324,7 @@
       },
       {
         "player": "getitoutdaFLUD",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=13&S=4&EP=13&ES=4&EF=6&EB=13&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=13&S=4&EP=13&ES=4&EF=4&EB=13&ET=0",
         "kills": 26,
         "assists": 12,
         "deaths": 19,
@@ -7114,7 +7339,7 @@
       },
       {
         "player": "2D",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=0&S=0&EP=0&ES=2&EF=5&EB=0&ET=0",
         "kills": 21,
         "assists": 10,
         "deaths": 26,
@@ -7129,7 +7354,7 @@
       },
       {
         "player": "Ralph Port",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=2&S=0&EP=7&ES=6&EF=25&EB=4&ET=0",
         "kills": 19,
         "assists": 10,
         "deaths": 25,
@@ -7144,7 +7369,7 @@
       },
       {
         "player": "KidMode",
-        "emblem_url": "https://www.halo2pc.com/test-pages/CartoStat/Emblem/emblem.php?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
+        "emblem_url": "https://carnagereport.com/emblem.html?P=1&S=0&EP=1&ES=0&EF=57&EB=5&ET=0",
         "kills": 25,
         "assists": 14,
         "deaths": 12,
