@@ -861,9 +861,9 @@ def main():
     if manual_playlists:
         print(f"Loaded {len(manual_playlists)} manual playlist override(s)")
 
-    # Check for changes since last run - use get_stats_files() which checks all directories
-    all_stats_files = get_stats_files()
-    stats_files = sorted([f[0] for f in all_stats_files])  # Extract just filenames
+    # Check for changes since last run - use get_all_game_files() which checks all directories
+    all_game_files = get_all_game_files()
+    stats_files = sorted([f[0] for f in all_game_files])  # Extract just filenames
     processed_state = load_processed_state()
     needs_full_rebuild, new_files, changed_playlists = check_for_changes(stats_files, manual_playlists, processed_state)
 
