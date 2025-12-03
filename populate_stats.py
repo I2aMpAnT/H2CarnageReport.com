@@ -27,6 +27,7 @@ PLAYERS_FILE = 'players.json'
 EMBLEMS_FILE = 'emblems.json'
 ACTIVE_MATCHES_FILE = 'active_matches.json'
 RANKHISTORY_FILE = 'rankhistory.json'
+MANUAL_PLAYLISTS_FILE = 'manual_playlists.json'
 
 # Base URL for downloadable files on the VPS
 STATS_BASE_URL = 'http://104.207.143.249/stats'
@@ -122,6 +123,26 @@ def load_active_matches():
             return data.get('active_match')
     except:
         return None
+
+def load_manual_playlists():
+    """
+    Load manual_playlists.json for manually flagging games with a playlist.
+
+    Expected format:
+    {
+        "20251128_201839.xlsx": "MLG 4v4",
+        "20251128_202256.xlsx": "MLG 4v4",
+        ...
+    }
+
+    Maps game filename to playlist name. Games listed here will be ranked
+    even without a bot session.
+    """
+    try:
+        with open(MANUAL_PLAYLISTS_FILE, 'r') as f:
+            return json.load(f)
+    except:
+        return {}
 
 def is_valid_mlg_combo(map_name, base_gametype):
     """Check if map + base gametype is a valid MLG 4v4 combination.
@@ -234,15 +255,21 @@ def players_match_active_match(game_players, active_match):
     # At least 75% of game players should be in active match
     return matches >= len(game_players) * 0.75
 
-def determine_playlist(file_path, active_match=None):
+def determine_playlist(file_path, active_match=None, manual_playlists=None):
     """
     Determine the appropriate playlist for a game based on:
-    1. Game duration (must be >= 2 minutes to filter restarts)
-    2. Active match from Discord bot (if any)
-    3. Game characteristics (player count, teams, map + base gametype)
+    1. Manual override from manual_playlists.json (highest priority)
+    2. Game duration (must be >= 2 minutes to filter restarts)
+    3. Active match from Discord bot (if any)
 
     Returns: playlist name string or None if game doesn't qualify for any playlist
     """
+    # Check manual override first (highest priority)
+    if manual_playlists:
+        filename = os.path.basename(file_path)
+        if filename in manual_playlists:
+            return manual_playlists[filename]
+
     # Filter out short games (restarts)
     if not is_game_long_enough(file_path):
         return None
@@ -286,11 +313,8 @@ def determine_playlist(file_path, active_match=None):
                     if players_match_active_match(game_players, active_match):
                         return active_playlist
 
-    # Fallback: No active match or game doesn't match active match
-    # Default behavior: 4v4 team games with valid combos go to MLG 4v4
-    if player_count == 8 and is_team and is_valid_mlg_combo(map_name, base_gametype):
-        return PLAYLIST_MLG_4V4
-
+    # No active match or game doesn't match active match = UNRANKED
+    # Games MUST have a bot session to be tagged with a playlist
     return None
 
 def build_mac_to_discord_lookup(players):
@@ -753,7 +777,12 @@ def main():
         if active_match.get('blue_team'):
             print(f"  Blue team: {', '.join(active_match['blue_team'])}")
     else:
-        print("\nNo active match detected - using default playlist detection")
+        print("\nNo active match detected")
+
+    # Load manual playlist overrides (if any)
+    manual_playlists = load_manual_playlists()
+    if manual_playlists:
+        print(f"Loaded {len(manual_playlists)} manual playlist override(s)")
 
     # STEP 1: Zero out ALL player stats
     print("\nStep 1: Zeroing out all player stats...")
@@ -786,7 +815,7 @@ def main():
 
     for filename in stats_files:
         file_path = os.path.join(STATS_DIR, filename)
-        playlist = determine_playlist(file_path, active_match)
+        playlist = determine_playlist(file_path, active_match, manual_playlists)
 
         game = parse_excel_file(file_path)
         game['source_file'] = filename
