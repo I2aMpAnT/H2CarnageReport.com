@@ -1269,7 +1269,15 @@ async function loadGamesData() {
         console.log('[DEBUG] Response size:', text.length, 'bytes');
         
         gamesData = JSON.parse(text);
-        
+
+        // Filter out hidden games (not included in stats or viewing)
+        const totalGames = gamesData.length;
+        gamesData = gamesData.filter(game => !game.hidden);
+        const hiddenCount = totalGames - gamesData.length;
+        if (hiddenCount > 0) {
+            console.log('[DEBUG] Filtered out', hiddenCount, 'hidden game(s)');
+        }
+
         console.log('[DEBUG] Games loaded successfully!');
         console.log('[DEBUG] Number of games:', gamesData.length);
         console.log('[DEBUG] First game:', gamesData[0]);
