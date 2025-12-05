@@ -429,19 +429,29 @@ def parse_identity_file(identity_path):
         return {}
 
 
-def get_identity_file_for_game(game_file):
+def get_identity_file_for_game(game_file, identity_dir=None):
     """
     Find the corresponding identity file for a game file.
     Game files: 20251128_201839.xlsx
     Identity files: 20251128_074332_identity.xlsx (use closest timestamp before game)
+
+    Args:
+        game_file: Path to the game file
+        identity_dir: Directory to search for identity files (optional, defaults to game's dir)
     """
-    import re
     game_basename = os.path.basename(game_file)
     game_timestamp = game_basename.replace('.xlsx', '')
 
-    # Look for identity files in the same directory
-    stats_dir = os.path.dirname(game_file) or STATS_DIR
-    identity_files = sorted([f for f in os.listdir(stats_dir) if '_identity.xlsx' in f])
+    # Look for identity files in the specified directory, or game's directory as fallback
+    if identity_dir and os.path.exists(identity_dir):
+        search_dir = identity_dir
+    else:
+        search_dir = os.path.dirname(game_file) or STATS_DIR
+
+    if not os.path.exists(search_dir):
+        return None
+
+    identity_files = sorted([f for f in os.listdir(search_dir) if '_identity.xlsx' in f])
 
     if not identity_files:
         return None
@@ -457,7 +467,7 @@ def get_identity_file_for_game(game_file):
     if not best_identity and identity_files:
         best_identity = identity_files[0]
 
-    return os.path.join(stats_dir, best_identity) if best_identity else None
+    return os.path.join(search_dir, best_identity) if best_identity else None
 
 
 def build_profile_lookup(players):
@@ -953,6 +963,7 @@ def main():
 
         game = parse_excel_file(file_path)
         game['source_file'] = filename
+        game['source_dir'] = source_dir  # Track where game came from
         game['playlist'] = playlist  # Will be None for untagged games
 
         # Add download URLs for public stats and theater files
@@ -1028,10 +1039,12 @@ def main():
 
     for game in all_games:
         game_file = game.get('source_file', '')
-        file_path = os.path.join(STATS_DIR, game_file)
+        game_source_dir = game.get('source_dir', STATS_DIR)
+        file_path = os.path.join(game_source_dir, game_file)
 
         # Find and use the identity file for this game's session
-        identity_file = get_identity_file_for_game(file_path)
+        # Identity files are in private dir on VPS, same dir locally
+        identity_file = get_identity_file_for_game(file_path, identity_dir)
         if identity_file:
             identity_basename = os.path.basename(identity_file)
             identity_name_to_mac = all_identity_mappings.get(identity_basename, {})
