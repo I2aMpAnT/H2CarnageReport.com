@@ -175,7 +175,8 @@ function getGameTimeRanges() {
     return ranges;
 }
 
-// Parse game date time string "MM/DD/YYYY HH:MM" to Date object
+// Parse game date time string "MM/DD/YYYY HH:MM" as Eastern Time and return Date object
+// All game timestamps are stored in Eastern Time (America/New_York)
 function parseGameDateTime(dateStr) {
     if (!dateStr) return null;
     try {
@@ -185,15 +186,64 @@ function parseGameDateTime(dateStr) {
         const dateParts = parts[0].split('/');
         const timeParts = parts[1].split(':');
         if (dateParts.length !== 3 || timeParts.length !== 2) return null;
-        const month = parseInt(dateParts[0]) - 1;
+        const month = parseInt(dateParts[0]);
         const day = parseInt(dateParts[1]);
         const year = parseInt(dateParts[2]);
         const hours = parseInt(timeParts[0]);
         const minutes = parseInt(timeParts[1]);
-        return new Date(year, month, day, hours, minutes);
+
+        // Create date string in ISO format with Eastern Time offset
+        // We need to determine if it's EST (-05:00) or EDT (-04:00)
+        const tempDate = new Date(year, month - 1, day, hours, minutes);
+        const jan = new Date(year, 0, 1);
+        const jul = new Date(year, 6, 1);
+        const stdOffset = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+        const isDST = tempDate.getTimezoneOffset() < stdOffset;
+
+        // For Eastern Time: EST = -05:00, EDT = -04:00
+        // We need to check if the date falls in DST for Eastern timezone
+        // DST in US: Second Sunday of March to First Sunday of November
+        const marchSecondSunday = new Date(year, 2, 1);
+        marchSecondSunday.setDate(14 - marchSecondSunday.getDay());
+        const novFirstSunday = new Date(year, 10, 1);
+        novFirstSunday.setDate(7 - novFirstSunday.getDay());
+
+        const isEasternDST = tempDate >= marchSecondSunday && tempDate < novFirstSunday;
+        const easternOffset = isEasternDST ? '-04:00' : '-05:00';
+
+        // Create ISO string and parse it as Eastern Time
+        const isoStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00${easternOffset}`;
+        return new Date(isoStr);
     } catch (e) {
         return null;
     }
+}
+
+// Format a Date object to display in user's local timezone
+function formatDateTimeLocal(date) {
+    if (!date || !(date instanceof Date) || isNaN(date)) return '';
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    function getOrdinal(n) {
+        if (n > 3 && n < 21) return 'th';
+        switch (n % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+        }
+    }
+
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+
+    return `${month} ${day}${getOrdinal(day)} ${year}, ${displayHours}:${String(minutes).padStart(2, '0')} ${ampm}`;
 }
 
 // Get in-game names for a Discord ID (from in_game_names array or discord_name)
@@ -735,43 +785,23 @@ function getMedalIcon(medalName) {
     return medalIcons[key] || null;
 }
 
-// Helper function to format date/time consistently
+// Helper function to format date/time consistently (converts from Eastern Time to local)
 function formatDateTime(startTime) {
     if (!startTime) return '';
 
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-    // Get ordinal suffix for day
-    function getOrdinal(n) {
-        if (n > 3 && n < 21) return 'th';
-        switch (n % 10) {
-            case 1: return 'st';
-            case 2: return 'nd';
-            case 3: return 'rd';
-            default: return 'th';
-        }
+    // Parse as Eastern Time and format in user's local timezone
+    const date = parseGameDateTime(startTime);
+    if (date) {
+        return formatDateTimeLocal(date);
     }
 
-    // Try to parse MM/DD/YYYY format first
-    const dateMatch = startTime.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
-    // Also try ISO format (YYYY-MM-DDTHH:MM:SS)
+    // Fallback for ISO format
     const isoMatch = startTime.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-
-    if (dateMatch) {
-        // MM/DD/YYYY format
-        const month = parseInt(dateMatch[1]) - 1;
-        const day = parseInt(dateMatch[2]);
-        let year = parseInt(dateMatch[3]);
-        if (year < 100) year += 2000;
-        const monthName = months[month] || dateMatch[1];
-        return `${monthName} ${day}${getOrdinal(day)} ${year}`;
-    } else if (isoMatch) {
-        // ISO format: 2025-11-23T08:35:00-05:00
-        const year = parseInt(isoMatch[1]);
-        const month = parseInt(isoMatch[2]) - 1;
-        const day = parseInt(isoMatch[3]);
-        const monthName = months[month];
-        return `${monthName} ${day}${getOrdinal(day)} ${year}`;
+    if (isoMatch) {
+        const date = new Date(startTime);
+        if (!isNaN(date)) {
+            return formatDateTimeLocal(date);
+        }
     }
 
     return startTime;
@@ -3762,7 +3792,6 @@ function renderMedalSearchResults(medalName) {
 
 function renderWeaponSearchResults(weaponName) {
     // Find all games where this weapon was used
-    // Weapons are stored at game.weapons[] with keys like "Sniper Rifle kills"
     const weaponGames = [];
     let playerKillStats = {};
     let playerDeathStats = {};
@@ -3771,44 +3800,96 @@ function renderWeaponSearchResults(weaponName) {
     let totalKills = 0;
     let totalDeaths = 0;
 
-    gamesData.forEach(game => {
-        let gameWeaponKills = 0;
-        const mapName = game.details['Map Name'] || 'Unknown';
-        const gametype = game.details['Variant Name'] || 'Unknown';
+    const isMeleeSearch = weaponName.toLowerCase() === 'melee';
 
-        if (game.weapons) {
-            game.weapons.forEach(playerWeapons => {
-                const playerName = playerWeapons.Player;
-                Object.keys(playerWeapons).forEach(key => {
-                    const keyLower = key.toLowerCase();
-                    if (keyLower.includes(weaponName.toLowerCase())) {
+    if (isMeleeSearch) {
+        // Special handling for melee - calculate from medals
+        const meleeWeapons = ['energy sword', 'flag', 'bomb', 'oddball'];
+
+        gamesData.forEach(game => {
+            let gameMeleeKills = 0;
+            const mapName = game.details['Map Name'] || 'Unknown';
+            const gametype = game.details['Variant Name'] || 'Unknown';
+
+            // For each player in the game
+            game.players?.forEach(player => {
+                const playerName = player.name;
+
+                // Get melee medals
+                const medalData = game.medals?.find(m => m.player === playerName);
+                const meleeMedals = medalData ? (medalData.bone_cracker || 0) + (medalData.assassin || 0) : 0;
+
+                // Get melee weapon kills to subtract
+                const weaponData = game.weapons?.find(w => w.Player === playerName);
+                let meleeWeaponKills = 0;
+                if (weaponData) {
+                    Object.keys(weaponData).forEach(key => {
+                        const keyLower = key.toLowerCase();
                         if (keyLower.includes('kills') && !keyLower.includes('headshot')) {
-                            const kills = parseInt(playerWeapons[key]) || 0;
-                            gameWeaponKills += kills;
-                            totalKills += kills;
-
-                            if (playerName && kills > 0) {
-                                playerKillStats[playerName] = (playerKillStats[playerName] || 0) + kills;
-                            }
-                        } else if (keyLower.includes('deaths')) {
-                            const deaths = parseInt(playerWeapons[key]) || 0;
-                            totalDeaths += deaths;
-
-                            if (playerName && deaths > 0) {
-                                playerDeathStats[playerName] = (playerDeathStats[playerName] || 0) + deaths;
+                            const wName = key.replace(/ kills/gi, '').trim().toLowerCase();
+                            if (meleeWeapons.includes(wName)) {
+                                meleeWeaponKills += parseInt(weaponData[key]) || 0;
                             }
                         }
-                    }
-                });
-            });
-        }
+                    });
+                }
 
-        if (gameWeaponKills > 0) {
-            weaponGames.push({ game, kills: gameWeaponKills });
-            mapWeaponKills[mapName] = (mapWeaponKills[mapName] || 0) + gameWeaponKills;
-            gametypeWeaponKills[gametype] = (gametypeWeaponKills[gametype] || 0) + gameWeaponKills;
-        }
-    });
+                const beatdownKills = Math.max(0, meleeMedals - meleeWeaponKills);
+                if (beatdownKills > 0) {
+                    playerKillStats[playerName] = (playerKillStats[playerName] || 0) + beatdownKills;
+                    totalKills += beatdownKills;
+                    gameMeleeKills += beatdownKills;
+                }
+            });
+
+            if (gameMeleeKills > 0) {
+                weaponGames.push({ game, kills: gameMeleeKills });
+                mapWeaponKills[mapName] = (mapWeaponKills[mapName] || 0) + gameMeleeKills;
+                gametypeWeaponKills[gametype] = (gametypeWeaponKills[gametype] || 0) + gameMeleeKills;
+            }
+        });
+        // Note: Deaths from melee not tracked separately in data
+    } else {
+        // Regular weapon search
+        gamesData.forEach(game => {
+            let gameWeaponKills = 0;
+            const mapName = game.details['Map Name'] || 'Unknown';
+            const gametype = game.details['Variant Name'] || 'Unknown';
+
+            if (game.weapons) {
+                game.weapons.forEach(playerWeapons => {
+                    const playerName = playerWeapons.Player;
+                    Object.keys(playerWeapons).forEach(key => {
+                        const keyLower = key.toLowerCase();
+                        if (keyLower.includes(weaponName.toLowerCase())) {
+                            if (keyLower.includes('kills') && !keyLower.includes('headshot')) {
+                                const kills = parseInt(playerWeapons[key]) || 0;
+                                gameWeaponKills += kills;
+                                totalKills += kills;
+
+                                if (playerName && kills > 0) {
+                                    playerKillStats[playerName] = (playerKillStats[playerName] || 0) + kills;
+                                }
+                            } else if (keyLower.includes('deaths')) {
+                                const deaths = parseInt(playerWeapons[key]) || 0;
+                                totalDeaths += deaths;
+
+                                if (playerName && deaths > 0) {
+                                    playerDeathStats[playerName] = (playerDeathStats[playerName] || 0) + deaths;
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+            if (gameWeaponKills > 0) {
+                weaponGames.push({ game, kills: gameWeaponKills });
+                mapWeaponKills[mapName] = (mapWeaponKills[mapName] || 0) + gameWeaponKills;
+                gametypeWeaponKills[gametype] = (gametypeWeaponKills[gametype] || 0) + gameWeaponKills;
+            }
+        });
+    }
 
     // Sort by most kills/deaths
     const topKillers = Object.entries(playerKillStats).sort((a, b) => b[1] - a[1]);
@@ -3889,13 +3970,16 @@ function renderWeaponSearchResults(weaponName) {
 
     html += '</div>'; // End weapon-search-leaderboard
 
+    // Breakdowns container for Map and Gametype
+    html += '<div class="breakdowns-container">';
+
     // By Map
     html += '<div class="breakdown-section">';
     html += '<div class="section-header">By Map</div>';
     html += '<div class="breakdown-list">';
     Object.entries(mapWeaponKills).sort((a, b) => b[1] - a[1]).forEach(([map, kills], index) => {
         const mapImg = mapImages[map] || defaultMapImage;
-        const pct = ((kills / totalKills) * 100).toFixed(1);
+        const pct = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
         html += `<div class="breakdown-item" onclick="openSearchResultsPage('map', '${map.replace(/'/g, "\\'")}')">`;
         html += `<span class="breakdown-rank">#${index + 1}</span>`;
         html += `<img src="${mapImg}" class="breakdown-icon map-icon" alt="${map}">`;
@@ -3910,7 +3994,7 @@ function renderWeaponSearchResults(weaponName) {
     html += '<div class="section-header">By Gametype</div>';
     html += '<div class="breakdown-list">';
     Object.entries(gametypeWeaponKills).sort((a, b) => b[1] - a[1]).forEach(([gt, kills], index) => {
-        const pct = ((kills / totalKills) * 100).toFixed(1);
+        const pct = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
         html += `<div class="breakdown-item" onclick="openSearchResultsPage('gametype', '${gt.replace(/'/g, "\\'")}')">`;
         html += `<span class="breakdown-rank">#${index + 1}</span>`;
         html += `<span class="breakdown-name">${gt}</span>`;
@@ -4363,7 +4447,9 @@ function formatWeaponName(name) {
         'frag grenade': 'Frag Grenade',
         'plasma grenade': 'Plasma Grenade',
         'sentinal beam': 'Sentinel Beam',
-        'sentinel beam': 'Sentinel Beam'
+        'sentinel beam': 'Sentinel Beam',
+        'melee': 'Melee Kill',
+        'beatdown': 'Melee Kill'
     };
 
     const lower = name.toLowerCase();
@@ -4906,7 +4992,40 @@ function getAllWeapons() {
             });
         });
     });
+    // Add melee as a searchable weapon (calculated from medals)
+    weapons.add('melee');
     return Array.from(weapons).sort();
+}
+
+// Calculate melee kills for a player from medals
+function calculatePlayerMeleeKills(playerName) {
+    const meleeWeapons = ['energy sword', 'flag', 'bomb', 'oddball'];
+    let totalMeleeMedals = 0;
+    let meleeWeaponKills = 0;
+
+    gamesData.forEach(game => {
+        // Get melee medals
+        const medalData = game.medals?.find(m => m.player === playerName);
+        if (medalData) {
+            totalMeleeMedals += (medalData.bone_cracker || 0) + (medalData.assassin || 0);
+        }
+
+        // Get melee weapon kills to subtract
+        const weaponData = game.weapons?.find(w => w.Player === playerName);
+        if (weaponData) {
+            Object.keys(weaponData).forEach(key => {
+                const keyLower = key.toLowerCase();
+                if (keyLower.includes('kills') && !keyLower.includes('headshot')) {
+                    const weaponName = key.replace(/ kills/gi, '').trim().toLowerCase();
+                    if (meleeWeapons.includes(weaponName)) {
+                        meleeWeaponKills += parseInt(weaponData[key]) || 0;
+                    }
+                }
+            });
+        }
+    });
+
+    return Math.max(0, totalMeleeMedals - meleeWeaponKills);
 }
 
 // Show global weapon leaderboard for a specific weapon
