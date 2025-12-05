@@ -1127,9 +1127,9 @@ async function loadEmblems() {
     }
 }
 
-// Parse emblem parameters from a halo2pc.com URL or return null if not valid
+// Parse emblem parameters from emblem URL or return null if not valid
 function parseEmblemParams(url) {
-    if (!url || !url.includes('emblem.php')) return null;
+    if (!url || (!url.includes('emblem.php') && !url.includes('emblem.html'))) return null;
 
     try {
         const urlParams = new URL(url).searchParams;
