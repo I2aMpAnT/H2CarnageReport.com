@@ -166,6 +166,146 @@ def load_manual_playlists():
     except:
         return {}
 
+def load_playlist_stats(playlist_name):
+    """
+    Load a playlist's stats file.
+
+    Returns dict with:
+    - playlist: name of playlist
+    - total_games: count of games
+    - games: array of game data
+    - active_match: current active match (null if none)
+    - match_history: array of all matches with timestamps/players
+    """
+    stats_file = PLAYLIST_STATS_FILES.get(playlist_name)
+    if not stats_file:
+        if playlist_name == 'Custom Games':
+            stats_file = CUSTOM_GAMES_STATS_FILE
+        else:
+            return None
+
+    try:
+        with open(stats_file, 'r') as f:
+            data = json.load(f)
+            # Ensure required fields exist
+            if 'active_match' not in data:
+                data['active_match'] = None
+            if 'match_history' not in data:
+                data['match_history'] = []
+            return data
+    except:
+        return {
+            'playlist': playlist_name,
+            'total_games': 0,
+            'games': [],
+            'active_match': None,
+            'match_history': []
+        }
+
+def load_all_playlist_stats():
+    """Load stats for all playlists including custom games."""
+    all_stats = {}
+    for playlist_name in PLAYLIST_STATS_FILES.keys():
+        all_stats[playlist_name] = load_playlist_stats(playlist_name)
+    all_stats['Custom Games'] = load_playlist_stats('Custom Games')
+    return all_stats
+
+def save_playlist_stats(playlist_name, data):
+    """Save a playlist's stats file."""
+    if playlist_name == 'Custom Games':
+        stats_file = CUSTOM_GAMES_STATS_FILE
+    else:
+        stats_file = PLAYLIST_STATS_FILES.get(playlist_name)
+
+    if stats_file:
+        with open(stats_file, 'w') as f:
+            json.dump(data, f, indent=2)
+        return True
+    return False
+
+def find_matching_match_in_history(game_timestamp, game_players, all_playlist_stats):
+    """
+    Find which playlist a game belongs to by checking match_history across all playlists.
+
+    Args:
+        game_timestamp: Start time of the game (string like "11/28/2025 20:03")
+        game_players: List of player names in the game
+        all_playlist_stats: Dict of all playlist stats
+
+    Returns:
+        playlist name if found, None otherwise
+    """
+    from datetime import datetime, timedelta
+
+    # Parse game timestamp
+    try:
+        game_dt = datetime.strptime(game_timestamp, '%m/%d/%Y %H:%M')
+    except:
+        return None
+
+    game_players_lower = set(p.lower() for p in game_players)
+
+    # Check each playlist's match_history
+    for playlist_name, stats in all_playlist_stats.items():
+        if playlist_name == 'Custom Games':
+            continue
+
+        match_history = stats.get('match_history', [])
+        for match in match_history:
+            # Parse match timestamps
+            try:
+                match_start = datetime.strptime(match.get('start_time', ''), '%Y-%m-%dT%H:%M:%S')
+                match_end_str = match.get('end_time')
+                if match_end_str:
+                    match_end = datetime.strptime(match_end_str, '%Y-%m-%dT%H:%M:%S')
+                else:
+                    # If no end time, assume match lasted up to 2 hours
+                    match_end = match_start + timedelta(hours=2)
+            except:
+                continue
+
+            # Check if game falls within match time window
+            if match_start <= game_dt <= match_end:
+                # Check if players match
+                match_players = set()
+                for p in match.get('red_team', []):
+                    match_players.add(p.lower())
+                for p in match.get('blue_team', []):
+                    match_players.add(p.lower())
+
+                if match_players:
+                    # At least 75% of game players should be in the match
+                    matches = sum(1 for p in game_players_lower if p in match_players)
+                    if matches >= len(game_players) * 0.75:
+                        return playlist_name
+
+    return None
+
+def record_match_to_history(playlist_name, match_data, all_playlist_stats):
+    """
+    Record a match to a playlist's match_history.
+
+    Args:
+        playlist_name: Name of the playlist
+        match_data: Dict with start_time, end_time, red_team, blue_team, discord_ids
+        all_playlist_stats: Dict of all playlist stats (will be modified)
+    """
+    if playlist_name not in all_playlist_stats:
+        return
+
+    stats = all_playlist_stats[playlist_name]
+    if 'match_history' not in stats:
+        stats['match_history'] = []
+
+    # Avoid duplicates by checking if match already exists
+    for existing in stats['match_history']:
+        if existing.get('start_time') == match_data.get('start_time'):
+            # Update existing match instead
+            existing.update(match_data)
+            return
+
+    stats['match_history'].append(match_data)
+
 def load_processed_state():
     """
     Load processed_state.json which tracks what has been processed.
@@ -348,12 +488,13 @@ def players_match_active_match(game_players, active_match):
     # At least 75% of game players should be in active match
     return matches >= len(game_players) * 0.75
 
-def determine_playlist(file_path, active_match=None, manual_playlists=None):
+def determine_playlist(file_path, active_match=None, manual_playlists=None, all_playlist_stats=None):
     """
     Determine the appropriate playlist for a game based on:
     1. Manual override from manual_playlists.json (highest priority)
     2. Game duration (must be >= 2 minutes to filter restarts)
     3. Active match from Discord bot (if any)
+    4. Match history from playlist stats files (for retroactive attribution)
 
     Returns: playlist name string or None if game doesn't qualify for any playlist
     """
@@ -371,19 +512,22 @@ def determine_playlist(file_path, active_match=None, manual_playlists=None):
     is_team = is_team_game(file_path)
     game_players = get_game_players(file_path)
 
-    # Get map and base gametype from game details
+    # Get map, base gametype, and start time from game details
     try:
         game_details_df = pd.read_excel(file_path, sheet_name='Game Details')
         if len(game_details_df) > 0:
             row = game_details_df.iloc[0]
             map_name = str(row.get('Map Name', '')).strip()
             base_gametype = str(row.get('Game Type', '')).strip()  # Use base gametype, not variant
+            start_time = str(row.get('Start Time', '')).strip()
         else:
             map_name = ''
             base_gametype = ''
+            start_time = ''
     except:
         map_name = ''
         base_gametype = ''
+        start_time = ''
 
     # If there's an active match, check if this game matches it
     if active_match:
@@ -406,8 +550,14 @@ def determine_playlist(file_path, active_match=None, manual_playlists=None):
                     if players_match_active_match(game_players, active_match):
                         return active_playlist
 
-    # No active match or game doesn't match active match = UNRANKED
-    # Games MUST have a bot session to be tagged with a playlist
+    # Check match_history from playlist stats files for retroactive attribution
+    if all_playlist_stats and start_time and game_players:
+        history_playlist = find_matching_match_in_history(start_time, game_players, all_playlist_stats)
+        if history_playlist:
+            print(f"    Found match in {history_playlist} match history")
+            return history_playlist
+
+    # No active match or history match = UNRANKED (Custom Games)
     return None
 
 def build_mac_to_discord_lookup(players):
@@ -861,6 +1011,15 @@ def main():
     mac_to_discord = build_mac_to_discord_lookup(players)
     print(f"Built {len(mac_to_discord)} MAC->Discord mappings")
 
+    # Load all playlist stats files (for match history lookup)
+    all_playlist_stats = load_all_playlist_stats()
+    print(f"Loaded {len(all_playlist_stats)} playlist stats files")
+    for pl_name, pl_stats in all_playlist_stats.items():
+        games_count = len(pl_stats.get('games', []))
+        history_count = len(pl_stats.get('match_history', []))
+        if games_count > 0 or history_count > 0:
+            print(f"  {pl_name}: {games_count} games, {history_count} matches in history")
+
     # Load active matches from Discord bot (if any)
     active_match = load_active_matches()
     if active_match:
@@ -869,6 +1028,19 @@ def main():
             print(f"  Red team: {', '.join(active_match['red_team'])}")
         if active_match.get('blue_team'):
             print(f"  Blue team: {', '.join(active_match['blue_team'])}")
+
+        # Record active match to playlist's match_history for future reference
+        active_playlist = active_match.get('playlist')
+        if active_playlist and active_playlist in all_playlist_stats:
+            match_record = {
+                'start_time': active_match.get('start_time', datetime.now().strftime('%Y-%m-%dT%H:%M:%S')),
+                'end_time': None,  # Will be updated when match ends
+                'red_team': active_match.get('red_team', []),
+                'blue_team': active_match.get('blue_team', []),
+                'discord_ids': active_match.get('discord_ids', {})
+            }
+            record_match_to_history(active_playlist, match_record, all_playlist_stats)
+            print(f"  Recorded to {active_playlist} match history")
     else:
         print("\nNo active match detected")
 
@@ -965,7 +1137,7 @@ def main():
 
     for filename, source_dir in all_game_files:
         file_path = os.path.join(source_dir, filename)
-        playlist = determine_playlist(file_path, active_match, manual_playlists)
+        playlist = determine_playlist(file_path, active_match, manual_playlists, all_playlist_stats)
 
         game = parse_excel_file(file_path)
         game['source_file'] = filename
@@ -1362,9 +1534,10 @@ def main():
             # Store flat rank for each playlist (legacy compatibility)
             rankstats[user_id][playlist] = playlist_rank
 
-            # Track highest rank across all playlists
-            if playlist_highest > overall_highest_rank:
-                overall_highest_rank = playlist_highest
+            # Track highest CURRENT rank across all playlists (for Discord bot display)
+            # Note: This is the current rank, not historical highest
+            if playlist_rank > overall_highest_rank:
+                overall_highest_rank = playlist_rank
 
             # Primary playlist is the one with most XP
             if playlist_xp > primary_xp:
@@ -1497,24 +1670,32 @@ def main():
         else:
             custom_games.append(game)
 
-    # Save each playlist's games to its own file
+    # Save each playlist's games to its own file (preserving match_history)
     for playlist, games in playlist_games.items():
         if playlist in PLAYLIST_STATS_FILES:
             stats_file = PLAYLIST_STATS_FILES[playlist]
+            # Preserve match_history from loaded stats
+            existing_stats = all_playlist_stats.get(playlist, {})
             playlist_data = {
                 'playlist': playlist,
                 'total_games': len(games),
-                'games': games
+                'games': games,
+                'active_match': existing_stats.get('active_match'),
+                'match_history': existing_stats.get('match_history', [])
             }
             with open(stats_file, 'w') as f:
                 json.dump(playlist_data, f, indent=2)
-            print(f"  Saved {stats_file} ({len(games)} games)")
+            history_count = len(playlist_data.get('match_history', []))
+            print(f"  Saved {stats_file} ({len(games)} games, {history_count} matches in history)")
 
     # Save custom games (unranked) to customgamestats.json
+    custom_stats = all_playlist_stats.get('Custom Games', {})
     custom_data = {
         'playlist': 'Custom Games',
         'total_games': len(custom_games),
-        'games': custom_games
+        'games': custom_games,
+        'active_match': None,
+        'match_history': custom_stats.get('match_history', [])
     }
     with open(CUSTOM_GAMES_STATS_FILE, 'w') as f:
         json.dump(custom_data, f, indent=2)
