@@ -1544,13 +1544,13 @@ function switchMainTab(tabName, updateHash = true) {
         loadTwitchHub();
     }
 
-    // Update URL hash for deep linking (e.g., /leaderboard, /twitch)
+    // Update URL hash for deep linking (e.g., #leaderboard, #twitch)
     if (updateHash) {
         const hashName = getHashNameForTab(tabName);
         if (hashName) {
-            history.replaceState(null, '', '/' + hashName);
+            history.replaceState(null, '', '#' + hashName);
         } else {
-            history.replaceState(null, '', '/');
+            history.replaceState(null, '', window.location.pathname);
         }
     }
 }
@@ -1582,9 +1582,9 @@ function getTabNameFromHash(hash) {
 
 // Handle URL-based tab navigation on page load
 function handleUrlNavigation() {
-    // Get path from URL (e.g., /leaderboard -> leaderboard)
-    const rawPath = window.location.pathname.replace(/^\//, '').replace(/\/$/, '');
-    const path = rawPath.toLowerCase();
+    // Get hash from URL (e.g., #leaderboard -> leaderboard)
+    const hash = window.location.hash.replace(/^#\/?/, '').replace(/\/$/, '');
+    const path = hash.toLowerCase();
 
     if (path) {
         // First check if it's a tab name
@@ -1595,7 +1595,7 @@ function handleUrlNavigation() {
         }
 
         // Check if it's a player name (try to find matching player)
-        const playerName = findPlayerByUrlPath(rawPath);
+        const playerName = findPlayerByUrlPath(hash);
         if (playerName) {
             // Small delay to ensure UI is ready
             setTimeout(() => {
@@ -1608,6 +1608,9 @@ function handleUrlNavigation() {
     // Default to gamehistory tab if no valid path
     switchMainTab('gamehistory', false);
 }
+
+// Listen for hash changes
+window.addEventListener('hashchange', handleUrlNavigation);
 
 // Find player by URL path (case-insensitive match against display names only)
 function findPlayerByUrlPath(urlPath) {
@@ -1746,23 +1749,6 @@ function createGameItem(game, gameNumber) {
         }
     }
 
-    // Build download dropdown HTML
-    let downloadDropdown = '<div class="game-download-dropdown" onclick="event.stopPropagation()">';
-    downloadDropdown += '<button class="download-icon-btn" onclick="toggleDownloadMenu(event, ' + gameNumber + ')" title="Download Files"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>';
-    downloadDropdown += `<div class="download-menu" id="download-menu-${gameNumber}">`;
-    if (game.public_url) {
-        downloadDropdown += `<a href="${game.public_url}" class="download-menu-item" target="_blank">Stats</a>`;
-    } else {
-        downloadDropdown += `<span class="download-menu-item disabled" onclick="alert('Sorry, it seems this file was lost')">Stats</span>`;
-    }
-    if (game.theater_url) {
-        downloadDropdown += `<a href="${game.theater_url}" class="download-menu-item" target="_blank">Telemetry</a>`;
-    } else {
-        downloadDropdown += `<span class="download-menu-item disabled" onclick="alert('Sorry, it seems this file was lost')">Telemetry</span>`;
-    }
-    downloadDropdown += '</div>';
-    downloadDropdown += '</div>';
-
     gameDiv.innerHTML = `
         <div class="game-header-bar ${winnerClass}" onclick="toggleGameDetails(${gameNumber})">
             <div class="game-header-left">
@@ -1775,7 +1761,6 @@ function createGameItem(game, gameNumber) {
             </div>
             <div class="game-header-right">
                 ${game.playlist ? `<span class="game-meta-tag playlist-tag">${game.playlist}</span>` : ''}
-                ${downloadDropdown}
                 ${dateDisplay ? `<span class="game-meta-tag date-tag">${dateDisplay}</span>` : ''}
                 <div class="expand-icon">▶</div>
             </div>
@@ -1915,8 +1900,30 @@ function renderGameContent(game) {
     html += `</div>`;
     html += teamScoreHtml;
     html += `</div>`;
+
+    // Download dropdown for expanded game view
+    const hasStats = game.public_url && game.public_url.trim() !== '';
+    const hasTelemetry = game.theater_url && game.theater_url.trim() !== '';
+    html += '<div class="game-download-dropdown">';
+    html += '<button class="download-icon-btn" onclick="event.stopPropagation(); this.nextElementSibling.classList.toggle(\'show\');" title="Download game files">';
+    html += '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
+    html += '</button>';
+    html += '<div class="download-menu">';
+    if (hasStats) {
+        html += `<a href="${game.public_url}" class="download-menu-item" download onclick="event.stopPropagation();">Stats</a>`;
+    } else {
+        html += '<span class="download-menu-item disabled" onclick="event.stopPropagation(); alert(\'Sorry, it seems this file was lost\');">Stats</span>';
+    }
+    if (hasTelemetry) {
+        html += `<a href="${game.theater_url}" class="download-menu-item" download onclick="event.stopPropagation();">Telemetry</a>`;
+    } else {
+        html += '<span class="download-menu-item disabled" onclick="event.stopPropagation(); alert(\'Sorry, it seems this file was lost\');">Telemetry</span>';
+    }
     html += '</div>';
-    
+    html += '</div>';
+
+    html += '</div>';
+
     html += '<div class="tab-navigation">';
     html += '<button class="tab-btn active" onclick="switchGameTab(this, \'scoreboard\')">Scoreboard</button>';
     html += '<button class="tab-btn" onclick="switchGameTab(this, \'pvp\')">PVP</button>';

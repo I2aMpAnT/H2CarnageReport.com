@@ -563,6 +563,8 @@ header {
 .game-download-dropdown {
     position: relative;
     display: inline-block;
+    margin-left: auto;
+    align-self: flex-start;
 }
 
 .download-icon-btn {
