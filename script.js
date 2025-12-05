@@ -175,7 +175,8 @@ function getGameTimeRanges() {
     return ranges;
 }
 
-// Parse game date time string "MM/DD/YYYY HH:MM" to Date object
+// Parse game date time string "MM/DD/YYYY HH:MM" as Eastern Time and return Date object
+// All game timestamps are stored in Eastern Time (America/New_York)
 function parseGameDateTime(dateStr) {
     if (!dateStr) return null;
     try {
@@ -185,15 +186,64 @@ function parseGameDateTime(dateStr) {
         const dateParts = parts[0].split('/');
         const timeParts = parts[1].split(':');
         if (dateParts.length !== 3 || timeParts.length !== 2) return null;
-        const month = parseInt(dateParts[0]) - 1;
+        const month = parseInt(dateParts[0]);
         const day = parseInt(dateParts[1]);
         const year = parseInt(dateParts[2]);
         const hours = parseInt(timeParts[0]);
         const minutes = parseInt(timeParts[1]);
-        return new Date(year, month, day, hours, minutes);
+
+        // Create date string in ISO format with Eastern Time offset
+        // We need to determine if it's EST (-05:00) or EDT (-04:00)
+        const tempDate = new Date(year, month - 1, day, hours, minutes);
+        const jan = new Date(year, 0, 1);
+        const jul = new Date(year, 6, 1);
+        const stdOffset = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+        const isDST = tempDate.getTimezoneOffset() < stdOffset;
+
+        // For Eastern Time: EST = -05:00, EDT = -04:00
+        // We need to check if the date falls in DST for Eastern timezone
+        // DST in US: Second Sunday of March to First Sunday of November
+        const marchSecondSunday = new Date(year, 2, 1);
+        marchSecondSunday.setDate(14 - marchSecondSunday.getDay());
+        const novFirstSunday = new Date(year, 10, 1);
+        novFirstSunday.setDate(7 - novFirstSunday.getDay());
+
+        const isEasternDST = tempDate >= marchSecondSunday && tempDate < novFirstSunday;
+        const easternOffset = isEasternDST ? '-04:00' : '-05:00';
+
+        // Create ISO string and parse it as Eastern Time
+        const isoStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00${easternOffset}`;
+        return new Date(isoStr);
     } catch (e) {
         return null;
     }
+}
+
+// Format a Date object to display in user's local timezone
+function formatDateTimeLocal(date) {
+    if (!date || !(date instanceof Date) || isNaN(date)) return '';
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    function getOrdinal(n) {
+        if (n > 3 && n < 21) return 'th';
+        switch (n % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+        }
+    }
+
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 || 12;
+
+    return `${month} ${day}${getOrdinal(day)} ${year}, ${displayHours}:${String(minutes).padStart(2, '0')} ${ampm}`;
 }
 
 // Get in-game names for a Discord ID (from in_game_names array or discord_name)
@@ -735,43 +785,23 @@ function getMedalIcon(medalName) {
     return medalIcons[key] || null;
 }
 
-// Helper function to format date/time consistently
+// Helper function to format date/time consistently (converts from Eastern Time to local)
 function formatDateTime(startTime) {
     if (!startTime) return '';
 
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-    // Get ordinal suffix for day
-    function getOrdinal(n) {
-        if (n > 3 && n < 21) return 'th';
-        switch (n % 10) {
-            case 1: return 'st';
-            case 2: return 'nd';
-            case 3: return 'rd';
-            default: return 'th';
-        }
+    // Parse as Eastern Time and format in user's local timezone
+    const date = parseGameDateTime(startTime);
+    if (date) {
+        return formatDateTimeLocal(date);
     }
 
-    // Try to parse MM/DD/YYYY format first
-    const dateMatch = startTime.match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
-    // Also try ISO format (YYYY-MM-DDTHH:MM:SS)
+    // Fallback for ISO format
     const isoMatch = startTime.match(/(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
-
-    if (dateMatch) {
-        // MM/DD/YYYY format
-        const month = parseInt(dateMatch[1]) - 1;
-        const day = parseInt(dateMatch[2]);
-        let year = parseInt(dateMatch[3]);
-        if (year < 100) year += 2000;
-        const monthName = months[month] || dateMatch[1];
-        return `${monthName} ${day}${getOrdinal(day)} ${year}`;
-    } else if (isoMatch) {
-        // ISO format: 2025-11-23T08:35:00-05:00
-        const year = parseInt(isoMatch[1]);
-        const month = parseInt(isoMatch[2]) - 1;
-        const day = parseInt(isoMatch[3]);
-        const monthName = months[month];
-        return `${monthName} ${day}${getOrdinal(day)} ${year}`;
+    if (isoMatch) {
+        const date = new Date(startTime);
+        if (!isNaN(date)) {
+            return formatDateTimeLocal(date);
+        }
     }
 
     return startTime;
