@@ -689,9 +689,10 @@ const weaponIcons = {
     'sniper rifle': 'assets/weapons/SniperRifle.png',
     'rocket launcher': 'assets/weapons/RocketLauncher.png',
     'rockets': 'assets/weapons/RocketLauncher.png',
-    'frag grenade': 'assets/weapons/H2-M9HEDPFragmentationGrenade.png',
-    'grenade': 'assets/weapons/H2-M9HEDPFragmentationGrenade.png',
-    'fragmentation grenade': 'assets/weapons/H2-M9HEDPFragmentationGrenade.png',
+    'frag grenade': 'assets/weapons/FragGrenadeHUD.png',
+    'grenade': 'assets/weapons/FragGrenadeHUD.png',
+    'fragmentation grenade': 'assets/weapons/FragGrenadeHUD.png',
+    'plasma grenade': 'assets/weapons/PlasmaGrenadeHUD.png',
 
     // Covenant Weapons
     'plasma pistol': 'assets/weapons/PlasmaPistol.png',
@@ -4720,14 +4721,17 @@ function showProfileWeaponKillsBreakdown() {
         weaponStats['melee'] = beatdownKills;
     }
 
-    // Sort by most kills and separate grenades from weapons
+    // Sort by most kills, but put grenades at the bottom
     const sortedWeapons = Object.entries(weaponStats).sort((a, b) => b[1] - a[1]);
     const totalKills = sortedWeapons.reduce((sum, [_, kills]) => sum + kills, 0);
 
-    // Separate grenades from regular weapons
+    // Separate grenades to show at bottom
     const isGrenade = (name) => name.toLowerCase().includes('grenade');
     const regularWeapons = sortedWeapons.filter(([weapon]) => !isGrenade(weapon));
     const grenades = sortedWeapons.filter(([weapon]) => isGrenade(weapon));
+
+    // Combine: regular weapons first, then grenades
+    const orderedWeapons = [...regularWeapons, ...grenades];
 
     // Create modal
     let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
@@ -4738,12 +4742,12 @@ function showProfileWeaponKillsBreakdown() {
     html += `</div>`;
     html += '<div class="weapon-breakdown-grid">';
 
-    if (sortedWeapons.length === 0) {
+    if (orderedWeapons.length === 0) {
         html += '<div class="no-data">No weapon data available</div>';
     }
 
-    // Render regular weapons with icons
-    for (const [weapon, kills] of regularWeapons) {
+    // Render all weapons with icons (grenades at bottom)
+    for (const [weapon, kills] of orderedWeapons) {
         const iconUrl = getWeaponIcon(weapon);
         const percentage = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
 
@@ -4761,18 +4765,6 @@ function showProfileWeaponKillsBreakdown() {
     }
 
     html += '</div>';
-
-    // Render grenades at the bottom without icons
-    if (grenades.length > 0) {
-        html += '<div class="weapon-breakdown-grenades">';
-        const grenadeText = grenades.map(([weapon, kills]) => {
-            const percentage = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
-            return `${formatWeaponName(weapon)}: ${kills} (${percentage}%)`;
-        }).join(' · ');
-        html += grenadeText;
-        html += '</div>';
-    }
-
     html += '</div>';
     html += '</div>';
 
