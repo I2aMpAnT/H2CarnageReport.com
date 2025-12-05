@@ -509,7 +509,7 @@ function renderTwitchHubVods(filterQuery = '') {
             <div class="twitch-hub-card" data-map="${entry.mapName}" data-gametype="${entry.gameType}">
                 <div class="vod-game-header" onclick="navigateToGame(${entry.gameIndex})">${entry.mapName} - ${entry.gameType}</div>
                 <div class="twitch-hub-embed-wrapper">
-                    <iframe src="${embedUrl}" allowfullscreen></iframe>
+                    <iframe src="${embedUrl}" allowfullscreen="true" allow="fullscreen"></iframe>
                 </div>
                 <div class="twitch-hub-info">
                     <div class="twitch-hub-meta">
@@ -535,13 +535,10 @@ function filterTwitchVods() {
 // Navigate to a specific game in the games list and expand it
 function navigateToGame(gameIndex) {
     // Switch to Games History tab
-    const gamesTab = document.querySelector('[data-tab="games"]');
-    if (gamesTab) {
-        gamesTab.click();
-    }
+    switchMainTab('gamehistory');
 
-    // Calculate the game number (games are displayed in reverse order, newest first)
-    const gameNumber = gamesData.length - gameIndex;
+    // Calculate the game number (gameIndex is 0-based, gameNumber is 1-based)
+    const gameNumber = gameIndex + 1;
 
     // Scroll to and expand the game
     setTimeout(() => {
@@ -1012,33 +1009,29 @@ function getRankAtTime(playerName, gameEndTime, discordId = null) {
     // Use provided discord ID or look it up from player name
     const playerId = discordId || profileNameToDiscordId[playerName];
 
+    // Helper to parse timestamp strings like "11/28/2025 7:43" or "11/28/2025 20:18"
+    function parseGameTimestamp(timestamp) {
+        if (timestamp.includes('/')) {
+            const [datePart, timePart] = timestamp.split(' ');
+            const [month, day, year] = datePart.split('/');
+            const [hour, minute] = timePart.split(':');
+            return new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:00`);
+        }
+        return new Date(timestamp);
+    }
+
     // First try dynamic rank history (calculated from game outcomes)
     if (playerId && dynamicRankHistory[playerId]) {
         const history = dynamicRankHistory[playerId].history;
         if (history && history.length > 0) {
-            // Parse game end time
-            let gameTime;
-            if (gameEndTime.includes('/')) {
-                const [datePart, timePart] = gameEndTime.split(' ');
-                const [month, day, year] = datePart.split('/');
-                gameTime = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart}:00`);
-            } else {
-                gameTime = new Date(gameEndTime);
-            }
+            const gameTime = parseGameTimestamp(gameEndTime);
 
             // Find the closest match within 5 minutes
             let closestMatch = null;
             let closestDiff = Infinity;
 
             for (const entry of history) {
-                let entryTime;
-                if (entry.timestamp.includes('/')) {
-                    const [datePart, timePart] = entry.timestamp.split(' ');
-                    const [month, day, year] = datePart.split('/');
-                    entryTime = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart}:00`);
-                } else {
-                    entryTime = new Date(entry.timestamp);
-                }
+                const entryTime = parseGameTimestamp(entry.timestamp);
                 const diffMinutes = Math.abs((gameTime - entryTime) / (1000 * 60));
 
                 if (diffMinutes <= 5 && diffMinutes < closestDiff) {
@@ -1063,16 +1056,7 @@ function getRankAtTime(playerName, gameEndTime, discordId = null) {
         return null;
     }
 
-    // Parse game end time (format: "11/28/2025 20:18" or ISO format)
-    let gameTime;
-    if (gameEndTime.includes('/')) {
-        // Parse MM/DD/YYYY HH:MM format
-        const [datePart, timePart] = gameEndTime.split(' ');
-        const [month, day, year] = datePart.split('/');
-        gameTime = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${timePart}:00`);
-    } else {
-        gameTime = new Date(gameEndTime);
-    }
+    const gameTime = parseGameTimestamp(gameEndTime);
 
     // Find the CLOSEST history entry within 5 minutes tolerance
     // The entry's rank_before is what we want
@@ -1080,7 +1064,7 @@ function getRankAtTime(playerName, gameEndTime, discordId = null) {
     let closestDiff = Infinity;
 
     for (const entry of history) {
-        const entryTime = new Date(entry.timestamp);
+        const entryTime = parseGameTimestamp(entry.timestamp);
         const diffMinutes = Math.abs((gameTime - entryTime) / (1000 * 60));
 
         if (diffMinutes <= 5 && diffMinutes < closestDiff) {
@@ -1554,7 +1538,8 @@ function getHashNameForTab(tabName) {
 // Map URL paths to tab names
 function getTabNameFromHash(hash) {
     const hashToTab = {
-        'games': 'games',
+        'games': 'gamehistory',
+        'gamehistory': 'gamehistory',
         'leaderboard': 'leaderboard',
         'twitch': 'twitch',
         'pvp': 'pvp',
@@ -1566,18 +1551,50 @@ function getTabNameFromHash(hash) {
 // Handle URL-based tab navigation on page load
 function handleUrlNavigation() {
     // Get path from URL (e.g., /leaderboard -> leaderboard)
-    const path = window.location.pathname.replace(/^\//, '').replace(/\/$/, '').toLowerCase();
+    const rawPath = window.location.pathname.replace(/^\//, '').replace(/\/$/, '');
+    const path = rawPath.toLowerCase();
 
     if (path) {
+        // First check if it's a tab name
         const tabName = getTabNameFromHash(path);
         if (tabName) {
             switchMainTab(tabName, false);
             return;
         }
+
+        // Check if it's a player name (try to find matching player)
+        const playerName = findPlayerByUrlPath(rawPath);
+        if (playerName) {
+            // Small delay to ensure UI is ready
+            setTimeout(() => {
+                openPlayerProfile(playerName);
+            }, 100);
+            return;
+        }
     }
 
-    // Default to games tab if no valid path
-    switchMainTab('games', false);
+    // Default to gamehistory tab if no valid path
+    switchMainTab('gamehistory', false);
+}
+
+// Find player by URL path (case-insensitive match against display names only)
+function findPlayerByUrlPath(urlPath) {
+    const searchLower = decodeURIComponent(urlPath).toLowerCase();
+
+    // Search by discord display name only (exact match)
+    for (const [discordId, data] of Object.entries(rankstatsData)) {
+        const displayName = data.display_name || data.discord_name || '';
+        if (displayName.toLowerCase() === searchLower) {
+            // Return the in-game name for this player (needed for openPlayerProfile)
+            const profileNames = discordIdToProfileNames[discordId];
+            if (profileNames && profileNames.length > 0) {
+                return profileNames[0];
+            }
+            return displayName;
+        }
+    }
+
+    return null;
 }
 
 function renderGamesList() {
@@ -2149,7 +2166,7 @@ function renderDetailedStats(game) {
         const timeAlive = formatTime(stat.total_time_alive || 0);
 
         html += `<tr ${teamAttr}>`;
-        html += `<td><span class="player-with-rank">${getPreGameRankIconByName(stat.player, game, 'small')}<span>${stat.player}</span></span></td>`;
+        html += `<td><span class="player-with-rank">${getPreGameRankIconByName(stat.player, game, 'small')}<span>${getDisplayNameForProfile(stat.player)}</span></span></td>`;
         html += `<td>${stat.kills}</td>`;
         html += `<td>${stat.assists}</td>`;
         html += `<td>${stat.deaths}</td>`;
@@ -2202,7 +2219,7 @@ function renderDetailedStats(game) {
             const team = playerTeams[stat.player];
             const teamAttr = team ? `data-team="${team}"` : '';
 
-            html += `<tr ${teamAttr}><td><span class="player-with-rank">${getPreGameRankIconByName(stat.player, game, 'small')}<span>${stat.player}</span></span></td>`;
+            html += `<tr ${teamAttr}><td><span class="player-with-rank">${getPreGameRankIconByName(stat.player, game, 'small')}<span>${getDisplayNameForProfile(stat.player)}</span></span></td>`;
 
             if (hasCTF) {
                 html += `<td>${stat.ctf_scores || 0}</td>`;
@@ -3078,9 +3095,9 @@ function renderPvpComparison(player1Name, player2Name) {
     
     // Header with player names
     html += '<div class="comparison-header">';
-    html += `<div class="player-header">${getPlayerRankIcon(player1Name, 'normal')}<span class="player-header-name">${player1Name}</span></div>`;
+    html += `<div class="player-header">${getPlayerRankIcon(player1Name, 'normal')}<span class="player-header-name">${getDisplayNameForProfile(player1Name)}</span></div>`;
     html += '<div class="pvp-vs">VS</div>';
-    html += `<div class="player-header">${getPlayerRankIcon(player2Name, 'normal')}<span class="player-header-name">${player2Name}</span></div>`;
+    html += `<div class="player-header">${getPlayerRankIcon(player2Name, 'normal')}<span class="player-header-name">${getDisplayNameForProfile(player2Name)}</span></div>`;
     html += '</div>';
     
     // Head to Head section
@@ -3382,7 +3399,7 @@ function openSearchResultsPage(type, name) {
     window.scrollTo(0, 0);
     
     if (type === 'player') {
-        searchResultsTitle.innerHTML = `${getPlayerRankIcon(name, 'small')} ${name}`;
+        searchResultsTitle.innerHTML = `${getPlayerRankIcon(name, 'small')} ${getDisplayNameForProfile(name)}`;
         searchResultsContent.innerHTML = renderPlayerSearchResults(name);
     } else if (type === 'map') {
         const mapImage = mapImages[name] || defaultMapImage;
@@ -4680,9 +4697,14 @@ function showProfileWeaponKillsBreakdown() {
         }
     });
 
-    // Sort by most kills
+    // Sort by most kills and separate grenades from weapons
     const sortedWeapons = Object.entries(weaponStats).sort((a, b) => b[1] - a[1]);
     const totalKills = sortedWeapons.reduce((sum, [_, kills]) => sum + kills, 0);
+
+    // Separate grenades from regular weapons
+    const isGrenade = (name) => name.toLowerCase().includes('grenade');
+    const regularWeapons = sortedWeapons.filter(([weapon]) => !isGrenade(weapon));
+    const grenades = sortedWeapons.filter(([weapon]) => isGrenade(weapon));
 
     // Create modal
     let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
@@ -4697,7 +4719,8 @@ function showProfileWeaponKillsBreakdown() {
         html += '<div class="no-data">No weapon data available</div>';
     }
 
-    for (const [weapon, kills] of sortedWeapons) {
+    // Render regular weapons with icons
+    for (const [weapon, kills] of regularWeapons) {
         const iconUrl = getWeaponIcon(weapon);
         const percentage = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
 
@@ -4715,6 +4738,18 @@ function showProfileWeaponKillsBreakdown() {
     }
 
     html += '</div>';
+
+    // Render grenades at the bottom without icons
+    if (grenades.length > 0) {
+        html += '<div class="weapon-breakdown-grenades">';
+        const grenadeText = grenades.map(([weapon, kills]) => {
+            const percentage = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
+            return `${formatWeaponName(weapon)}: ${kills} (${percentage}%)`;
+        }).join(' · ');
+        html += grenadeText;
+        html += '</div>';
+    }
+
     html += '</div>';
     html += '</div>';
 
@@ -4747,9 +4782,14 @@ function showProfileWeaponDeathsBreakdown() {
         }
     });
 
-    // Sort by most deaths
+    // Sort by most deaths and separate grenades from weapons
     const sortedWeapons = Object.entries(weaponStats).sort((a, b) => b[1] - a[1]);
     const totalDeaths = sortedWeapons.reduce((sum, [_, deaths]) => sum + deaths, 0);
+
+    // Separate grenades from regular weapons
+    const isGrenade = (name) => name.toLowerCase().includes('grenade');
+    const regularWeapons = sortedWeapons.filter(([weapon]) => !isGrenade(weapon));
+    const grenades = sortedWeapons.filter(([weapon]) => isGrenade(weapon));
 
     // Create modal
     let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
@@ -4764,7 +4804,8 @@ function showProfileWeaponDeathsBreakdown() {
         html += '<div class="no-data">No weapon data available</div>';
     }
 
-    for (const [weapon, deaths] of sortedWeapons) {
+    // Render regular weapons with icons
+    for (const [weapon, deaths] of regularWeapons) {
         const iconUrl = getWeaponIcon(weapon);
         const percentage = totalDeaths > 0 ? ((deaths / totalDeaths) * 100).toFixed(1) : '0';
 
@@ -4782,6 +4823,18 @@ function showProfileWeaponDeathsBreakdown() {
     }
 
     html += '</div>';
+
+    // Render grenades at the bottom without icons
+    if (grenades.length > 0) {
+        html += '<div class="weapon-breakdown-grenades">';
+        const grenadeText = grenades.map(([weapon, deaths]) => {
+            const percentage = totalDeaths > 0 ? ((deaths / totalDeaths) * 100).toFixed(1) : '0';
+            return `${formatWeaponName(weapon)}: ${deaths} (${percentage}%)`;
+        }).join(' · ');
+        html += grenadeText;
+        html += '</div>';
+    }
+
     html += '</div>';
     html += '</div>';
 
