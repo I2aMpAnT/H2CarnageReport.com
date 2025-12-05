@@ -689,9 +689,10 @@ const weaponIcons = {
     'sniper rifle': 'assets/weapons/SniperRifle.png',
     'rocket launcher': 'assets/weapons/RocketLauncher.png',
     'rockets': 'assets/weapons/RocketLauncher.png',
-    'frag grenade': 'assets/weapons/H2-M9HEDPFragmentationGrenade.png',
-    'grenade': 'assets/weapons/H2-M9HEDPFragmentationGrenade.png',
-    'fragmentation grenade': 'assets/weapons/H2-M9HEDPFragmentationGrenade.png',
+    'frag grenade': 'assets/weapons/FragGrenadeHUD.png',
+    'grenade': 'assets/weapons/FragGrenadeHUD.png',
+    'fragmentation grenade': 'assets/weapons/FragGrenadeHUD.png',
+    'plasma grenade': 'assets/weapons/PlasmaGrenadeHUD.png',
 
     // Covenant Weapons
     'plasma pistol': 'assets/weapons/PlasmaPistol.png',
@@ -723,6 +724,10 @@ const weaponIcons = {
 // Helper function to get weapon icon
 function getWeaponIcon(weaponName) {
     const key = weaponName.toLowerCase().trim();
+    // Use bone cracker medal icon for melee kills
+    if (key === 'melee') {
+        return medalIcons['bone_cracker'] || null;
+    }
     return weaponIcons[key] || null;
 }
 
@@ -4680,6 +4685,9 @@ function showProfileWeaponKillsBreakdown() {
 
     // Calculate weapon kill stats for the player
     const weaponStats = {};
+    let totalMeleeMedals = 0;
+    let meleeWeaponKills = 0;
+    const meleeWeapons = ['energy sword', 'flag', 'bomb', 'oddball'];
 
     currentProfileGames.forEach(game => {
         const weaponData = game.weapons?.find(w => w.Player === currentProfilePlayer);
@@ -4691,20 +4699,39 @@ function showProfileWeaponKillsBreakdown() {
                     const kills = parseInt(weaponData[key]) || 0;
                     if (kills > 0) {
                         weaponStats[weaponName] = (weaponStats[weaponName] || 0) + kills;
+                        // Track melee weapon kills
+                        if (meleeWeapons.includes(weaponName.toLowerCase())) {
+                            meleeWeaponKills += kills;
+                        }
                     }
                 }
             });
         }
+
+        // Get melee medals (bone_cracker + assassin)
+        const medalData = game.medals?.find(m => m.player === currentProfilePlayer);
+        if (medalData) {
+            totalMeleeMedals += (medalData.bone_cracker || 0) + (medalData.assassin || 0);
+        }
     });
 
-    // Sort by most kills and separate grenades from weapons
+    // Calculate beatdown kills (melee medals minus melee weapon kills)
+    const beatdownKills = Math.max(0, totalMeleeMedals - meleeWeaponKills);
+    if (beatdownKills > 0) {
+        weaponStats['melee'] = beatdownKills;
+    }
+
+    // Sort by most kills, but put grenades at the bottom
     const sortedWeapons = Object.entries(weaponStats).sort((a, b) => b[1] - a[1]);
     const totalKills = sortedWeapons.reduce((sum, [_, kills]) => sum + kills, 0);
 
-    // Separate grenades from regular weapons
+    // Separate grenades to show at bottom
     const isGrenade = (name) => name.toLowerCase().includes('grenade');
     const regularWeapons = sortedWeapons.filter(([weapon]) => !isGrenade(weapon));
     const grenades = sortedWeapons.filter(([weapon]) => isGrenade(weapon));
+
+    // Combine: regular weapons first, then grenades
+    const orderedWeapons = [...regularWeapons, ...grenades];
 
     // Create modal
     let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
@@ -4715,12 +4742,12 @@ function showProfileWeaponKillsBreakdown() {
     html += `</div>`;
     html += '<div class="weapon-breakdown-grid">';
 
-    if (sortedWeapons.length === 0) {
+    if (orderedWeapons.length === 0) {
         html += '<div class="no-data">No weapon data available</div>';
     }
 
-    // Render regular weapons with icons
-    for (const [weapon, kills] of regularWeapons) {
+    // Render all weapons with icons (grenades at bottom)
+    for (const [weapon, kills] of orderedWeapons) {
         const iconUrl = getWeaponIcon(weapon);
         const percentage = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
 
@@ -4738,18 +4765,6 @@ function showProfileWeaponKillsBreakdown() {
     }
 
     html += '</div>';
-
-    // Render grenades at the bottom without icons
-    if (grenades.length > 0) {
-        html += '<div class="weapon-breakdown-grenades">';
-        const grenadeText = grenades.map(([weapon, kills]) => {
-            const percentage = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
-            return `${formatWeaponName(weapon)}: ${kills} (${percentage}%)`;
-        }).join(' · ');
-        html += grenadeText;
-        html += '</div>';
-    }
-
     html += '</div>';
     html += '</div>';
 
@@ -4782,14 +4797,17 @@ function showProfileWeaponDeathsBreakdown() {
         }
     });
 
-    // Sort by most deaths and separate grenades from weapons
+    // Sort by most deaths, put grenades at bottom
     const sortedWeapons = Object.entries(weaponStats).sort((a, b) => b[1] - a[1]);
     const totalDeaths = sortedWeapons.reduce((sum, [_, deaths]) => sum + deaths, 0);
 
-    // Separate grenades from regular weapons
+    // Separate grenades to show at bottom
     const isGrenade = (name) => name.toLowerCase().includes('grenade');
     const regularWeapons = sortedWeapons.filter(([weapon]) => !isGrenade(weapon));
     const grenades = sortedWeapons.filter(([weapon]) => isGrenade(weapon));
+
+    // Combine: regular weapons first, then grenades
+    const orderedWeapons = [...regularWeapons, ...grenades];
 
     // Create modal
     let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
@@ -4800,12 +4818,12 @@ function showProfileWeaponDeathsBreakdown() {
     html += `</div>`;
     html += '<div class="weapon-breakdown-grid">';
 
-    if (sortedWeapons.length === 0) {
+    if (orderedWeapons.length === 0) {
         html += '<div class="no-data">No weapon data available</div>';
     }
 
-    // Render regular weapons with icons
-    for (const [weapon, deaths] of regularWeapons) {
+    // Render all weapons with icons (grenades at bottom)
+    for (const [weapon, deaths] of orderedWeapons) {
         const iconUrl = getWeaponIcon(weapon);
         const percentage = totalDeaths > 0 ? ((deaths / totalDeaths) * 100).toFixed(1) : '0';
 
@@ -4823,18 +4841,6 @@ function showProfileWeaponDeathsBreakdown() {
     }
 
     html += '</div>';
-
-    // Render grenades at the bottom without icons
-    if (grenades.length > 0) {
-        html += '<div class="weapon-breakdown-grenades">';
-        const grenadeText = grenades.map(([weapon, deaths]) => {
-            const percentage = totalDeaths > 0 ? ((deaths / totalDeaths) * 100).toFixed(1) : '0';
-            return `${formatWeaponName(weapon)}: ${deaths} (${percentage}%)`;
-        }).join(' · ');
-        html += grenadeText;
-        html += '</div>';
-    }
-
     html += '</div>';
     html += '</div>';
 
@@ -4842,6 +4848,203 @@ function showProfileWeaponDeathsBreakdown() {
     const overlay = document.createElement('div');
     overlay.innerHTML = html;
     document.body.appendChild(overlay.firstChild);
+}
+
+// Get all unique weapons from all games
+function getAllWeapons() {
+    const weapons = new Set();
+    gamesData.forEach(game => {
+        game.weapons?.forEach(weaponData => {
+            Object.keys(weaponData).forEach(key => {
+                if (key !== 'Player' && key.toLowerCase().includes('kills')) {
+                    const weaponName = key.replace(/ kills/gi, '').trim().toLowerCase();
+                    weapons.add(weaponName);
+                }
+            });
+        });
+    });
+    return Array.from(weapons).sort();
+}
+
+// Show global weapon leaderboard for a specific weapon
+function showWeaponLeaderboard(weaponName) {
+    const weaponLower = weaponName.toLowerCase();
+
+    // Calculate kills and deaths for each player with this weapon
+    const playerKills = {};
+    const playerDeaths = {};
+
+    gamesData.forEach(game => {
+        game.weapons?.forEach(weaponData => {
+            const player = weaponData.Player;
+            if (!player) return;
+
+            Object.keys(weaponData).forEach(key => {
+                const keyLower = key.toLowerCase();
+                const weaponInKey = key.replace(/ (kills|deaths)/gi, '').trim().toLowerCase();
+
+                if (weaponInKey === weaponLower || weaponInKey.includes(weaponLower) || weaponLower.includes(weaponInKey)) {
+                    if (keyLower.includes('kills') && !keyLower.includes('headshot')) {
+                        const kills = parseInt(weaponData[key]) || 0;
+                        playerKills[player] = (playerKills[player] || 0) + kills;
+                    } else if (keyLower.includes('deaths')) {
+                        const deaths = parseInt(weaponData[key]) || 0;
+                        playerDeaths[player] = (playerDeaths[player] || 0) + deaths;
+                    }
+                }
+            });
+        });
+    });
+
+    // Sort by most kills/deaths
+    const topKillers = Object.entries(playerKills)
+        .filter(([_, kills]) => kills > 0)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+    const topVictims = Object.entries(playerDeaths)
+        .filter(([_, deaths]) => deaths > 0)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10);
+
+    // Create modal
+    let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
+    html += '<div class="weapon-leaderboard-modal" onclick="event.stopPropagation()">';
+    html += `<div class="weapon-breakdown-header">`;
+    const iconUrl = getWeaponIcon(weaponName);
+    if (iconUrl) {
+        html += `<img src="${iconUrl}" alt="${weaponName}" class="weapon-header-icon">`;
+    }
+    html += `<h2>${formatWeaponName(weaponName)} Leaderboard</h2>`;
+    html += `<button class="modal-close" onclick="closeMedalBreakdown()">&times;</button>`;
+    html += `</div>`;
+
+    html += '<div class="weapon-leaderboard-columns">';
+
+    // Most Kills column
+    html += '<div class="weapon-leaderboard-column">';
+    html += '<h3>Most Kills</h3>';
+    if (topKillers.length === 0) {
+        html += '<div class="no-data">No kills recorded</div>';
+    } else {
+        html += '<div class="weapon-leaderboard-list">';
+        for (let i = 0; i < topKillers.length; i++) {
+            const [player, kills] = topKillers[i];
+            const displayName = getDisplayNameForProfile(player);
+            const discordId = profileNameToDiscordId[player];
+            const playerInfo = discordId ? playersData.players?.find(p => p.discord_id === discordId) : null;
+            const emblemUrl = playerInfo?.emblem_url || getPlayerEmblemUrl(player);
+            const emblemParams = emblemUrl ? parseEmblemParams(emblemUrl) : null;
+            const rank = getRankForPlayer(player);
+
+            html += `<div class="weapon-lb-row">`;
+            html += `<span class="weapon-lb-rank">#${i + 1}</span>`;
+            if (emblemParams) {
+                html += `<div class="emblem-placeholder weapon-lb-emblem" data-emblem-params='${JSON.stringify(emblemParams)}'></div>`;
+            }
+            html += `<span class="weapon-lb-name">${displayName}</span>`;
+            if (rank) {
+                html += `<img src="assets/ranks/${rank}.png" alt="Rank ${rank}" class="weapon-lb-rank-icon">`;
+            }
+            html += `<span class="weapon-lb-count">${kills}</span>`;
+            html += `</div>`;
+        }
+        html += '</div>';
+    }
+    html += '</div>';
+
+    // Most Deaths column
+    html += '<div class="weapon-leaderboard-column">';
+    html += '<h3>Most Deaths</h3>';
+    if (topVictims.length === 0) {
+        html += '<div class="no-data">No deaths recorded</div>';
+    } else {
+        html += '<div class="weapon-leaderboard-list">';
+        for (let i = 0; i < topVictims.length; i++) {
+            const [player, deaths] = topVictims[i];
+            const displayName = getDisplayNameForProfile(player);
+            const discordId = profileNameToDiscordId[player];
+            const playerInfo = discordId ? playersData.players?.find(p => p.discord_id === discordId) : null;
+            const emblemUrl = playerInfo?.emblem_url || getPlayerEmblemUrl(player);
+            const emblemParams = emblemUrl ? parseEmblemParams(emblemUrl) : null;
+            const rank = getRankForPlayer(player);
+
+            html += `<div class="weapon-lb-row">`;
+            html += `<span class="weapon-lb-rank">#${i + 1}</span>`;
+            if (emblemParams) {
+                html += `<div class="emblem-placeholder weapon-lb-emblem" data-emblem-params='${JSON.stringify(emblemParams)}'></div>`;
+            }
+            html += `<span class="weapon-lb-name">${displayName}</span>`;
+            if (rank) {
+                html += `<img src="assets/ranks/${rank}.png" alt="Rank ${rank}" class="weapon-lb-rank-icon">`;
+            }
+            html += `<span class="weapon-lb-count">${deaths}</span>`;
+            html += `</div>`;
+        }
+        html += '</div>';
+    }
+    html += '</div>';
+
+    html += '</div>'; // columns
+    html += '</div>'; // modal
+    html += '</div>'; // overlay
+
+    // Add to page
+    const overlay = document.createElement('div');
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay.firstChild);
+
+    // Load emblems
+    loadBreakdownEmblems();
+}
+
+// Show weapon search modal with all weapons
+function showWeaponSearch() {
+    const weapons = getAllWeapons();
+
+    let html = '<div class="weapon-breakdown-overlay" onclick="closeMedalBreakdown()">';
+    html += '<div class="weapon-breakdown-modal weapon-search-modal" onclick="event.stopPropagation()">';
+    html += `<div class="weapon-breakdown-header">`;
+    html += `<h2>Weapon Leaderboards</h2>`;
+    html += `<button class="modal-close" onclick="closeMedalBreakdown()">&times;</button>`;
+    html += `</div>`;
+    html += `<input type="text" class="weapon-search-input" placeholder="Search weapons..." oninput="filterWeaponSearch(this.value)">`;
+    html += '<div class="weapon-breakdown-grid weapon-search-grid">';
+
+    for (const weapon of weapons) {
+        const iconUrl = getWeaponIcon(weapon);
+        html += `<div class="weapon-breakdown-item weapon-search-item" data-weapon="${weapon}" onclick="closeMedalBreakdown(); showWeaponLeaderboard('${weapon}')">`;
+        if (iconUrl) {
+            html += `<img src="${iconUrl}" alt="${weapon}" class="weapon-breakdown-icon">`;
+        } else {
+            html += `<div class="weapon-breakdown-placeholder">${weapon.substring(0, 2).toUpperCase()}</div>`;
+        }
+        html += `<div class="weapon-breakdown-info">`;
+        html += `<div class="weapon-breakdown-name">${formatWeaponName(weapon)}</div>`;
+        html += `</div>`;
+        html += `</div>`;
+    }
+
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+
+    const overlay = document.createElement('div');
+    overlay.innerHTML = html;
+    document.body.appendChild(overlay.firstChild);
+}
+
+// Filter weapon search results
+function filterWeaponSearch(query) {
+    const items = document.querySelectorAll('.weapon-search-item');
+    const queryLower = query.toLowerCase();
+    items.forEach(item => {
+        const weapon = item.dataset.weapon;
+        if (weapon.includes(queryLower) || formatWeaponName(weapon).toLowerCase().includes(queryLower)) {
+            item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
 }
 
 // Load emblems for breakdown modals
