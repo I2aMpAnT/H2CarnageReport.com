@@ -3762,7 +3762,6 @@ function renderMedalSearchResults(medalName) {
 
 function renderWeaponSearchResults(weaponName) {
     // Find all games where this weapon was used
-    // Weapons are stored at game.weapons[] with keys like "Sniper Rifle kills"
     const weaponGames = [];
     let playerKillStats = {};
     let playerDeathStats = {};
@@ -3771,44 +3770,96 @@ function renderWeaponSearchResults(weaponName) {
     let totalKills = 0;
     let totalDeaths = 0;
 
-    gamesData.forEach(game => {
-        let gameWeaponKills = 0;
-        const mapName = game.details['Map Name'] || 'Unknown';
-        const gametype = game.details['Variant Name'] || 'Unknown';
+    const isMeleeSearch = weaponName.toLowerCase() === 'melee';
 
-        if (game.weapons) {
-            game.weapons.forEach(playerWeapons => {
-                const playerName = playerWeapons.Player;
-                Object.keys(playerWeapons).forEach(key => {
-                    const keyLower = key.toLowerCase();
-                    if (keyLower.includes(weaponName.toLowerCase())) {
+    if (isMeleeSearch) {
+        // Special handling for melee - calculate from medals
+        const meleeWeapons = ['energy sword', 'flag', 'bomb', 'oddball'];
+
+        gamesData.forEach(game => {
+            let gameMeleeKills = 0;
+            const mapName = game.details['Map Name'] || 'Unknown';
+            const gametype = game.details['Variant Name'] || 'Unknown';
+
+            // For each player in the game
+            game.players?.forEach(player => {
+                const playerName = player.name;
+
+                // Get melee medals
+                const medalData = game.medals?.find(m => m.player === playerName);
+                const meleeMedals = medalData ? (medalData.bone_cracker || 0) + (medalData.assassin || 0) : 0;
+
+                // Get melee weapon kills to subtract
+                const weaponData = game.weapons?.find(w => w.Player === playerName);
+                let meleeWeaponKills = 0;
+                if (weaponData) {
+                    Object.keys(weaponData).forEach(key => {
+                        const keyLower = key.toLowerCase();
                         if (keyLower.includes('kills') && !keyLower.includes('headshot')) {
-                            const kills = parseInt(playerWeapons[key]) || 0;
-                            gameWeaponKills += kills;
-                            totalKills += kills;
-
-                            if (playerName && kills > 0) {
-                                playerKillStats[playerName] = (playerKillStats[playerName] || 0) + kills;
-                            }
-                        } else if (keyLower.includes('deaths')) {
-                            const deaths = parseInt(playerWeapons[key]) || 0;
-                            totalDeaths += deaths;
-
-                            if (playerName && deaths > 0) {
-                                playerDeathStats[playerName] = (playerDeathStats[playerName] || 0) + deaths;
+                            const wName = key.replace(/ kills/gi, '').trim().toLowerCase();
+                            if (meleeWeapons.includes(wName)) {
+                                meleeWeaponKills += parseInt(weaponData[key]) || 0;
                             }
                         }
-                    }
-                });
-            });
-        }
+                    });
+                }
 
-        if (gameWeaponKills > 0) {
-            weaponGames.push({ game, kills: gameWeaponKills });
-            mapWeaponKills[mapName] = (mapWeaponKills[mapName] || 0) + gameWeaponKills;
-            gametypeWeaponKills[gametype] = (gametypeWeaponKills[gametype] || 0) + gameWeaponKills;
-        }
-    });
+                const beatdownKills = Math.max(0, meleeMedals - meleeWeaponKills);
+                if (beatdownKills > 0) {
+                    playerKillStats[playerName] = (playerKillStats[playerName] || 0) + beatdownKills;
+                    totalKills += beatdownKills;
+                    gameMeleeKills += beatdownKills;
+                }
+            });
+
+            if (gameMeleeKills > 0) {
+                weaponGames.push({ game, kills: gameMeleeKills });
+                mapWeaponKills[mapName] = (mapWeaponKills[mapName] || 0) + gameMeleeKills;
+                gametypeWeaponKills[gametype] = (gametypeWeaponKills[gametype] || 0) + gameMeleeKills;
+            }
+        });
+        // Note: Deaths from melee not tracked separately in data
+    } else {
+        // Regular weapon search
+        gamesData.forEach(game => {
+            let gameWeaponKills = 0;
+            const mapName = game.details['Map Name'] || 'Unknown';
+            const gametype = game.details['Variant Name'] || 'Unknown';
+
+            if (game.weapons) {
+                game.weapons.forEach(playerWeapons => {
+                    const playerName = playerWeapons.Player;
+                    Object.keys(playerWeapons).forEach(key => {
+                        const keyLower = key.toLowerCase();
+                        if (keyLower.includes(weaponName.toLowerCase())) {
+                            if (keyLower.includes('kills') && !keyLower.includes('headshot')) {
+                                const kills = parseInt(playerWeapons[key]) || 0;
+                                gameWeaponKills += kills;
+                                totalKills += kills;
+
+                                if (playerName && kills > 0) {
+                                    playerKillStats[playerName] = (playerKillStats[playerName] || 0) + kills;
+                                }
+                            } else if (keyLower.includes('deaths')) {
+                                const deaths = parseInt(playerWeapons[key]) || 0;
+                                totalDeaths += deaths;
+
+                                if (playerName && deaths > 0) {
+                                    playerDeathStats[playerName] = (playerDeathStats[playerName] || 0) + deaths;
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+
+            if (gameWeaponKills > 0) {
+                weaponGames.push({ game, kills: gameWeaponKills });
+                mapWeaponKills[mapName] = (mapWeaponKills[mapName] || 0) + gameWeaponKills;
+                gametypeWeaponKills[gametype] = (gametypeWeaponKills[gametype] || 0) + gameWeaponKills;
+            }
+        });
+    }
 
     // Sort by most kills/deaths
     const topKillers = Object.entries(playerKillStats).sort((a, b) => b[1] - a[1]);
@@ -3889,13 +3940,16 @@ function renderWeaponSearchResults(weaponName) {
 
     html += '</div>'; // End weapon-search-leaderboard
 
+    // Breakdowns container for Map and Gametype
+    html += '<div class="breakdowns-container">';
+
     // By Map
     html += '<div class="breakdown-section">';
     html += '<div class="section-header">By Map</div>';
     html += '<div class="breakdown-list">';
     Object.entries(mapWeaponKills).sort((a, b) => b[1] - a[1]).forEach(([map, kills], index) => {
         const mapImg = mapImages[map] || defaultMapImage;
-        const pct = ((kills / totalKills) * 100).toFixed(1);
+        const pct = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
         html += `<div class="breakdown-item" onclick="openSearchResultsPage('map', '${map.replace(/'/g, "\\'")}')">`;
         html += `<span class="breakdown-rank">#${index + 1}</span>`;
         html += `<img src="${mapImg}" class="breakdown-icon map-icon" alt="${map}">`;
@@ -3910,7 +3964,7 @@ function renderWeaponSearchResults(weaponName) {
     html += '<div class="section-header">By Gametype</div>';
     html += '<div class="breakdown-list">';
     Object.entries(gametypeWeaponKills).sort((a, b) => b[1] - a[1]).forEach(([gt, kills], index) => {
-        const pct = ((kills / totalKills) * 100).toFixed(1);
+        const pct = totalKills > 0 ? ((kills / totalKills) * 100).toFixed(1) : '0';
         html += `<div class="breakdown-item" onclick="openSearchResultsPage('gametype', '${gt.replace(/'/g, "\\'")}')">`;
         html += `<span class="breakdown-rank">#${index + 1}</span>`;
         html += `<span class="breakdown-name">${gt}</span>`;
@@ -4363,7 +4417,9 @@ function formatWeaponName(name) {
         'frag grenade': 'Frag Grenade',
         'plasma grenade': 'Plasma Grenade',
         'sentinal beam': 'Sentinel Beam',
-        'sentinel beam': 'Sentinel Beam'
+        'sentinel beam': 'Sentinel Beam',
+        'melee': 'Melee Kill',
+        'beatdown': 'Melee Kill'
     };
 
     const lower = name.toLowerCase();
@@ -4906,7 +4962,40 @@ function getAllWeapons() {
             });
         });
     });
+    // Add melee as a searchable weapon (calculated from medals)
+    weapons.add('melee');
     return Array.from(weapons).sort();
+}
+
+// Calculate melee kills for a player from medals
+function calculatePlayerMeleeKills(playerName) {
+    const meleeWeapons = ['energy sword', 'flag', 'bomb', 'oddball'];
+    let totalMeleeMedals = 0;
+    let meleeWeaponKills = 0;
+
+    gamesData.forEach(game => {
+        // Get melee medals
+        const medalData = game.medals?.find(m => m.player === playerName);
+        if (medalData) {
+            totalMeleeMedals += (medalData.bone_cracker || 0) + (medalData.assassin || 0);
+        }
+
+        // Get melee weapon kills to subtract
+        const weaponData = game.weapons?.find(w => w.Player === playerName);
+        if (weaponData) {
+            Object.keys(weaponData).forEach(key => {
+                const keyLower = key.toLowerCase();
+                if (keyLower.includes('kills') && !keyLower.includes('headshot')) {
+                    const weaponName = key.replace(/ kills/gi, '').trim().toLowerCase();
+                    if (meleeWeapons.includes(weaponName)) {
+                        meleeWeaponKills += parseInt(weaponData[key]) || 0;
+                    }
+                }
+            });
+        }
+    });
+
+    return Math.max(0, totalMeleeMedals - meleeWeaponKills);
 }
 
 // Show global weapon leaderboard for a specific weapon
