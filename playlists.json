@@ -1,0 +1,34 @@
+{
+  "playlists": [
+    {
+      "name": "MLG 4v4",
+      "stats_file": "mlg4v4stats.json",
+      "description": "MLG 4v4 match history",
+      "ranked": true
+    },
+    {
+      "name": "Team Hardcore",
+      "stats_file": "teamhardcorestats.json",
+      "description": "Team Hardcore match history",
+      "ranked": true
+    },
+    {
+      "name": "Double Team",
+      "stats_file": "doubleteamstats.json",
+      "description": "2v2 match history",
+      "ranked": true
+    },
+    {
+      "name": "Head to Head",
+      "stats_file": "headtoheadstats.json",
+      "description": "1v1 match history",
+      "ranked": true
+    },
+    {
+      "name": "Custom Games",
+      "stats_file": "customgamestats.json",
+      "description": "Unranked custom games",
+      "ranked": false
+    }
+  ]
+}

@@ -30,6 +30,22 @@ ACTIVE_MATCHES_FILE = 'active_matches.json'
 RANKHISTORY_FILE = 'rankhistory.json'
 MANUAL_PLAYLISTS_FILE = 'manual_playlists.json'
 PROCESSED_STATE_FILE = 'processed_state.json'
+PLAYLISTS_FILE = 'playlists.json'
+
+# Playlist-specific stats files
+MLG4V4_STATS_FILE = 'mlg4v4stats.json'
+TEAM_HARDCORE_STATS_FILE = 'teamhardcorestats.json'
+DOUBLE_TEAM_STATS_FILE = 'doubleteamstats.json'
+HEAD_TO_HEAD_STATS_FILE = 'headtoheadstats.json'
+CUSTOM_GAMES_STATS_FILE = 'customgamestats.json'
+
+# Map playlist names to their stats files
+PLAYLIST_STATS_FILES = {
+    'MLG 4v4': MLG4V4_STATS_FILE,
+    'Team Hardcore': TEAM_HARDCORE_STATS_FILE,
+    'Double Team': DOUBLE_TEAM_STATS_FILE,
+    'Head to Head': HEAD_TO_HEAD_STATS_FILE,
+}
 
 # Base URL for downloadable files on the VPS
 STATS_BASE_URL = 'http://104.207.143.249/stats'
@@ -1464,6 +1480,84 @@ def main():
     with open(MATCHHISTORY_FILE, 'w') as f:
         json.dump(matchhistory, f, indent=2)
     print(f"  Saved {MATCHHISTORY_FILE}")
+
+    # Save playlist-specific stats files
+    print("\n  Saving playlist-specific stats files...")
+
+    # Group games by playlist
+    playlist_games = {}
+    custom_games = []
+
+    for game in all_games:
+        playlist = game.get('playlist')
+        if playlist:
+            if playlist not in playlist_games:
+                playlist_games[playlist] = []
+            playlist_games[playlist].append(game)
+        else:
+            custom_games.append(game)
+
+    # Save each playlist's games to its own file
+    for playlist, games in playlist_games.items():
+        if playlist in PLAYLIST_STATS_FILES:
+            stats_file = PLAYLIST_STATS_FILES[playlist]
+            playlist_data = {
+                'playlist': playlist,
+                'total_games': len(games),
+                'games': games
+            }
+            with open(stats_file, 'w') as f:
+                json.dump(playlist_data, f, indent=2)
+            print(f"  Saved {stats_file} ({len(games)} games)")
+
+    # Save custom games (unranked) to customgamestats.json
+    custom_data = {
+        'playlist': 'Custom Games',
+        'total_games': len(custom_games),
+        'games': custom_games
+    }
+    with open(CUSTOM_GAMES_STATS_FILE, 'w') as f:
+        json.dump(custom_data, f, indent=2)
+    print(f"  Saved {CUSTOM_GAMES_STATS_FILE} ({len(custom_games)} games)")
+
+    # Save playlists.json (list of all playlists and their stats files)
+    playlists_info = {
+        'playlists': [
+            {
+                'name': 'MLG 4v4',
+                'stats_file': MLG4V4_STATS_FILE,
+                'description': 'MLG 4v4 match history',
+                'ranked': True
+            },
+            {
+                'name': 'Team Hardcore',
+                'stats_file': TEAM_HARDCORE_STATS_FILE,
+                'description': 'Team Hardcore match history',
+                'ranked': True
+            },
+            {
+                'name': 'Double Team',
+                'stats_file': DOUBLE_TEAM_STATS_FILE,
+                'description': '2v2 match history',
+                'ranked': True
+            },
+            {
+                'name': 'Head to Head',
+                'stats_file': HEAD_TO_HEAD_STATS_FILE,
+                'description': '1v1 match history',
+                'ranked': True
+            },
+            {
+                'name': 'Custom Games',
+                'stats_file': CUSTOM_GAMES_STATS_FILE,
+                'description': 'Unranked custom games',
+                'ranked': False
+            }
+        ]
+    }
+    with open(PLAYLISTS_FILE, 'w') as f:
+        json.dump(playlists_info, f, indent=2)
+    print(f"  Saved {PLAYLISTS_FILE}")
 
     # Print summary
     print("\n" + "=" * 50)
