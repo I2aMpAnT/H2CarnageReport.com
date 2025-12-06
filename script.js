@@ -1384,16 +1384,113 @@ document.addEventListener('DOMContentLoaded', function() {
     loadGamesData();
 });
 
+// Global storage for playlist data
+let playlistsConfig = null;
+let playlistMatches = {};  // {playlist_name: matches_array}
+let playlistStats = {};    // {playlist_name: stats_object}
+let customGamesData = [];
+let showCustomGames = false;
+
+// Convert match data from {playlist}_matches.json to gamesData player format
+function convertMatchToPlayers(match, playlist) {
+    const players = [];
+
+    if (playlist.is_team === false) {
+        // Head to Head - players array with no teams
+        if (match.players) {
+            for (const playerName of match.players) {
+                players.push({
+                    name: playerName,
+                    team: null,
+                    winner: playerName === match.winner
+                });
+            }
+        }
+    } else {
+        // Team game - red and blue teams
+        if (match.red_team) {
+            for (const playerName of match.red_team) {
+                players.push({
+                    name: playerName,
+                    team: 'Red',
+                    winner: match.winner === 'Red'
+                });
+            }
+        }
+        if (match.blue_team) {
+            for (const playerName of match.blue_team) {
+                players.push({
+                    name: playerName,
+                    team: 'Blue',
+                    winner: match.winner === 'Blue'
+                });
+            }
+        }
+    }
+
+    return players;
+}
+
+// Load custom games when checkbox is toggled
+async function loadCustomGames() {
+    if (customGamesData.length > 0) {
+        return customGamesData;  // Already loaded
+    }
+
+    try {
+        const response = await fetch('customgames.json');
+        if (response.ok) {
+            const data = await response.json();
+            customGamesData = data.matches || [];
+            console.log(`[DEBUG] Loaded ${customGamesData.length} custom games`);
+        }
+    } catch (e) {
+        console.warn('[WARN] Could not load customgames.json:', e);
+    }
+
+    return customGamesData;
+}
+
+// Toggle custom games display
+async function toggleCustomGames(show) {
+    showCustomGames = show;
+
+    if (show && customGamesData.length === 0) {
+        await loadCustomGames();
+
+        // Add custom games to gamesData
+        for (const match of customGamesData) {
+            gamesData.push({
+                details: {
+                    'Start Time': match.timestamp,
+                    'Map Name': match.map,
+                    'Game Type': match.gametype,
+                    'Variant Name': match.variant || match.gametype
+                },
+                players: convertMatchToPlayers(match, { is_team: true }),
+                playlist: null,  // Unranked
+                source_file: match.source_file,
+                isCustomGame: true
+            });
+        }
+    } else if (!show) {
+        // Remove custom games from gamesData
+        gamesData = gamesData.filter(game => !game.isCustomGame);
+    }
+
+    // Re-render games list
+    renderGamesList();
+}
+
 async function loadGamesData() {
     const loadingArea = document.getElementById('loadingArea');
     const statsArea = document.getElementById('statsArea');
     const mainHeader = document.getElementById('mainHeader');
-    
+
     console.log('[DEBUG] Starting to load games data...');
     console.log('[DEBUG] Current URL:', window.location.href);
     console.log('[DEBUG] Protocol:', window.location.protocol);
-    console.log('[DEBUG] Fetch URL: gameshistory.json');
-    
+
     // Check if running from file:// protocol
     if (window.location.protocol === 'file:') {
         console.error('[ERROR] Running from file:// protocol - this will not work!');
@@ -1412,25 +1509,72 @@ async function loadGamesData() {
         `;
         return;
     }
-    
+
     try {
-        console.log('[DEBUG] Attempting fetch...');
-        const response = await fetch('gameshistory.json');
-        
-        console.log('[DEBUG] Response status:', response.status);
-        console.log('[DEBUG] Response ok:', response.ok);
-        console.log('[DEBUG] Response type:', response.type);
-        console.log('[DEBUG] Response URL:', response.url);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+        // Load playlists configuration first
+        console.log('[DEBUG] Loading playlists.json...');
+        const playlistsResponse = await fetch('playlists.json');
+        if (playlistsResponse.ok) {
+            playlistsConfig = await playlistsResponse.json();
+            console.log('[DEBUG] Playlists config loaded:', playlistsConfig);
+        } else {
+            console.warn('[WARN] playlists.json not found, falling back to legacy loading');
+            playlistsConfig = null;
         }
-        
-        console.log('[DEBUG] Parsing JSON...');
-        const text = await response.text();
-        console.log('[DEBUG] Response size:', text.length, 'bytes');
-        
-        gamesData = JSON.parse(text);
+
+        // Load games from per-playlist files or legacy gameshistory.json
+        gamesData = [];
+
+        if (playlistsConfig && playlistsConfig.playlists) {
+            // New per-playlist loading
+            console.log('[DEBUG] Loading per-playlist match files...');
+            for (const playlist of playlistsConfig.playlists) {
+                try {
+                    const matchesResponse = await fetch(playlist.matches_file);
+                    if (matchesResponse.ok) {
+                        const matchesData = await matchesResponse.json();
+                        playlistMatches[playlist.name] = matchesData.matches || [];
+                        console.log(`[DEBUG] Loaded ${playlistMatches[playlist.name].length} matches from ${playlist.matches_file}`);
+
+                        // Convert to gamesData format for compatibility
+                        for (const match of playlistMatches[playlist.name]) {
+                            gamesData.push({
+                                details: {
+                                    'Start Time': match.timestamp,
+                                    'Map Name': match.map,
+                                    'Game Type': match.gametype,
+                                    'Variant Name': match.gametype
+                                },
+                                players: convertMatchToPlayers(match, playlist),
+                                playlist: playlist.name,
+                                source_file: match.source_file
+                            });
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`[WARN] Could not load ${playlist.matches_file}:`, e);
+                }
+
+                // Also load stats for this playlist
+                try {
+                    const statsResponse = await fetch(playlist.stats_file);
+                    if (statsResponse.ok) {
+                        const statsData = await statsResponse.json();
+                        playlistStats[playlist.name] = statsData.players || {};
+                        console.log(`[DEBUG] Loaded stats for ${Object.keys(playlistStats[playlist.name]).length} players from ${playlist.stats_file}`);
+                    }
+                } catch (e) {
+                    console.warn(`[WARN] Could not load ${playlist.stats_file}:`, e);
+                }
+            }
+        } else {
+            // Legacy: load from gameshistory.json
+            console.log('[DEBUG] Falling back to gameshistory.json...');
+            const response = await fetch('gameshistory.json');
+            if (response.ok) {
+                gamesData = await response.json();
+            }
+        }
 
         // Filter out hidden games (not included in stats or viewing)
         const totalGames = gamesData.length;
@@ -1442,7 +1586,9 @@ async function loadGamesData() {
 
         console.log('[DEBUG] Games loaded successfully!');
         console.log('[DEBUG] Number of games:', gamesData.length);
-        console.log('[DEBUG] First game:', gamesData[0]);
+        if (gamesData.length > 0) {
+            console.log('[DEBUG] First game:', gamesData[0]);
+        }
         
         // Load player ranks from rankstats.json (supports playlist-based ranks)
         console.log('[DEBUG] Loading player ranks...');
