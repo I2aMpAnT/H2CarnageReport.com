@@ -4,7 +4,10 @@
     {
       "timestamp": "11/28/2025 20:03",
       "map": "Midship",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG CTF MidWar",
+      "variant_name": "MLG CTF MidWar",
+      "red_score": 4,
+      "blue_score": 1,
       "winner": "Red",
       "red_team": [
         "2D",
@@ -14,7 +17,7 @@
       ],
       "blue_team": [
         "Rocky",
-        "Ralph Port",
+        "keylord",
         "getitoutdaFLUD",
         "roasted"
       ],
@@ -23,7 +26,10 @@
     {
       "timestamp": "11/28/2025 20:19",
       "map": "Beaver Creek",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS 2007",
+      "variant_name": "MLG TS 2007",
+      "red_score": 19,
+      "blue_score": 33,
       "winner": "Blue",
       "red_team": [
         "KidMode",
@@ -34,7 +40,7 @@
       "blue_team": [
         "getitoutdaFLUD",
         "roasted",
-        "Ralph Port",
+        "keylord",
         "Rocky"
       ],
       "source_file": "20251128_202256.xlsx"
@@ -42,7 +48,10 @@
     {
       "timestamp": "11/28/2025 20:29",
       "map": "Lockout",
-      "gametype": "Oddball",
+      "gametype": "MLG Ball 2007",
+      "variant_name": "MLG Ball 2007",
+      "red_score": 0,
+      "blue_score": 70,
       "winner": "Blue",
       "red_team": [
         "KidMode",
@@ -53,7 +62,7 @@
       "blue_team": [
         "getitoutdaFLUD",
         "roasted",
-        "Ralph Port",
+        "keylord",
         "Rocky"
       ],
       "source_file": "20251128_204504.xlsx"
@@ -61,7 +70,10 @@
     {
       "timestamp": "11/28/2025 20:45",
       "map": "Warlock",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS 2007",
+      "variant_name": "MLG TS 2007",
+      "red_score": 50,
+      "blue_score": 32,
       "winner": "Red",
       "red_team": [
         "EpiiiC",
@@ -71,7 +83,7 @@
       ],
       "blue_team": [
         "getitoutdaFLUD",
-        "Ralph Port",
+        "keylord",
         "Rocky",
         "roasted"
       ],
@@ -80,7 +92,10 @@
     {
       "timestamp": "11/28/2025 20:50",
       "map": "Sanctuary",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG CTF Sanc",
+      "variant_name": "MLG CTF Sanc",
+      "red_score": 1,
+      "blue_score": 0,
       "winner": "Red",
       "red_team": [
         "Tetracide",
@@ -90,7 +105,7 @@
       ],
       "blue_team": [
         "getitoutdaFLUD",
-        "Ralph Port",
+        "keylord",
         "Rocky",
         "roasted"
       ],
@@ -99,37 +114,43 @@
     {
       "timestamp": "12/2/2025 20:23",
       "map": "Warlock",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG MidWar CTF",
+      "variant_name": "MLG MidWar CTF",
+      "red_score": 2,
+      "blue_score": 1,
       "winner": "Red",
       "red_team": [
         "Em Won 5 F 1 T",
         "Rocky",
         "getitoutdaFLUD",
-        "\ue101\ue100\ue101\ue103\ue075"
+        "Rinser"
       ],
       "blue_team": [
         "Dirk",
         "AfroMaN",
         "roasted",
-        "Keylord"
+        "keylord"
       ],
       "source_file": "20251202_203858.xlsx"
     },
     {
       "timestamp": "12/2/2025 20:40",
       "map": "Midship",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS No Dualz",
+      "variant_name": "MLG TS No Dualz",
+      "red_score": 50,
+      "blue_score": 44,
       "winner": "Red",
       "red_team": [
         "Rocky",
-        "\ue101\ue100\ue101\ue103\ue075",
+        "Rinser",
         "Em Won 5 F 1 T",
         "getitoutdaFLUD"
       ],
       "blue_team": [
         "AfroMaN",
         "Dirk",
-        "Keylord",
+        "keylord",
         "roasted"
       ],
       "source_file": "20251202_204558.xlsx"
@@ -137,11 +158,14 @@
     {
       "timestamp": "12/2/2025 20:46",
       "map": "Sanctuary",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG Sanc CTF",
+      "variant_name": "MLG Sanc CTF",
+      "red_score": 2,
+      "blue_score": 0,
       "winner": "Red",
       "red_team": [
         "Em Won 5 F 1 T",
-        "\ue101\ue100\ue101\ue103\ue075",
+        "Rinser",
         "Rocky",
         "getitoutdaFLUD"
       ],
@@ -149,23 +173,26 @@
         "AfroMaN",
         "Dirk",
         "roasted",
-        "Keylord"
+        "keylord"
       ],
       "source_file": "20251202_210205.xlsx"
     },
     {
       "timestamp": "12/5/2025 1:45 AM",
       "map": "Warlock",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG MidWar CTF",
+      "variant_name": "MLG MidWar CTF",
+      "red_score": 1,
+      "blue_score": 0,
       "winner": "Red",
       "red_team": [
         "AfroMaN",
         "shooter22",
         "Hyrax",
-        "Sneaky Beaver"
+        "sneakybeav3r"
       ],
       "blue_team": [
-        "popq2",
+        "popq22",
         "DU7S",
         "Curts GLORY",
         "getitoutdaFLUD"
@@ -175,18 +202,21 @@
     {
       "timestamp": "12/5/2025 1:54 AM",
       "map": "Sanctuary",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS Default",
+      "variant_name": "MLG TS Default",
+      "red_score": 50,
+      "blue_score": 41,
       "winner": "Red",
       "red_team": [
         "Hyrax",
-        "Sneaky Beaver",
+        "sneakybeav3r",
         "AfroMaN",
         "shooter22"
       ],
       "blue_team": [
         "getitoutdaFLUD",
         "DU7S",
-        "popq2",
+        "popq22",
         "Curts GLORY"
       ],
       "source_file": "20251205_020151.xlsx"
@@ -194,18 +224,21 @@
     {
       "timestamp": "12/5/2025 2:02 AM",
       "map": "Midship",
-      "gametype": "Bomb",
+      "gametype": "MidBomb",
+      "variant_name": "MidBomb",
+      "red_score": 0,
+      "blue_score": 3,
       "winner": "Blue",
       "red_team": [
         "AfroMaN",
         "shooter22",
         "Hyrax",
-        "Sneaky Beaver"
+        "sneakybeav3r"
       ],
       "blue_team": [
         "DU7S",
         "getitoutdaFLUD",
-        "popq2",
+        "popq22",
         "Curts GLORY"
       ],
       "source_file": "20251205_021632.xlsx"
@@ -213,10 +246,13 @@
     {
       "timestamp": "12/5/2025 2:17 AM",
       "map": "Lockout",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS No Dualz",
+      "variant_name": "MLG TS No Dualz",
+      "red_score": 50,
+      "blue_score": 49,
       "winner": "Red",
       "red_team": [
-        "Sneaky Beaver",
+        "sneakybeav3r",
         "shooter22",
         "Hyrax",
         "AfroMaN"
@@ -224,7 +260,7 @@
       "blue_team": [
         "getitoutdaFLUD",
         "Curts GLORY",
-        "popq2",
+        "popq22",
         "DU7S"
       ],
       "source_file": "20251205_023212.xlsx"
@@ -232,18 +268,21 @@
     {
       "timestamp": "12/5/2025 2:33 AM",
       "map": "Sanctuary",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG Sanc CTF",
+      "variant_name": "MLG Sanc CTF",
+      "red_score": 0,
+      "blue_score": 0,
       "winner": "Tie",
       "red_team": [
         "Hyrax",
         "AfroMaN",
         "shooter22",
-        "Sneaky Beaver"
+        "sneakybeav3r"
       ],
       "blue_team": [
         "getitoutdaFLUD",
         "DU7S",
-        "popq2",
+        "popq22",
         "Curts GLORY"
       ],
       "source_file": "20251205_023445.xlsx"
@@ -251,18 +290,21 @@
     {
       "timestamp": "12/5/2025 10:29 PM",
       "map": "Beaver Creek",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS 2007",
+      "variant_name": "MLG TS 2007",
+      "red_score": 49,
+      "blue_score": 50,
       "winner": "Blue",
       "red_team": [
         "EpiiiC",
-        "WTFrenetic",
+        "James | The Frenetic",
         "AfroMaN",
-        "Keylord"
+        "keylord"
       ],
       "blue_team": [
         "getitoutdaFLUD",
         "cOn",
-        "iSiS RiNsY iSiS",
+        "Rinser",
         "KidMode"
       ],
       "source_file": "20251205_223635.xlsx"
@@ -270,17 +312,20 @@
     {
       "timestamp": "12/5/2025 10:37 PM",
       "map": "Lockout",
-      "gametype": "Oddball",
+      "gametype": "MLG Ball 2007",
+      "variant_name": "MLG Ball 2007",
+      "red_score": 0,
+      "blue_score": 125,
       "winner": "Blue",
       "red_team": [
         "EpiiiC",
-        "Keylord",
+        "keylord",
         "AfroMaN",
-        "WTFrenetic"
+        "James | The Frenetic"
       ],
       "blue_team": [
         "KidMode",
-        "iSiS RiNsY iSiS",
+        "Rinser",
         "cOn",
         "getitoutdaFLUD"
       ],
@@ -289,51 +334,60 @@
     {
       "timestamp": "12/5/2025 10:51 PM",
       "map": "Warlock",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS 2007",
+      "variant_name": "MLG TS 2007",
+      "red_score": 49,
+      "blue_score": 50,
       "winner": "Blue",
       "red_team": [
         "AfroMaN",
         "EpiiiC",
-        "Keylord",
-        "WTFrenetic"
+        "keylord",
+        "James | The Frenetic"
       ],
       "blue_team": [
         "KidMode",
         "cOn",
         "getitoutdaFLUD",
-        "iSiS RiNsY iSiS"
+        "Rinser"
       ],
       "source_file": "20251205_225641.xlsx"
     },
     {
       "timestamp": "12/5/2025 10:58 PM",
       "map": "Sanctuary",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG CTF Sanc",
+      "variant_name": "MLG CTF Sanc",
+      "red_score": 1,
+      "blue_score": 2,
       "winner": "Blue",
       "red_team": [
-        "WTFrenetic",
+        "James | The Frenetic",
         "EpiiiC",
         "AfroMaN",
-        "Keylord"
+        "keylord"
       ],
       "blue_team": [
         "KidMode",
         "cOn",
         "getitoutdaFLUD",
-        "iSiS RiNsY iSiS"
+        "Rinser"
       ],
       "source_file": "20251205_231359.xlsx"
     },
     {
       "timestamp": "12/6/2025 12:01 AM",
       "map": "Midship",
-      "gametype": "Bomb",
+      "gametype": "MLG Bomb 07",
+      "variant_name": "MLG Bomb 07",
+      "red_score": 2,
+      "blue_score": 0,
       "winner": "Red",
       "red_team": [
         "cOn",
-        "Keylord",
+        "keylord",
         "popq22",
-        "WTFrenetic"
+        "James | The Frenetic"
       ],
       "blue_team": [
         "KidMode",
@@ -346,13 +400,16 @@
     {
       "timestamp": "12/6/2025 12:16 AM",
       "map": "Sanctuary",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS Sanc 2007",
+      "variant_name": "MLG TS Sanc 2007",
+      "red_score": 50,
+      "blue_score": 33,
       "winner": "Red",
       "red_team": [
-        "WTFrenetic",
+        "James | The Frenetic",
         "popq22",
         "cOn",
-        "Keylord"
+        "keylord"
       ],
       "blue_team": [
         "AfroMaN",
@@ -365,13 +422,16 @@
     {
       "timestamp": "12/6/2025 12:24 AM",
       "map": "Midship",
-      "gametype": "Oddball",
+      "gametype": "MLG Ball 2007",
+      "variant_name": "MLG Ball 2007",
+      "red_score": 117,
+      "blue_score": 119,
       "winner": "Blue",
       "red_team": [
         "popq22",
-        "Keylord",
+        "keylord",
         "cOn",
-        "WTFrenetic"
+        "James | The Frenetic"
       ],
       "blue_team": [
         "KidMode",
@@ -384,12 +444,15 @@
     {
       "timestamp": "12/6/2025 12:41 AM",
       "map": "Lockout",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS 2007",
+      "variant_name": "MLG TS 2007",
+      "red_score": 42,
+      "blue_score": 50,
       "winner": "Blue",
       "red_team": [
         "cOn",
-        "WTFrenetic",
-        "Keylord",
+        "James | The Frenetic",
+        "keylord",
         "popq22"
       ],
       "blue_team": [
@@ -403,13 +466,16 @@
     {
       "timestamp": "12/6/2025 1:01 AM",
       "map": "Warlock",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG CTF MidWar",
+      "variant_name": "MLG CTF MidWar",
+      "red_score": 2,
+      "blue_score": 3,
       "winner": "Blue",
       "red_team": [
         "popq22",
         "cOn",
-        "Keylord",
-        "WTFrenetic"
+        "keylord",
+        "James | The Frenetic"
       ],
       "blue_team": [
         "Hyrax",
@@ -422,13 +488,16 @@
     {
       "timestamp": "12/6/2025 1:24 AM",
       "map": "Beaver Creek",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS 2007",
+      "variant_name": "MLG TS 2007",
+      "red_score": 48,
+      "blue_score": 50,
       "winner": "Blue",
       "red_team": [
-        "WTFrenetic",
+        "James | The Frenetic",
         "cOn",
         "popq22",
-        "Keylord"
+        "keylord"
       ],
       "blue_team": [
         "EpiiiC",
@@ -441,17 +510,20 @@
     {
       "timestamp": "12/6/2025 2:29 AM",
       "map": "Midship",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG MidWar CTF",
+      "variant_name": "MLG MidWar CTF",
+      "red_score": 4,
+      "blue_score": 3,
       "winner": "Red",
       "red_team": [
-        "RJ",
+        "Hammie",
         "popq22",
         "cOn",
-        "Sneaky Beaver"
+        "sneakybeav3r"
       ],
       "blue_team": [
         "getitoutdaFLUD",
-        "Keylord",
+        "keylord",
         "EpiiiC",
         "Hyrax"
       ],
@@ -460,17 +532,20 @@
     {
       "timestamp": "12/6/2025 2:47 AM",
       "map": "Beaver Creek",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS No Dualz",
+      "variant_name": "MLG TS No Dualz",
+      "red_score": 50,
+      "blue_score": 45,
       "winner": "Red",
       "red_team": [
         "cOn",
-        "Sneaky Beaver",
+        "sneakybeav3r",
         "popq22",
-        "RJ"
+        "Hammie"
       ],
       "blue_team": [
         "getitoutdaFLUD",
-        "Keylord",
+        "keylord",
         "Hyrax",
         "EpiiiC"
       ],
@@ -479,16 +554,19 @@
     {
       "timestamp": "12/6/2025 2:55 AM",
       "map": "Lockout",
-      "gametype": "Oddball",
+      "gametype": "MLG bawl",
+      "variant_name": "MLG bawl",
+      "red_score": 66,
+      "blue_score": 86,
       "winner": "Blue",
       "red_team": [
-        "RJ",
-        "Sneaky Beaver",
+        "Hammie",
+        "sneakybeav3r",
         "cOn",
         "popq22"
       ],
       "blue_team": [
-        "Keylord",
+        "keylord",
         "EpiiiC",
         "getitoutdaFLUD",
         "Hyrax"
@@ -498,17 +576,20 @@
     {
       "timestamp": "12/6/2025 3:11 AM",
       "map": "Warlock",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS No Dualz",
+      "variant_name": "MLG TS No Dualz",
+      "red_score": 38,
+      "blue_score": 50,
       "winner": "Blue",
       "red_team": [
-        "Sneaky Beaver",
-        "RJ",
+        "sneakybeav3r",
+        "Hammie",
         "cOn",
         "popq22"
       ],
       "blue_team": [
         "getitoutdaFLUD",
-        "Keylord",
+        "keylord",
         "Hyrax",
         "EpiiiC"
       ],
@@ -517,18 +598,21 @@
     {
       "timestamp": "12/6/2025 3:18 AM",
       "map": "Sanctuary",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG Sanc CTF",
+      "variant_name": "MLG Sanc CTF",
+      "red_score": 1,
+      "blue_score": 2,
       "winner": "Blue",
       "red_team": [
-        "RJ",
-        "Sneaky Beaver",
+        "Hammie",
+        "sneakybeav3r",
         "popq22",
         "cOn"
       ],
       "blue_team": [
         "EpiiiC",
         "Hyrax",
-        "Keylord",
+        "keylord",
         "getitoutdaFLUD"
       ],
       "source_file": "20251206_033331.xlsx"
@@ -536,11 +620,14 @@
     {
       "timestamp": "12/6/2025 3:34 AM",
       "map": "Lockout",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS No Dualz",
+      "variant_name": "MLG TS No Dualz",
+      "red_score": 50,
+      "blue_score": 24,
       "winner": "Red",
       "red_team": [
-        "Sneaky Beaver",
-        "RJ",
+        "sneakybeav3r",
+        "Hammie",
         "cOn",
         "popq22"
       ],
@@ -548,24 +635,27 @@
         "Hyrax",
         "getitoutdaFLUD",
         "EpiiiC",
-        "Keylord"
+        "keylord"
       ],
       "source_file": "20251206_034108.xlsx"
     },
     {
       "timestamp": "12/6/2025 3:43 AM",
       "map": "Midship",
-      "gametype": "Bomb",
+      "gametype": "MidBomb",
+      "variant_name": "MidBomb",
+      "red_score": 2,
+      "blue_score": 1,
       "winner": "Red",
       "red_team": [
-        "RJ",
-        "Sneaky Beaver",
+        "Hammie",
+        "sneakybeav3r",
         "popq22",
         "cOn"
       ],
       "blue_team": [
         "getitoutdaFLUD",
-        "Keylord",
+        "keylord",
         "Hyrax",
         "EpiiiC"
       ],
@@ -574,17 +664,20 @@
     {
       "timestamp": "12/6/2025 4:27 AM",
       "map": "Warlock",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG MidWar CTF",
+      "variant_name": "MLG MidWar CTF",
+      "red_score": 0,
+      "blue_score": 0,
       "winner": "Tie",
       "red_team": [
-        "Keylord",
-        "Future Trunks",
-        "Sneaky Beaver",
+        "keylord",
+        "future trunks",
+        "sneakybeav3r",
         "shooter22"
       ],
       "blue_team": [
-        "MMMMMMMMMMM15F1T",
-        "RJ",
+        "Em Won 5 F 1 T",
+        "Hammie",
         "getitoutdaFLUD",
         "Hyrax"
       ],
@@ -593,18 +686,21 @@
     {
       "timestamp": "12/6/2025 4:28 AM",
       "map": "Warlock",
-      "gametype": "capture_the_flag",
+      "gametype": "MLG MidWar CTF",
+      "variant_name": "MLG MidWar CTF",
+      "red_score": 2,
+      "blue_score": 3,
       "winner": "Blue",
       "red_team": [
-        "Future Trunks",
+        "future trunks",
         "shooter22",
-        "Sneaky Beaver",
-        "Keylord"
+        "sneakybeav3r",
+        "keylord"
       ],
       "blue_team": [
         "Hyrax",
-        "RJ",
-        "MMMMMMMMMMM15F1T",
+        "Hammie",
+        "Em Won 5 F 1 T",
         "getitoutdaFLUD"
       ],
       "source_file": "20251206_044406.xlsx"
@@ -612,18 +708,21 @@
     {
       "timestamp": "12/6/2025 4:46 AM",
       "map": "Sanctuary",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS Default",
+      "variant_name": "MLG TS Default",
+      "red_score": 47,
+      "blue_score": 50,
       "winner": "Blue",
       "red_team": [
         "shooter22",
-        "Future Trunks",
-        "Sneaky Beaver",
-        "Keylord"
+        "future trunks",
+        "sneakybeav3r",
+        "keylord"
       ],
       "blue_team": [
         "getitoutdaFLUD",
-        "MMMMMMMMMMM15F1T",
-        "RJ",
+        "Em Won 5 F 1 T",
+        "Hammie",
         "Hyrax"
       ],
       "source_file": "20251206_045415.xlsx"
@@ -631,37 +730,43 @@
     {
       "timestamp": "12/6/2025 4:55 AM",
       "map": "Midship",
-      "gametype": "Oddball",
+      "gametype": "MLG bawl",
+      "variant_name": "MLG bawl",
+      "red_score": 0,
+      "blue_score": 199,
       "winner": "Blue",
       "red_team": [
-        "Future Trunks",
-        "Keylord",
+        "future trunks",
+        "keylord",
         "shooter22",
-        "Sneaky Beaver"
+        "sneakybeav3r"
       ],
       "blue_team": [
-        "RJ",
+        "Hammie",
         "Hyrax",
         "getitoutdaFLUD",
-        "MMMMMMMMMMM15F1T"
+        "Em Won 5 F 1 T"
       ],
       "source_file": "20251206_050850.xlsx"
     },
     {
       "timestamp": "12/6/2025 5:10 AM",
       "map": "Beaver Creek",
-      "gametype": "Team Slayer",
+      "gametype": "MLG TS No Dualz",
+      "variant_name": "MLG TS No Dualz",
+      "red_score": 50,
+      "blue_score": 49,
       "winner": "Red",
       "red_team": [
-        "Future Trunks",
-        "Sneaky Beaver",
+        "future trunks",
+        "sneakybeav3r",
         "shooter22",
-        "Keylord"
+        "keylord"
       ],
       "blue_team": [
-        "MMMMMMMMMMM15F1T",
+        "Em Won 5 F 1 T",
         "getitoutdaFLUD",
-        "RJ",
+        "Hammie",
         "Hyrax"
       ],
       "source_file": "20251206_051617.xlsx"

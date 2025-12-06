@@ -12,10 +12,6 @@
     "twitch_name": "hyrax__",
     "twitch_url": "https://twitch.tv/hyrax__",
     "rank": 12,
-    "kills": 351,
-    "deaths": 414,
-    "assists": 239,
-    "headshots": 238,
     "MLG 4v4": 12,
     "playlists": {
       "MLG 4v4": {
@@ -27,7 +23,11 @@
         "games": 23
       }
     },
-    "highest_rank": 12
+    "highest_rank": 12,
+    "kills": 351,
+    "deaths": 414,
+    "assists": 239,
+    "headshots": 238
   },
   "283293015135748097": {
     "xp": 0,
@@ -74,10 +74,6 @@
     "twitch_url": "https://twitch.tv/ai2ejay",
     "alias": "Hammie",
     "rank": 7,
-    "kills": 274,
-    "deaths": 271,
-    "assists": 145,
-    "headshots": 213,
     "MLG 4v4": 7,
     "playlists": {
       "MLG 4v4": {
@@ -89,7 +85,11 @@
         "games": 12
       }
     },
-    "highest_rank": 7
+    "highest_rank": 7,
+    "kills": 274,
+    "deaths": 271,
+    "assists": 145,
+    "headshots": 213
   },
   "136324687926919168": {
     "xp": 181,
@@ -238,10 +238,6 @@
     "twitch_name": "du7s",
     "twitch_url": "https://twitch.tv/du7s",
     "rank": 2,
-    "kills": 41,
-    "deaths": 70,
-    "assists": 40,
-    "headshots": 22,
     "MLG 4v4": 2,
     "playlists": {
       "MLG 4v4": {
@@ -253,7 +249,11 @@
         "games": 5
       }
     },
-    "highest_rank": 2
+    "highest_rank": 2,
+    "kills": 41,
+    "deaths": 70,
+    "assists": 40,
+    "headshots": 22
   },
   "299780772456431627": {
     "xp": 0,
@@ -450,10 +450,6 @@
     "twitch_name": "Curtsglory",
     "twitch_url": "https://twitch.tv/Curtsglory",
     "rank": 2,
-    "kills": 71,
-    "deaths": 62,
-    "assists": 45,
-    "headshots": 49,
     "MLG 4v4": 2,
     "playlists": {
       "MLG 4v4": {
@@ -465,7 +461,11 @@
         "games": 5
       }
     },
-    "highest_rank": 2
+    "highest_rank": 2,
+    "kills": 71,
+    "deaths": 62,
+    "assists": 45,
+    "headshots": 49
   },
   "943239550782803988": {
     "xp": 0,
@@ -634,10 +634,6 @@
     "discord_name": "popq22",
     "rank": 7,
     "alias": "popq22",
-    "kills": 261,
-    "deaths": 255,
-    "assists": 197,
-    "headshots": 149,
     "MLG 4v4": 7,
     "playlists": {
       "MLG 4v4": {
@@ -649,7 +645,11 @@
         "games": 18
       }
     },
-    "highest_rank": 6
+    "highest_rank": 6,
+    "kills": 261,
+    "deaths": 255,
+    "assists": 197,
+    "headshots": 149
   },
   "1179648030375424032": {
     "xp": 0,
@@ -806,10 +806,6 @@
     "discord_name": "future trunks",
     "rank": 2,
     "alias": "future trunks",
-    "kills": 87,
-    "deaths": 83,
-    "assists": 62,
-    "headshots": 52,
     "MLG 4v4": 2,
     "playlists": {
       "MLG 4v4": {
@@ -821,7 +817,11 @@
         "games": 5
       }
     },
-    "highest_rank": 2
+    "highest_rank": 2,
+    "kills": 87,
+    "deaths": 83,
+    "assists": 62,
+    "headshots": 52
   },
   "213096674023833610": {
     "xp": 0,
@@ -1112,10 +1112,6 @@
     "discord_name": "shooter22",
     "rank": 4,
     "alias": "shooter22",
-    "kills": 136,
-    "deaths": 185,
-    "assists": 108,
-    "headshots": 101,
     "MLG 4v4": 4,
     "playlists": {
       "MLG 4v4": {
@@ -1127,7 +1123,11 @@
         "games": 10
       }
     },
-    "highest_rank": 4
+    "highest_rank": 4,
+    "kills": 136,
+    "deaths": 185,
+    "assists": 108,
+    "headshots": 101
   },
   "210280313262309376": {
     "xp": 0,
@@ -1214,10 +1214,6 @@
     "twitch_name": "thefrenetic",
     "twitch_url": "https://twitch.tv/thefrenetic",
     "rank": 2,
-    "kills": 321,
-    "deaths": 309,
-    "assists": 170,
-    "headshots": 235,
     "MLG 4v4": 2,
     "playlists": {
       "MLG 4v4": {
@@ -1229,7 +1225,11 @@
         "games": 10
       }
     },
-    "highest_rank": 3
+    "highest_rank": 3,
+    "kills": 321,
+    "deaths": 309,
+    "assists": 170,
+    "headshots": 235
   },
   "135116534388490240": {
     "xp": 0,
@@ -1327,10 +1327,6 @@
     "twitch_name": "SneeakyBeav3r",
     "twitch_url": "https://twitch.tv/SneeakyBeav3r",
     "rank": 8,
-    "kills": 365,
-    "deaths": 288,
-    "assists": 182,
-    "headshots": 243,
     "MLG 4v4": 8,
     "playlists": {
       "MLG 4v4": {
@@ -1342,7 +1338,11 @@
         "games": 17
       }
     },
-    "highest_rank": 8
+    "highest_rank": 8,
+    "kills": 365,
+    "deaths": 288,
+    "assists": 182,
+    "headshots": 243
   },
   "156973309722886144": {
     "xp": 0,
@@ -1397,10 +1397,6 @@
     "discord_name": "cOn",
     "rank": 9,
     "alias": "cOn",
-    "kills": 413,
-    "deaths": 372,
-    "assists": 288,
-    "headshots": 271,
     "MLG 4v4": 9,
     "playlists": {
       "MLG 4v4": {
@@ -1412,7 +1408,11 @@
         "games": 17
       }
     },
-    "highest_rank": 9
+    "highest_rank": 9,
+    "kills": 413,
+    "deaths": 372,
+    "assists": 288,
+    "headshots": 271
   },
   "180809401228197889": {
     "xp": 0,
