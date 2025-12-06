@@ -189,7 +189,38 @@
     "discord_name": "fluhd",
     "twitch_name": "floodandshiro",
     "twitch_url": "https://twitch.tv/floodandshiro",
-    "highest_rank": 1
+    "highest_rank": 1,
+    "playlists": {
+      "MLG 4v4": {
+        "rank": 1,
+        "highest_rank": 1,
+        "xp": 0,
+        "wins": 0,
+        "losses": 0
+      },
+      "Team Hardcore": {
+        "rank": 1,
+        "highest_rank": 1,
+        "xp": 0,
+        "wins": 0,
+        "losses": 0
+      },
+      "Double Team": {
+        "rank": 1,
+        "highest_rank": 1,
+        "xp": 0,
+        "wins": 0,
+        "losses": 0
+      },
+      "Head to Head": {
+        "rank": 1,
+        "highest_rank": 1,
+        "xp": 0,
+        "wins": 0,
+        "losses": 0
+      }
+    },
+    "rank": 1
   },
   "212720585279537153": {
     "xp": 0,
