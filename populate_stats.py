@@ -1838,11 +1838,11 @@ def main():
             subprocess.run(['git', 'commit', '-m', commit_msg], check=True)
             print(f"  Committed: {commit_msg}")
 
-            # Push to origin main with retry logic
+            # Push to origin main with force (this script is authoritative for stats)
             max_retries = 4
             for attempt in range(max_retries):
                 try:
-                    subprocess.run(['git', 'push', 'origin', 'main'], check=True, timeout=60)
+                    subprocess.run(['git', 'push', 'origin', 'main', '--force'], check=True, timeout=60)
                     print("  Pushed to GitHub successfully!")
                     break
                 except subprocess.CalledProcessError as e:
