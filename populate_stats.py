@@ -1639,6 +1639,24 @@ def main():
         user_id_to_names[user_id].append(player_name)
 
     for user_id, player_names in user_id_to_names.items():
+        # Ensure user exists in rankstats
+        if user_id not in rankstats:
+            # Get discord_name from id_to_profile
+            discord_name = id_to_profile.get(user_id, player_names[0])
+            rankstats[user_id] = {
+                'discord_name': discord_name,
+                'total_games': 0,
+                'kills': 0,
+                'deaths': 0,
+                'assists': 0,
+                'headshots': 0,
+                'wins': 0,
+                'losses': 0,
+                'playlists': {},
+                'series_wins': 0,
+                'series_losses': 0,
+            }
+
         # Consolidate stats from all aliases for this user
         total_games = 0
         total_kills = 0
