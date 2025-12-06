@@ -21,9 +21,7 @@ STATS_PUBLIC_DIR = '/home/carnagereport/stats/public'
 STATS_PRIVATE_DIR = '/home/carnagereport/stats/private'
 STATS_THEATER_DIR = '/home/carnagereport/stats/theater'
 RANKSTATS_FILE = 'rankstats.json'  # Legacy - will be replaced by per-playlist stats
-GAMESTATS_FILE = 'gamestats.json'
-MATCHHISTORY_FILE = 'matchhistory.json'
-GAMESDATA_FILE = 'gameshistory.json'  # Legacy - no longer used
+RANKS_FILE = 'ranks.json'  # Simple discord_id -> rank mapping for bot
 PLAYLISTS_FILE = 'playlists.json'
 CUSTOMGAMES_FILE = 'customgames.json'
 XP_CONFIG_FILE = 'xp_config.json'
@@ -1593,6 +1591,30 @@ def main():
         json.dump(rankstats, f, indent=2)
     print(f"  Saved {RANKSTATS_FILE} (legacy)")
 
+    # Save simple ranks.json for bot (discord_id -> rank per playlist)
+    ranks_data = {}
+    for user_id, data in rankstats.items():
+        ranks_data[user_id] = {
+            'primary_rank': data.get('rank', 1),
+            'highest_rank': data.get('highest_rank', 1),
+            'discord_name': data.get('discord_name', ''),
+            'alias': data.get('alias', ''),
+            'playlists': {}
+        }
+        # Add per-playlist ranks
+        playlists_info = data.get('playlists', {})
+        for playlist_name, pl_data in playlists_info.items():
+            ranks_data[user_id]['playlists'][playlist_name] = {
+                'rank': pl_data.get('rank', 1),
+                'xp': pl_data.get('xp', 0),
+                'wins': pl_data.get('wins', 0),
+                'losses': pl_data.get('losses', 0)
+            }
+
+    with open(RANKS_FILE, 'w') as f:
+        json.dump(ranks_data, f, indent=2)
+    print(f"  Saved {RANKS_FILE} ({len(ranks_data)} players)")
+
     # Save per-playlist matches and stats
     print("\n  Saving per-playlist files...")
     all_playlists = [PLAYLIST_MLG_4V4, PLAYLIST_TEAM_HARDCORE, PLAYLIST_DOUBLE_TEAM, PLAYLIST_HEAD_TO_HEAD]
@@ -1791,7 +1813,7 @@ def main():
     print("\nPushing stats to GitHub...")
     # Base files
     json_files = [
-        RANKSTATS_FILE, RANKHISTORY_FILE, EMBLEMS_FILE,
+        RANKSTATS_FILE, RANKS_FILE, RANKHISTORY_FILE, EMBLEMS_FILE,
         PROCESSED_STATE_FILE, PLAYLISTS_FILE
     ]
     # Add per-playlist files that were saved

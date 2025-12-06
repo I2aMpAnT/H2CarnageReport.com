@@ -1206,8 +1206,8 @@ function buildProfileNameMappings() {
     profileNameToDiscordId = {};
     discordIdToProfileNames = {};
 
-    // PRIORITY 1: Use discord_id directly from gameshistory.json (most reliable)
-    // Each player in gameshistory has their discord_id attached
+    // PRIORITY 1: Use discord_id directly from game data (most reliable)
+    // Each player in match data has their discord_id attached
     gamesData.forEach(game => {
         game.players.forEach(player => {
             if (!player.name) return;
@@ -1568,12 +1568,7 @@ async function loadGamesData() {
                 }
             }
         } else {
-            // Legacy: load from gameshistory.json
-            console.log('[DEBUG] Falling back to gameshistory.json...');
-            const response = await fetch('gameshistory.json');
-            if (response.ok) {
-                gamesData = await response.json();
-            }
+            console.error('[ERROR] playlists.json not found - cannot load game data');
         }
 
         // Filter out hidden games (not included in stats or viewing)
@@ -1649,7 +1644,7 @@ async function loadGamesData() {
         let helpText = 'Check browser console (F12) for details';
         
         if (error.message.includes('404') || error.message.includes('Not Found')) {
-            helpText = 'File gameshistory.json not found. Make sure it\'s in the same directory as index.html';
+            helpText = 'Required JSON files not found. Make sure playlists.json and match files are in the same directory as index.html';
         } else if (error.message.includes('Failed to fetch')) {
             helpText = 'Cannot load file. Are you running from file:// ? You need to use a web server (see README.md)';
         } else if (error.name === 'SyntaxError') {
@@ -2973,51 +2968,69 @@ function renderLeaderboard(selectedPlaylist = null) {
         selectedPlaylist = playlistFilter ? playlistFilter.value : 'all';
     }
 
-    // Build leaderboard from rankstatsData (includes ALL players, even with 0 games)
-    if (Object.keys(rankstatsData).length === 0) {
+    // Use per-playlist stats if available for specific playlist
+    let statsSource = rankstatsData;
+    let usePlaylistStats = false;
+
+    if (selectedPlaylist !== 'all' && playlistStats[selectedPlaylist]) {
+        statsSource = playlistStats[selectedPlaylist];
+        usePlaylistStats = true;
+        console.log(`[DEBUG] Using per-playlist stats for ${selectedPlaylist}`);
+    }
+
+    // Build leaderboard from stats source
+    if (Object.keys(statsSource).length === 0) {
         leaderboardContainer.innerHTML = '<div class="loading-message">No leaderboard data available</div>';
         return;
     }
 
-    // Convert rankstatsData to array format for sorting
-    const players = Object.entries(rankstatsData).map(([discordId, data]) => {
+    // Convert stats to array format for sorting
+    const players = Object.entries(statsSource).map(([discordId, data]) => {
         // Get profile names (in-game names) for this discord ID
         const profileNames = discordIdToProfileNames[discordId] || [];
 
-        // For playlist filtering, use playlist-specific rank if available
-        let rank, hasPlaylistData;
-        if (selectedPlaylist !== 'all' && data[selectedPlaylist]) {
-            rank = data[selectedPlaylist];
-            hasPlaylistData = true;
-        } else if (selectedPlaylist === 'all') {
-            rank = data.rank || 1;
-            hasPlaylistData = data.total_games > 0;
-        } else {
-            rank = 1;
-            hasPlaylistData = false;
-        }
+        // Get rank and stats based on data source
+        let rank, wins, losses, games, kills, deaths;
 
-        // Use stats directly from rankstats (already aggregated by backend)
-        const kills = data.kills || 0;
-        const deaths = data.deaths || 0;
-        const wins = data.wins || 0;
-        const losses = data.losses || 0;
-        const games = data.total_games || 0;
+        if (usePlaylistStats) {
+            // Per-playlist stats file format
+            rank = data.rank || 1;
+            wins = data.wins || 0;
+            losses = data.losses || 0;
+            games = wins + losses;
+            kills = data.kills || 0;
+            deaths = data.deaths || 0;
+        } else {
+            // Legacy rankstats.json format
+            if (selectedPlaylist !== 'all' && data.playlists && data.playlists[selectedPlaylist]) {
+                const plData = data.playlists[selectedPlaylist];
+                rank = plData.rank || 1;
+                wins = plData.wins || 0;
+                losses = plData.losses || 0;
+            } else {
+                rank = data.rank || 1;
+                wins = data.wins || 0;
+                losses = data.losses || 0;
+            }
+            games = data.total_games || 0;
+            kills = data.kills || 0;
+            deaths = data.deaths || 0;
+        }
 
         return {
             discordId: discordId,
-            // Priority: display_name > discord_name
-            displayName: data.display_name || data.discord_name || 'Unknown',
+            // Priority: alias > display_name > discord_name
+            displayName: data.alias || data.display_name || data.discord_name || 'Unknown',
             profileNames: profileNames,
             rank: rank,
             wins: wins,
             losses: losses,
-            games: games,
+            games: games || (wins + losses),
             kills: kills,
             deaths: deaths,
             kd: deaths > 0 ? (kills / deaths).toFixed(2) : kills.toFixed(2),
-            winrate: games > 0 ? ((wins / games) * 100).toFixed(1) : '0.0',
-            hasPlaylistData: hasPlaylistData
+            winrate: (wins + losses) > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : '0.0',
+            hasPlaylistData: usePlaylistStats || (wins > 0 || losses > 0)
         };
     });
 
