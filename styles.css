@@ -1635,7 +1635,7 @@ header {
 
 .leaderboard-header {
     display: grid;
-    grid-template-columns: 50px 40px 2fr 120px 80px;
+    grid-template-columns: 50px 40px 2fr 120px 70px 80px;
     gap: 15px;
     padding: 12px 20px;
     background: linear-gradient(90deg, rgba(168, 212, 255, 0.15), rgba(168, 212, 255, 0.05));
@@ -1650,13 +1650,19 @@ header {
 
 .leaderboard-row {
     display: grid;
-    grid-template-columns: 50px 40px 2fr 120px 80px;
+    grid-template-columns: 50px 40px 2fr 120px 70px 80px;
     gap: 15px;
     padding: 8px 20px;
     border-bottom: 1px solid rgba(168, 212, 255, 0.1);
     transition: all 0.3s ease;
     cursor: pointer;
     align-items: center;
+}
+
+.lb-series {
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
 }
 
 .leaderboard-row:hover {
@@ -4283,8 +4289,8 @@ header {
     
     .leaderboard-header,
     .leaderboard-row {
-        min-width: 500px;
-        grid-template-columns: 50px 40px 1fr 70px 60px;
+        min-width: 550px;
+        grid-template-columns: 50px 40px 1fr 70px 50px 60px;
         gap: 8px;
         padding: 12px 8px;
     }
