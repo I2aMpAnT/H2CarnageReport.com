@@ -1615,6 +1615,14 @@ async function loadGamesData() {
         }
         console.log(`[DEBUG] Added ${customGamesData.length} custom games to gamesData`);
 
+        // Sort all games chronologically (oldest first, newest last)
+        gamesData.sort((a, b) => {
+            const timeA = new Date(a.details['Start Time'] || a.details['End Time'] || 0);
+            const timeB = new Date(b.details['Start Time'] || b.details['End Time'] || 0);
+            return timeA - timeB;
+        });
+        console.log('[DEBUG] Games sorted chronologically');
+
         console.log('[DEBUG] Games loaded successfully!');
         console.log('[DEBUG] Number of games:', gamesData.length);
         if (gamesData.length > 0) {
