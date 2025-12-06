@@ -924,10 +924,10 @@ def main():
         for user_id, state in saved_player_state.items():
             if user_id in rankstats:
                 # Restore per-playlist state
-                for playlist, pl_state in state.get('playlist_stats', {}).items():
-                    if 'playlist_stats' not in rankstats[user_id]:
-                        rankstats[user_id]['playlist_stats'] = {}
-                    rankstats[user_id]['playlist_stats'][playlist] = pl_state.copy()
+                for playlist, pl_state in state.get('playlists', {}).items():
+                    if 'playlists' not in rankstats[user_id]:
+                        rankstats[user_id]['playlists'] = {}
+                    rankstats[user_id]['playlists'][playlist] = pl_state.copy()
                     rankstats[user_id][playlist] = pl_state.get('rank', 1)
                 # Restore overall stats
                 rankstats[user_id]['xp'] = state.get('xp', 0)
@@ -1137,7 +1137,7 @@ def main():
             for player_name, pid in player_to_id.items():
                 if pid == user_id:
                     # Restore per-playlist XP and rank
-                    for playlist, pl_state in state.get('playlist_stats', {}).items():
+                    for playlist, pl_state in state.get('playlists', {}).items():
                         player_playlist_xp[player_name][playlist] = pl_state.get('xp', 0)
                         player_playlist_rank[player_name][playlist] = pl_state.get('rank', 1)
                         player_playlist_highest_rank[player_name][playlist] = pl_state.get('highest_rank', 1)
@@ -1383,8 +1383,8 @@ def main():
                 primary_xp = playlist_xp
                 primary_playlist = playlist
 
-        # Store playlist details
-        rankstats[user_id]['playlist_stats'] = playlists_data
+        # Store playlist details (use 'playlists' key for bot compatibility)
+        rankstats[user_id]['playlists'] = playlists_data
 
         # For legacy compatibility: use primary playlist's XP/rank as the main one
         if primary_playlist:
@@ -1545,7 +1545,7 @@ def main():
                 'assists': data.get('assists', 0),
                 'headshots': data.get('headshots', 0),
                 'highest_rank': data.get('highest_rank', 1),
-                'playlist_stats': data.get('playlist_stats', {})
+                'playlists': data.get('playlists', {})
             }
 
     new_processed_state = {
