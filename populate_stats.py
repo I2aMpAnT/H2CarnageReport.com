@@ -1279,6 +1279,9 @@ def main():
 
                 history_entry = {
                     'timestamp': game_timestamp,
+                    'source_file': game.get('source_file'),
+                    'map': game['details'].get('Map Name', 'Unknown'),
+                    'gametype': game['details'].get('Variant Name', 'Unknown'),
                     'playlist': playlist,
                     'xp_change': xp_change,
                     'xp_total': new_xp,
