@@ -1343,7 +1343,12 @@ function getRankIconForValue(rank, size = 'small') {
 // Get pre-game rank icon for a player in a specific game
 // Uses discord_id directly if available, otherwise falls back to name lookup
 function getPreGameRankIcon(player, size = 'small', game = null) {
-    // First try to look up from rank history using discord_id (preferred) or player name
+    // First priority: Check if player object has pre_game_rank stored from match data
+    if (player.pre_game_rank && player.pre_game_rank > 0) {
+        return getRankIconForValue(player.pre_game_rank, size);
+    }
+
+    // Second priority: Look up from rank history using discord_id (preferred) or player name
     if (game && game.details && game.details['End Time']) {
         const preGameRank = getRankAtTime(player.name, game.details['End Time'], player.discord_id);
         if (preGameRank) {
@@ -1351,10 +1356,6 @@ function getPreGameRankIcon(player, size = 'small', game = null) {
         }
     }
 
-    // Check if player object has pre_game_rank
-    if (player.pre_game_rank && player.pre_game_rank > 0) {
-        return getRankIconForValue(player.pre_game_rank, size);
-    }
     // Fallback to current rank using discord_id if available
     const discordId = player.discord_id || profileNameToDiscordId[player.name];
     if (discordId && rankstatsData[discordId]) {
@@ -1365,7 +1366,15 @@ function getPreGameRankIcon(player, size = 'small', game = null) {
 
 // Get pre-game rank icon by looking up player name in game data
 function getPreGameRankIconByName(playerName, game, size = 'small') {
-    // Find player in game data to get discord_id
+    // First priority: Check player object's pre_game_rank from match data
+    if (game && game.players) {
+        const player = game.players.find(p => p.name === playerName);
+        if (player && player.pre_game_rank && player.pre_game_rank > 0) {
+            return getRankIconForValue(player.pre_game_rank, size);
+        }
+    }
+
+    // Second priority: Look up from rank history using discord_id or player name
     let discordId = null;
     if (game && game.players) {
         const player = game.players.find(p => p.name === playerName);
@@ -1374,7 +1383,6 @@ function getPreGameRankIconByName(playerName, game, size = 'small') {
         }
     }
 
-    // Try to look up from rank history using discord_id or player name
     if (game && game.details && game.details['End Time']) {
         const preGameRank = getRankAtTime(playerName, game.details['End Time'], discordId);
         if (preGameRank) {
@@ -1382,7 +1390,7 @@ function getPreGameRankIconByName(playerName, game, size = 'small') {
         }
     }
 
-    // Fall back to player object's pre_game_rank if available
+    // Third: Fall back to getPreGameRankIcon for any additional fallback logic
     if (game && game.players) {
         const player = game.players.find(p => p.name === playerName);
         if (player) {
@@ -1416,7 +1424,8 @@ function convertMatchToPlayers(match, playlist) {
             deaths: p.deaths || 0,
             assists: p.assists || 0,
             score: p.score || '0',
-            winner: p.team === match.winner
+            winner: p.team === match.winner,
+            pre_game_rank: p.pre_game_rank || 1
         }));
     }
 

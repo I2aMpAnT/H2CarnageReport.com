@@ -1566,6 +1566,9 @@ def main():
             old_xp = player_playlist_xp[player_name][playlist]
             rank_before = player_playlist_rank[player_name][playlist]
 
+            # Store pre_game_rank on the player dict so it can be included in match data
+            player['pre_game_rank'] = rank_before
+
             # Determine result and calculate XP change
             xp_change = 0
             game_result = 'tie'
@@ -1865,7 +1868,8 @@ def main():
                     'shots_fired': p.get('shots_fired', 0),
                     'shots_hit': p.get('shots_hit', 0),
                     'accuracy': p.get('accuracy', 0),
-                    'headshots': p.get('head_shots', 0)
+                    'headshots': p.get('head_shots', 0),
+                    'pre_game_rank': p.get('pre_game_rank', 1)
                 })
 
             # Build detailed_stats array (Game Statistics sheet data with emblem URLs)
@@ -2013,7 +2017,8 @@ def main():
                     'shots_fired': p.get('shots_fired', 0),
                     'shots_hit': p.get('shots_hit', 0),
                     'accuracy': p.get('accuracy', 0),
-                    'headshots': p.get('head_shots', 0)
+                    'headshots': p.get('head_shots', 0),
+                    'pre_game_rank': p.get('pre_game_rank', 1)
                 })
 
             # Build detailed_stats array (Game Statistics sheet data)
