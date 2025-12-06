@@ -3073,7 +3073,9 @@ function renderLeaderboard(selectedPlaylist = null) {
             deaths: deaths,
             kd: deaths > 0 ? (kills / deaths).toFixed(2) : kills.toFixed(2),
             winrate: (wins + losses) > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : '0.0',
-            hasPlaylistData: usePlaylistStats || (wins > 0 || losses > 0)
+            hasPlaylistData: usePlaylistStats || (wins > 0 || losses > 0),
+            seriesWins: data.series_wins || 0,
+            seriesLosses: data.series_losses || 0
         };
     });
 
@@ -3100,6 +3102,7 @@ function renderLeaderboard(selectedPlaylist = null) {
     html += '<div></div>'; // Emblem column - no header text
     html += '<div>Player</div>';
     html += '<div>Record</div>';
+    html += '<div>Series</div>';
     html += '<div>K/D</div>';
     html += '</div>';
 
@@ -3144,6 +3147,11 @@ function renderLeaderboard(selectedPlaylist = null) {
         html += '</div>';
         html += `<div class="lb-player">${player.displayName}</div>`;
         html += `<div class="lb-record">${recordDisplay}</div>`;
+        // Series wins-losses
+        const seriesDisplay = (player.seriesWins > 0 || player.seriesLosses > 0)
+            ? `${player.seriesWins}-${player.seriesLosses}`
+            : '<span class="stat-empty">—</span>';
+        html += `<div class="lb-series">${seriesDisplay}</div>`;
         html += `<div class="lb-kd ${kdClass}">${kdDisplay}</div>`;
         html += '</div>';
     });
