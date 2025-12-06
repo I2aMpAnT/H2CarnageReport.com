@@ -1824,6 +1824,9 @@ def main():
         script_dir = os.path.dirname(os.path.abspath(__file__))
         os.chdir(script_dir)
 
+        # Ensure we're on main branch before committing
+        subprocess.run(['git', 'checkout', 'main'], check=True)
+
         # Add all JSON files (filter out any that don't exist)
         existing_files = [f for f in json_files if os.path.exists(f)]
         subprocess.run(['git', 'add'] + existing_files, check=True)
