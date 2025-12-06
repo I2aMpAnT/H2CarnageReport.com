@@ -1,17 +1,19 @@
 {
   "1136095104663306240": {
-    "primary_rank": 12,
-    "highest_rank": 12,
+    "primary_rank": 13,
+    "highest_rank": 13,
     "discord_name": "Hyrax",
     "alias": "",
     "playlists": {
       "MLG 4v4": {
-        "rank": 12,
-        "xp": 1113,
-        "wins": 13,
+        "rank": 13,
+        "xp": 1213,
+        "wins": 14,
         "losses": 8
       }
-    }
+    },
+    "series_wins": 3,
+    "series_losses": 1
   },
   "283293015135748097": {
     "primary_rank": 1,
@@ -25,21 +27,25 @@
         "wins": 0,
         "losses": 3
       }
-    }
+    },
+    "series_wins": 0,
+    "series_losses": 1
   },
   "132652800378142720": {
-    "primary_rank": 7,
-    "highest_rank": 7,
+    "primary_rank": 8,
+    "highest_rank": 8,
     "discord_name": "Hammie",
     "alias": "Hammie",
     "playlists": {
       "MLG 4v4": {
-        "rank": 7,
-        "xp": 665,
-        "wins": 7,
+        "rank": 8,
+        "xp": 765,
+        "wins": 8,
         "losses": 4
       }
-    }
+    },
+    "series_wins": 2,
+    "series_losses": 0
   },
   "136324687926919168": {
     "primary_rank": 2,
@@ -53,7 +59,9 @@
         "wins": 2,
         "losses": 6
       }
-    }
+    },
+    "series_wins": 0,
+    "series_losses": 2
   },
   "426757496557010948": {
     "primary_rank": 6,
@@ -67,7 +75,9 @@
         "wins": 5,
         "losses": 3
       }
-    }
+    },
+    "series_wins": 1,
+    "series_losses": 1
   },
   "412829053603807232": {
     "primary_rank": 1,
@@ -102,7 +112,9 @@
         "wins": 11,
         "losses": 4
       }
-    }
+    },
+    "series_wins": 3,
+    "series_losses": 0
   },
   "284010072504270849": {
     "primary_rank": 2,
@@ -116,7 +128,9 @@
         "wins": 1,
         "losses": 3
       }
-    }
+    },
+    "series_wins": 0,
+    "series_losses": 1
   },
   "299780772456431627": {
     "primary_rank": 1,
@@ -137,21 +151,25 @@
         "wins": 7,
         "losses": 0
       }
-    }
+    },
+    "series_wins": 2,
+    "series_losses": 0
   },
   "334212655613214721": {
-    "primary_rank": 13,
-    "highest_rank": 13,
+    "primary_rank": 14,
+    "highest_rank": 14,
     "discord_name": "fluhd",
     "alias": "getitoutdaFLUD",
     "playlists": {
       "MLG 4v4": {
-        "rank": 13,
-        "xp": 1318,
-        "wins": 16,
+        "rank": 14,
+        "xp": 1418,
+        "wins": 17,
         "losses": 11
       }
-    }
+    },
+    "series_wins": 3,
+    "series_losses": 3
   },
   "212720585279537153": {
     "primary_rank": 1,
@@ -221,7 +239,9 @@
         "wins": 1,
         "losses": 3
       }
-    }
+    },
+    "series_wins": 0,
+    "series_losses": 1
   },
   "943239550782803988": {
     "primary_rank": 1,
@@ -298,7 +318,9 @@
         "wins": 3,
         "losses": 2
       }
-    }
+    },
+    "series_wins": 1,
+    "series_losses": 0
   },
   "1380083223937290272": {
     "primary_rank": 1,
@@ -319,7 +341,9 @@
         "wins": 7,
         "losses": 10
       }
-    }
+    },
+    "series_wins": 1,
+    "series_losses": 2
   },
   "1179648030375424032": {
     "primary_rank": 1,
@@ -406,11 +430,13 @@
     "playlists": {
       "MLG 4v4": {
         "rank": 2,
-        "xp": 100,
+        "xp": 98,
         "wins": 1,
-        "losses": 3
+        "losses": 4
       }
-    }
+    },
+    "series_wins": 0,
+    "series_losses": 1
   },
   "213096674023833610": {
     "primary_rank": 1,
@@ -574,11 +600,13 @@
     "playlists": {
       "MLG 4v4": {
         "rank": 4,
-        "xp": 378,
+        "xp": 371,
         "wins": 4,
-        "losses": 4
+        "losses": 5
       }
-    }
+    },
+    "series_wins": 1,
+    "series_losses": 1
   },
   "210280313262309376": {
     "primary_rank": 1,
@@ -634,7 +662,9 @@
         "wins": 2,
         "losses": 8
       }
-    }
+    },
+    "series_wins": 0,
+    "series_losses": 2
   },
   "135116534388490240": {
     "primary_rank": 1,
@@ -651,18 +681,20 @@
     "playlists": {}
   },
   "1040724126836457624": {
-    "primary_rank": 7,
-    "highest_rank": 4,
+    "primary_rank": 8,
+    "highest_rank": 5,
     "discord_name": "Em Won 5 F 1 T",
     "alias": "Em Won 5 F 1 T",
     "playlists": {
       "MLG 4v4": {
-        "rank": 7,
-        "xp": 593,
-        "wins": 6,
+        "rank": 8,
+        "xp": 693,
+        "wins": 7,
         "losses": 1
       }
-    }
+    },
+    "series_wins": 2,
+    "series_losses": 0
   },
   "653385687852253215": {
     "primary_rank": 1,
@@ -679,18 +711,20 @@
     "playlists": {}
   },
   "274372368686776321": {
-    "primary_rank": 8,
+    "primary_rank": 7,
     "highest_rank": 8,
     "discord_name": "sneakybeav3r",
     "alias": "",
     "playlists": {
       "MLG 4v4": {
-        "rank": 8,
-        "xp": 700,
+        "rank": 7,
+        "xp": 673,
         "wins": 8,
-        "losses": 7
+        "losses": 8
       }
-    }
+    },
+    "series_wins": 2,
+    "series_losses": 1
   },
   "156973309722886144": {
     "primary_rank": 1,
@@ -725,7 +759,9 @@
         "wins": 10,
         "losses": 7
       }
-    }
+    },
+    "series_wins": 2,
+    "series_losses": 1
   },
   "180809401228197889": {
     "primary_rank": 1,
@@ -767,7 +803,9 @@
         "wins": 10,
         "losses": 12
       }
-    }
+    },
+    "series_wins": 2,
+    "series_losses": 2
   },
   "84785392234012672": {
     "primary_rank": 1,
@@ -858,7 +896,9 @@
         "wins": 7,
         "losses": 10
       }
-    }
+    },
+    "series_wins": 2,
+    "series_losses": 2
   },
   "269681242335739905": {
     "primary_rank": 8,
@@ -868,11 +908,13 @@
     "playlists": {
       "MLG 4v4": {
         "rank": 8,
-        "xp": 719,
+        "xp": 704,
         "wins": 8,
-        "losses": 21
+        "losses": 22
       }
-    }
+    },
+    "series_wins": 0,
+    "series_losses": 6
   },
   "175060415833833472": {
     "primary_rank": 4,
@@ -886,6 +928,8 @@
         "wins": 3,
         "losses": 2
       }
-    }
+    },
+    "series_wins": 1,
+    "series_losses": 0
   }
 }
