@@ -63,6 +63,8 @@ DEDICATED_SERVER_NAMES = {'statsdedi', 'dedi', 'dedicated', 'server'}
 UNICODE_NAME_MAPPINGS = {
     'isis rinsy isis': '210187331066396672',
     'isisrinsyisis': '210187331066396672',
+    # PUA (Private Use Area) Unicode characters - game-specific symbols
+    '\ue101\ue100\ue101\ue103\ue075': '210187331066396672',  # iSiS RiNsY iSiS's symbol name
 }
 
 # Playlist types
@@ -535,14 +537,19 @@ def resolve_player_to_discord(player_name, identity_name_to_mac, mac_to_discord,
     3. Discord name match in rankstats
     """
     name_lower = player_name.strip().lower()
+    name_raw = player_name.strip()  # Keep original case for PUA characters
 
-    # Strip Unicode invisible characters and normalize
+    # Method 0: Check hardcoded Unicode name mappings first (before any normalization)
+    # Check raw name first (for PUA/symbol characters that don't have case)
+    if name_raw in UNICODE_NAME_MAPPINGS:
+        return UNICODE_NAME_MAPPINGS[name_raw]
+    if name_lower in UNICODE_NAME_MAPPINGS:
+        return UNICODE_NAME_MAPPINGS[name_lower]
+
+    # Strip Unicode invisible characters and normalize for additional checks
     name_stripped = ''.join(c for c in name_lower if c.isalnum() or c.isspace()).strip()
     name_no_spaces = name_stripped.replace(' ', '')
 
-    # Method 0: Check hardcoded Unicode name mappings first
-    if name_lower in UNICODE_NAME_MAPPINGS:
-        return UNICODE_NAME_MAPPINGS[name_lower]
     if name_stripped in UNICODE_NAME_MAPPINGS:
         return UNICODE_NAME_MAPPINGS[name_stripped]
     if name_no_spaces in UNICODE_NAME_MAPPINGS:
